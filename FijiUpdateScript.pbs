@@ -1,0 +1,24 @@
+#!/bin/sh
+
+#  FijiUpdateScript.pbs
+#  
+#
+#  Created by Ian Munro on 09/06/2016.
+#
+
+
+## ask PBS for time (format hh:mm:ss)
+#PBS -l walltime=01:01:01
+
+## ask for one node with 16 cpus and total 2gb memory (per node)
+#PBS -l select=1:ncpus=16:mem=2gb
+
+
+##load application module
+module load fiji
+
+
+##command line
+fiji --update update
+
+
