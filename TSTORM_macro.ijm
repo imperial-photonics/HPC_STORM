@@ -1,5 +1,4 @@
 WORK=getArgument()
-print("work="+WORK+" ")
 setBatchMode(true)
 run("Bio-Formats Importer","open="+WORK+"/teststack.tif color_mode=Default view=Hyperstack stack_order=XYCZT use_virtual_stack");
 //run("Bio-Formats Importer","open=/Users/imunro/STORM_Optimisation/speedtest/teststack.tif color_mode=Default view=Hyperstack stack_order=XYCZT use_virtual_stack");
