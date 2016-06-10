@@ -11,7 +11,7 @@
 #PBS -l walltime=01:01:01
 
 ## ask for one node with 16 cpus and total 2gb memory (per node)
-#PBS -l select=1:ncpus=16:mem=2gb
+#PBS -l select=1:ncpus=16:mem=8gb
 
 
 ##load application module
