@@ -19,6 +19,6 @@ module load fiji
 
 
 ##command line
-fiji --update update
+/apps/fiji/Fiji.app/ImageJ-linux64 --update update
 
 

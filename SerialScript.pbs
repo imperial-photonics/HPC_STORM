@@ -19,5 +19,5 @@ module load fiji
 
 
 ##command line
-fiji -macro $HOME/TSTORM_macro.ijm $WORK
+/apps/fiji/Fiji.app/ImageJ-linux64 --ij2 --headless -macro $HOME/MIN_macro.ijm $WORK
 
