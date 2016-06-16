@@ -19,5 +19,5 @@ module load fiji
 
 
 ##command line
-/apps/fiji/Fiji.app/ImageJ-linux64 --ij2 --headless -macro $HOME/MIN_macro.ijm $WORK
+DEBUG=1 /apps/fiji/Fiji.app/ImageJ-linux64 --ij2 --headless -macro $HOME/MIN_macro.ijm $WORK
 
