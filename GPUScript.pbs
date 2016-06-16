@@ -11,7 +11,7 @@
 #PBS -l walltime=00:09:01
 
 ## ask for one node with 16 cpus and total 2gb memory (per node)
-#PBS -l select=1:ncpus=16:mem=2gb:ngpus=1
+#PBS -l select=1:ncpus=16:mem=4gb:ngpus=1
 
 #PBS -q gpgpu
 ## This tells the batch manager to enqueue the job in the general gpgpu queue.
