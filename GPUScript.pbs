@@ -22,5 +22,6 @@ module load fiji
 
 
 ##command line
-DEBUG=1 /apps/fiji/Fiji.app/ImageJ-linux64 --ij2 -macro $HOME/TSTORM_macro.ijm $WORK
+## DEBUG=1
+/apps/fiji/Fiji.app/ImageJ-linux64 --ij2 -macro $HOME/TSTORM_macro.ijm $WORK
 
