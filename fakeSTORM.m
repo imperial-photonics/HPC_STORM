@@ -18,6 +18,9 @@ assert(status, ['Missing Bio-Formats library. Either add loci_tools.jar '...
 % initialize logging
 loci.common.DebugTools.enableLogging('ERROR');
 
+java.lang.System.setProperty('javax.xml.transform.TransformerFactory', 'com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl');
+OMEXMLService = loci.formats.services.OMEXMLServiceImpl();
+
 sizeY = 256;
 sizeX = 256;
 
