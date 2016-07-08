@@ -11,8 +11,9 @@
 #PBS -l walltime=01:00:00
 
 ## ask for one node with 16 cpus and total 2gb memory (per node)
-#PBS -l select=1:ncpus=16:mem=4gb
+#PBS -l select=1:ncpus=1:mem=4gb
 
+rm /work/imunro/result*
 
 ##load application module
 module load fiji vnc
@@ -21,9 +22,8 @@ module load fiji vnc
 
 ##command line
 ## DEBUG=1
-ARGS=
 
-/apps/fiji/Fiji.app/ImageJ-linux64 --ij2 -macro $HOME/TSTORM_macro.ijm $WORK 
+/home/imunro/NodeScript.sh 1
 
 vnc_stop
 
