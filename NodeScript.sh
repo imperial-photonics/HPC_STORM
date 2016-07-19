@@ -8,21 +8,26 @@
 
 #  NB assume c-style numbering here
 ONE=1
-PBS_ARRAY_INDEX=$(( $1  ))
+PBS_ARRAY_INDEX=$(( $1 ))
+
 echo "PBS_ARRAY_INDEX="
-echo PBS_ARRAY_INDEX
-
-
-#  get arg  list from file
-ARGS=$(head -$PBS_ARRAY_INDEX args | tail -1)
+echo $PBS_ARRAY_INDEX
 
 
 #  hardwired paths TBD
+
 HOME=/home/imunro
 IJ=/apps/fiji/Fiji.app/ImageJ-linux64
 
-#/Users/imunro/HPC_STORM
+#HOME=/Users/imunro/HPC_STORM
 #IJ=/Applications/Fiji.app/Contents/MacOS/ImageJ-macosx
+
+ARGSFILE=$HOME"/args"
+
+
+#  get arg  list from file
+ARGS=$(head -$PBS_ARRAY_INDEX $ARGSFILE | tail -1)
+
 
 
 echo "running TSTORM macro!"
