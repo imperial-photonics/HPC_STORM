@@ -1,0 +1,26 @@
+#!/bin/sh
+
+#  MERGEScript.sh
+#  
+#
+#  Created by Ian Munro on 18/07/2016.
+#
+
+
+## ask PBS for time (format hh:mm:ss)
+#PBS -l walltime=01:00:00
+
+## ask for one node with 16 cpus and total 2gb memory (per node)
+#PBS -l select=1:ncpus=1:mem=2gb
+
+
+##more hardcoded paths
+cd /work/imunro
+
+ls -v result*.csv | xargs cat > /home/imunro/result.csv
+
+
+
+
+
+

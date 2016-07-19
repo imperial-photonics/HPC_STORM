@@ -1,0 +1,31 @@
+#!/bin/sh
+#  VNCScript.pbs
+#  
+#
+#  Created by Ian Munro on 02/07/2016.
+#
+## ask PBS for time (format hh:mm:ss)
+#PBS -l walltime=01:00:0
+## ask for one node with 16 cpus and total 2gb memory (per node)
+#PBS -l select=1:ncpus=1:mem=4gb
+#PBS -J 1-2
+
+rm /work/imunro/result*
+
+##load application module
+module load fiji vnc
+
+`vnc_start`
+
+echo $PBS_ARRAY_INDEX
+
+##command line
+## DEBUG=1
+
+/home/imunro/NodeScript.sh $PBS_ARRAY_INDEX
+
+vnc_stop
+
+exit
+
+
