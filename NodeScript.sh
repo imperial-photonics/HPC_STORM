@@ -6,16 +6,12 @@
 #  Created by Ian Munro on 4/07/2016.
 #  The script that runs on each node
 
-#  NB assume c-style numbering here
-ONE=1
-PBS_ARRAY_INDEX=$(( $1 ))
+echo "Start time $(date)"
 
-echo "PBS_ARRAY_INDEX="
-echo $PBS_ARRAY_INDEX
+PBS_ARRAY_INDEX=$(( $1 ))
 
 
 #  hardwired paths TBD
-
 HOME=/home/imunro
 IJ=/apps/fiji/Fiji.app/ImageJ-linux64
 
@@ -49,24 +45,11 @@ then
   WORK=${arr[0]}
   FILENAME=$WORK"/result"$PBS_ARRAY_INDEX".csv"
   
-  FIRST=${arr[1]}
-
-  nframes=$((${arr[2]} - $FIRST +1))
 
   sed -i -e '1d' "${FILENAME}"
-
-  for NUM in `seq 1 1 $nframes`
-  do
-    fin=$(printf "%d\n" $NUM)
-    REP=$(($NUM + $FIRST -$ONE))
-    rep=$(printf "%d\n" $REP)
-
-    sed -i -e  "s/^${fin}\.0,/${rep}\.0,/" "${FILENAME}"
-
-  done
 
 
 fi
 
-
+echo "End time $(date)"
 
