@@ -6,18 +6,40 @@
 #  Created by Ian Munro on 18/07/2016.
 #
 
-
 ## ask PBS for time (format hh:mm:ss)
 #PBS -l walltime=01:00:00
 
 ## ask for one node with 16 cpus and total 2gb memory (per node)
-#PBS -l select=1:ncpus=1:mem=2gb
+#PBS -l select=1:ncpus=1:mem=8gb
 
+#  hardwired paths TBD
+HOME=/home/imunro
+IJ=/apps/fiji/Fiji.app/ImageJ-linux64
+
+#HOME=/Users/imunro/HPC_STORM
+#IJ=/Applications/Fiji.app/Contents/MacOS/ImageJ-macosx
+
+ARGSFILE=$HOME"/args"
+
+echo $ARGSFILE
 
 ##more hardcoded paths
 cd /work/imunro
 
-ls -v result*.csv | xargs cat > /home/imunro/result.csv
+##load application module
+module load fiji vnc
+
+`vnc_start`
+
+$IJ --ij2 -macro $HOME/TSTORM_merge.ijm $ARGSFILE
+
+vnc_stop
+
+mv result-protocol.txt /home/imunro/result-protocol.txt
+
+rm resul*.csv
+
+
 
 
 

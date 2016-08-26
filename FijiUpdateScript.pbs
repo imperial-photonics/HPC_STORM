@@ -11,14 +11,19 @@
 #PBS -l walltime=01:01:01
 
 ## ask for one node with 16 cpus and total 2gb memory (per node)
-#PBS -l select=1:ncpus=16:mem=8gb
+#PBS -l select=1:ncpus=1:mem=8gb
 
 
 ##load application module
-module load fiji
+module load fiji vnc
+
+`vnc_start`
 
 
 ##command line
 /apps/fiji/Fiji.app/ImageJ-linux64 --update update
 
 
+vnc_stop
+
+exit

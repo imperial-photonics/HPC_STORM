@@ -7,10 +7,12 @@
 ## ask PBS for time (format hh:mm:ss)
 #PBS -l walltime=01:00:0
 ## ask for one node with 16 cpus and total 2gb memory (per node)
-#PBS -l select=1:ncpus=1:mem=4gb
-#PBS -J 1-2
+#PBS -l select=1:ncpus=20:mem=8gb
+#PBS -J 1-5
+#PBS -M i.munro@ic.ac.uk
+#PBS -m e
 
-rm /work/imunro/result*
+#rm /work/imunro/result*
 
 ##load application module
 module load fiji vnc
