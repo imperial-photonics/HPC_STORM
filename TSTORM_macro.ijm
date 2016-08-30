@@ -7,12 +7,15 @@ FIRST=parts[2];
 LAST=parts[3];
 BLOCK=parts[4];
 
+fullname=split(FNAME, ".");
+NAME=fullname[0];
+
 if (BLOCK == "1")  {
-  OUTPATH = WORK + "/result.csv";
+  OUTPATH = WORK + "/tmp_" + NAME + ".csv";
   SAVEPROTOCOL = "true";
 }
 else  {
-  OUTPATH = WORK + "/result" + BLOCK + ".csv";
+  OUTPATH = WORK + "/tmp_" + NAME + BLOCK + ".csv";
   SAVEPROTOCOL = "false";
 }
 

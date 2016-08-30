@@ -35,9 +35,14 @@ $IJ --ij2 -macro $HOME/TSTORM_merge.ijm $ARGSFILE
 
 vnc_stop
 
-mv result-protocol.txt /home/imunro/result-protocol.txt
 
-rm resul*.csv
+# remove the string "tmp_" from all the protocol.txt filenames
+for f in *-protocol.txt;
+  do mv "$f" "${f//tmp_/}";
+done
+
+# clear up left over tmp files
+rm tmp*.csv
 
 
 
