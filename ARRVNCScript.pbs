@@ -5,7 +5,7 @@
 #  Created by Ian Munro on 02/07/2016.
 #
 ## ask PBS for time (format hh:mm:ss)
-#PBS -l walltime=01:00:0
+#PBS -l walltime=04:00:0
 ## ask for one node with 16 cpus and total 2gb memory (per node)
 #PBS -l select=1:ncpus=20:mem=8gb
 #PBS -J 1-5
