@@ -23,8 +23,6 @@ ARGSFILE=$HOME"/args"
 
 echo $ARGSFILE
 
-##more hardcoded paths
-cd /work/imunro
 
 ##load application module
 module load fiji vnc
@@ -35,14 +33,6 @@ $IJ --ij2 -macro $HOME/TSTORM_merge.ijm $ARGSFILE
 
 vnc_stop
 
-
-# remove the string "tmp_" from all the protocol.txt filenames
-for f in *-protocol.txt;
-  do mv "$f" "${f//tmp_/}";
-done
-
-# clear up left over tmp files
-rm tmp*.csv
 
 
 
