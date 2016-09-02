@@ -11,17 +11,14 @@ In order to get this working for you the steps are.\
 1) There are a number of hardcoded paths to watch out for so you will need to change these.\
 \'a0 \'a0Use a text editor to Replace all occurrences of /home/imunro with your home directory.\
 \'a0 \'a0To find this it\'92s \'91echo $HOME' on the cx1 system.\
-\'a0 Occurs in ARRVNCScript, NodeScript \'a0& MergeScript.\'a0\
+\'a0 Occurs in NodeScript \'a0& MergeScript.\'a0\
 (also change the e-mail address in ARRVNCScript - although I\'92m not 100% sure this works anyway)\
 \
-\
-2) Replace all occurrences of /work/imunro with your work dir (echo $WORK on cx1) directory.\
-\'a0 \'a0Occurs in args and MergeScript.\
 \pard\pardeftab720\partightenfactor0
 \AppleTypeServices\AppleTypeServicesF65539 \cf2 \
-3 ) Now copy all these (edited) files into your home dir on cx1 using \'a0Winscp.\AppleTypeServices \cf0 \
+2 ) Now copy all these (edited) files into your home dir on cx1 using \'a0Winscp.\AppleTypeServices \cf0 \
 \AppleTypeServices\AppleTypeServicesF65539 \cf2 \
-4) Using PUTTy change\'a0\AppleTypeServices \cf0 ARRVNCScript, NodeScript \'a0& MergeScript. to be executable.\
+4) If required Using PUTTy change\'a0 ChainScript \AppleTypeServices \cf0 ARRVNCScript, NodeScript \'a0& MergeScript. to be executable.\
 \'a0 \'a0 chmod +x filename\
 \
 ---------------------------------------------------------------------------------------------------------------------------\
@@ -30,29 +27,39 @@ All of the above stuff needs doing only once - the following need doing for each
 \AppleTypeServices\AppleTypeServicesF65539 \cf2 \
 1) Copy your file-to-be processed into your work dir on cx1 \
 \
-2) \AppleTypeServices \cf0 3) Ensure that the args file matches your file.\'a0\
-\'a0 \'a0 One line per job (there are currently 5 ) of the form $WORK:file_name:first_frame:last_frame:jobNo\
+2) \AppleTypeServices \cf0 Ensure that the args file matches your file.\'a0\
+\
+Everything is controlled by this text file.\
+\'a0 \'a0 There is one line per job (there are currently 5 ) of the form $WORK:file_name:first_frame:last_frame:jobNo (and optionally) calibrationFle name\
  all seperated by colons.\
-\'a0 <\'a0 NB if you want more jobs you will need more lines & also to change \'a0line 11 in ARRVNCScript that reads\'a0\
+\'a0 <\'a0 NB if you want to use more/fewer nodes you will need more lines & also to change \'a0line 11 in ARRVNCScript that reads\'a0\
 
 \f1\fs22 \cf3 \'a0 #PBS -J 1-5\
-\
 \'a0 
-\f0\fs26 \AppleTypeServices\AppleTypeServicesF65539 \cf2 change the last No from 5 to the new no of jobs. >\
+\f0\fs26 \AppleTypeServices\AppleTypeServicesF65539 \cf2 change the last No from 5 to the new no of nodes. >\
+\
+If the calibrationFile is filled in and that file is present in the same dir as the data then it will \
+treat the data as 3D. Otherwise 2D.\
+\
+You can have different files on different lines to allow (some) batch processing).\
+\
+NB Do not try 2D and 3D processing of the same file in the same job args file.\
+\
 \pard\pardeftab720\partightenfactor0
 \AppleTypeServices \cf0 \
 \pard\pardeftab720\partightenfactor0
 \AppleTypeServices\AppleTypeServicesF65539 \cf2 3) \'a0 to Submit a job.  type\'a0\AppleTypeServices \cf0 \
-\AppleTypeServices\AppleTypeServicesF65539 \cf2 \'a0 \'a0 \'a0 qsub ARRVNCScript.pbs.\AppleTypeServices \cf0 \
+\AppleTypeServices\AppleTypeServicesF65539 \cf2 \'a0 \'a0 \'a0 ./ChainScript\AppleTypeServices \cf0 \
 \AppleTypeServices\AppleTypeServicesF65539 \cf2 \
-4) Wait\'a0\'85\'85.. qstat will tell you whether it\'92s finished\AppleTypeServices \cf0 \
+4) Wait\'a0\'85\'85.. qstat will tell you whether it\'92s finished \AppleTypeServices \cf0 \
 \AppleTypeServices\AppleTypeServicesF65539 \cf2 \
 5) When it finally finishes (you will see 2 files called ARRVNCScript.pb.oxxxxx.n oer job where xxxxxx is the job No returned by qsub and n is the node job no.\'a0\AppleTypeServices \cf0 \
-\AppleTypeServices\AppleTypeServicesF65539 \cf2 \'a0 \'a0(1-5 in the example).\AppleTypeServices \cf0 \
+\AppleTypeServices\AppleTypeServicesF65539 \cf2 \'a0 \'a0(1-5 in the example).\
+and also 2 files called MERGEScript.pbs.oxxxxx and .exxxx\AppleTypeServices \cf0 \
 \AppleTypeServices\AppleTypeServicesF65539 \cf2 \
-6) Check your work dir on cx1. You should see result.csv, result-protocol.txt and resultn.csv (where n = 1-5)\AppleTypeServices \cf0 \
-\AppleTypeServices\AppleTypeServicesF65539 \cf2 \
-7) Type qsub MERGEScript.pbs this job concatenates all the output files into Finalresults.csv in your WORK  dir and copies \'a0results-protocol.txt into there\AppleTypeServices \cf0 \
-\AppleTypeServices\AppleTypeServicesF65539 \cf2 \'a0 \'a0 before clearing up all the output files.in $WORK\AppleTypeServices \cf0 \
+6) Check your work dir on cx1. You should see filename.csv, filename-protocol.txt \
+\pard\pardeftab720\partightenfactor0
+\AppleTypeServices \cf0 \
+\pard\pardeftab720\partightenfactor0
 \AppleTypeServices\AppleTypeServicesF65539 \cf2 \
 }
