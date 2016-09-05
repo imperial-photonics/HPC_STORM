@@ -10,8 +10,8 @@ echo "Start time $(date)"
 
 PBS_ARRAY_INDEX=$(( $1 ))
 
-echo "ncores = "
-nproc
+echo "ncpus on node = "
+echo $NCPUS
 
 
 #  hardwired paths TBD
@@ -26,9 +26,11 @@ ARGSFILE=$HOME"/args"
 #  get arg  list from config file
 ARGS=$(head -$PBS_ARRAY_INDEX $ARGSFILE | tail -1)
 
+module load sysconfcpus/0.5
+
 echo "running TSTORM macro!"
 # run ThunderSTORM
-$IJ --ij2 -macro $HOME/TSTORM_macro.ijm $ARGS
+sysconfcpus -n $NCPUS $IJ --ij2 -macro $HOME/TSTORM_macro.ijm $ARGS
 
 
 echo "End time $(date)"
