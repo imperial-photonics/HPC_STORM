@@ -11,6 +11,8 @@
 
 ## ask for one node with 16 cpus and total 2gb memory (per node)
 #PBS -l select=1:ncpus=1:mem=8gb
+#PBS -M i.munro@ic.ac.uk
+#PBS -m ae
 
 #  hardwired paths TBD
 HOME=/home/imunro
