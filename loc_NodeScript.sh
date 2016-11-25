@@ -30,7 +30,7 @@ module load sysconfcpus/0.5
 
 echo "running TSTORM macro!"
 # run ThunderSTORM
-sysconfcpus -n $NCPUS $IJ --ij2 -macro $HOME/TSTORM_macro.ijm $ARGS
+sysconfcpus -n $NCPUS $IJ --ij2 -macro $HOME/TSTORM_loc_macro.ijm $ARGS
 
 
 echo "End time $(date)"

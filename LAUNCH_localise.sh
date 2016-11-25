@@ -6,20 +6,20 @@
 if [ "$1" = "general" ]
 then
 
-one=$(qsub ARRVNCScript.pbs )
+one=$(qsub loc_ARRScript.pbs )
 echo "launching processing job"
 echo $one
-two=$(qsub -W depend=afterok:$one MERGEScript.pbs)
+two=$(qsub -W depend=afterok:$one loc_MERGEScript.pbs)
 echo "launching merge job"
 echo $two
 
 else
 
 echo "fogim queue"
-one=$(qsub -q pqfogim ARRVNCScript.pbs)
+one=$(qsub -q pqfogim loc_ARRScript.pbs)
 echo "launching processing job"
 echo $one
-two=$(qsub -q pqfogim -W depend=afterok:$one MERGEScript.pbs )
+two=$(qsub -q pqfogim -W depend=afterok:$one loc_MERGEScript.pbs )
 echo "launching merge job"
 echo $two
 

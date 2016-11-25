@@ -22,7 +22,7 @@ echo $NCPUS
 ##command line
 ## DEBUG=1
 
-/home/imunro/NodeScript.sh $PBS_ARRAY_INDEX
+/home/imunro/loc_NodeScript.sh $PBS_ARRAY_INDEX
 
 vnc_stop
 
