@@ -25,7 +25,16 @@ File.delete(LOGPATH);
 }
 
 logf = File.open(LOGPATH);
-File.append("Opened log file!",LOGPATH);
+
+getDateAndTime(year, month, dayOfWeek, dayOfMonth, hour, minute, second, msec);
+if (hour<10) {TimeString = "0";} else {TimeString = "";}
+TimeString = TimeString+hour+":";
+if (minute<10) {TimeString = TimeString+"0";}
+TimeString = TimeString+minute+":";
+if (second<10) {TimeString = TimeString+"0";}
+TimeString = TimeString+second;
+
+File.append("Opened log file at " + TimeString, LOGPATH);
 
 
 FIRST=parts[2];
@@ -40,14 +49,9 @@ if (parts.length == 8)  {
   CALPATH= WORK + "/" + CALIB;
   THREED=File.exists(CALPATH); //Returns "1" (true) if the specified file exists.
 
-File.append("3D!",LOGPATH);
-}
-else  {
-  
-File.append("2D!",LOGPATH);
 }
 
-File.append("Lateral Uncertainty = " + LATERAL_UNCERTAINTY, LOGPATH)
+File.append("Lateral Uncertainty = " + LATERAL_UNCERTAINTY, LOGPATH);
 
 
 FILEPATH=WORK + "/" + FNAME;
@@ -101,7 +105,18 @@ if(File.exists(OUTPATH) != 1 ) {
 File.append("Failed to write " + OUTPATH, LOGPATH);
 }
 
-File.append("exiting macro",LOGPATH)
+
+getDateAndTime(year, month, dayOfWeek, dayOfMonth, hour, minute, second, msec);
+if (hour<10) {TimeString = "0";} else {TimeString = "";}
+TimeString = TimeString+hour+":";
+if (minute<10) {TimeString = TimeString+"0";}
+TimeString = TimeString+minute+":";
+if (second<10) {TimeString = TimeString+"0";}
+TimeString = TimeString+second;
+
+File.append("exiting Visualisation macro at "+ TimeString, LOGPATH);
+File.close(logf);
+
 
 close();
 run("Quit");

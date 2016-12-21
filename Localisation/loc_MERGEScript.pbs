@@ -1,0 +1,50 @@
+#!/bin/sh
+
+#  MERGEScript.sh
+#  
+#
+#  Created by Ian Munro on 18/07/2016.
+#
+
+## ask PBS for time (format hh:mm:ss)
+#PBS -l walltime=01:00:00
+
+## ask for one node with 24 cpus and total 2gb memory (per node)
+#PBS -l select=1:ncpus=24:mem=8gb
+#PBS -M i.munro@ic.ac.uk
+#PBS -m ae
+
+#  hardwired paths TBD
+IJ=/apps/fiji/Fiji.app/ImageJ-linux64
+
+#HOME=/Users/imunro/HPC_STORM
+#IJ=/Applications/Fiji.app/Contents/MacOS/ImageJ-macosx
+
+
+echo "merging all the localisation log files"
+cat $HOME/Localisation/tmp*.log  > $HOME/Localisation/temp_localisation.log
+rm  $HOME/Localisation/tmp*.log
+
+
+##load application module
+module load fiji vnc
+
+`vnc_start`
+
+echo "running TSTORM loc_merge macro!"
+$IJ --ij2 -macro $HOME/Localisation/TSTORM_loc_merge_macro.ijm $HOME
+
+
+vnc_stop
+
+
+exit
+
+
+
+
+
+
+
+
+

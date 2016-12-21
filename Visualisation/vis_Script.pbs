@@ -4,22 +4,18 @@
 #
 #  Created by Ian Munro on 02/07/2016.
 #
+
 ## ask PBS for time (format hh:mm:ss)
 #PBS -l walltime=00:30:0
 ## ask for one node with 24 cpus and total 8gb memory (per node)
 #PBS -l select=1:ncpus=24:mem=48gb
-#PBS -M s.guldbrand@ic.ac.uk
+#PBS -M i.munro@ic.ac.uk
 #PBS -m ae
 
-##load application module
-module load fiji vnc
-
-`vnc_start`
 
 ##command line
 ## DEBUG=1
 
-echo "Start time $(date)"
 
 #  hardwired paths TBD
 IJ=/apps/fiji/Fiji.app/ImageJ-linux64
@@ -38,12 +34,15 @@ ARGS_FULL="$ARGS":"$LATERAL_RES":"$HOME"
 
 echo $ARGS_FULL
 
-module load sysconfcpus/0.5
+##load application module
+module load fiji vnc
+
+`vnc_start`
 
 echo "running TSTORM macro!"
 
 # run ThunderSTORM
-sysconfcpus -n $NCPUS $IJ --ij2 -macro $HOME/Visualisation/TSTORM_vis_macro.ijm $ARGS_FULL
+$IJ --ij2 -macro $HOME/Visualisation/TSTORM_vis_macro.ijm $ARGS_FULL
 
 
 vnc_stop

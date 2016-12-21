@@ -8,7 +8,7 @@ module load fiji vnc
 
 #check to see if "my" display is already in use
 
-MY=$(vncserver -list | grep :6)
+MY=$(vncserver -list | grep :8)
 MY=${MY:0:2}
 
 if [ -n "$MY" ]; then
@@ -17,13 +17,13 @@ echo "Requested display is already in use!"
 
 else
 
-vncserver :6
+vncserver :8
 
-MY=$(vncserver -list | grep :6)
+MY=$(vncserver -list | grep :8)
 MY=${MY:0:2}
 
 echo "Started display "$MY
-echo "Please connect to port 5906 "
+echo "Please connect to port 5908 "
 
 read -p "Shut down display now? " answer
 
@@ -31,6 +31,7 @@ vncserver -kill $MY
 
 rm core.*
 rm .vnc/*.log
+
 
 fi
 
