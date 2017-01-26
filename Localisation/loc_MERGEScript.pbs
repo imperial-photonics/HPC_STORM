@@ -9,8 +9,8 @@
 ## ask PBS for time (format hh:mm:ss)
 #PBS -l walltime=01:00:00
 
-## ask for one node with 24 cpus and total 2gb memory (per node)
-#PBS -l select=1:ncpus=24:mem=8gb
+## ask for one node with 24 cpus and total 16gb memory (per node)
+#PBS -l select=1:ncpus=24:mem=16gb
 #PBS -M i.munro@ic.ac.uk
 #PBS -m ae
 

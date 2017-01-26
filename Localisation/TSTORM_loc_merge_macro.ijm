@@ -12,7 +12,6 @@ logf = File.open(LOGPATH);
 File.append("Failed to find Localisation log file!",LOGPATH);
 }
 
-
 getDateAndTime(year, month, dayOfWeek, dayOfMonth, hour, minute, second, msec);
 if (hour<10) {TimeString = "0";} else {TimeString = "";}
 TimeString = TimeString+hour+":";
@@ -90,6 +89,33 @@ for (r=0; r<rows.length; r++)  {
 
 }
 
+// Drift correction
+
+//DRIFTPATH = WORK + "/" + NAME + "_drift.tiff";
+
+//File.append("Performing drift correction.", LOGPATH);
+//run("Show results table", "action=drift magnification=12.0 method=[Cross correlation] save=false steps=6 showcorrelations=false");
+//selectWindow("Drift");
+//File.append("Saving drift graph to " + DRIFTPATH, LOGPATH);
+//saveAs("Tiff", DRIFTPATH);
+//close();
+//DRIFTPATH = WORK + "/" + NAME + "_drift.csv";
+//File.append("Saving drift corrected localisations as " + DRIFTPATH, LOGPATH);
+//run("Export results", "filepath=["+DRIFTPATH+"] fileformat=[CSV (comma separated)] id=true frame=true sigma=true bkgstd=true intensity=true saveprotocol=["+SAVEPROTOCOL+"] offset=true uncertainty=true y=true x=true");
+
+
+FINAL_LOGPATH = HOME + "/Localisation/" + NAME + ".log";
+
+File.append("renaming log file to " + FINAL_LOGPATH,LOGPATH);
+
+
+if (File.exists(FINAL_LOGPATH))  {
+File.delete(FINAL_LOGPATH);
+}
+
+File.rename(LOGPATH, FINAL_LOGPATH);
+
+
 getDateAndTime(year, month, dayOfWeek, dayOfMonth, hour, minute, second, msec);
 if (hour<10) {TimeString = "0";} else {TimeString = "";}
 TimeString = TimeString+hour+":";
@@ -98,15 +124,8 @@ TimeString = TimeString+minute+":";
 if (second<10) {TimeString = TimeString+"0";}
 TimeString = TimeString+second;
 
-File.append("exiting loc_merge_macro at " + TimeString,LOGPATH);
 
-FINAL_LOGPATH = HOME + "/Localisation/" + NAME + ".log";
-
-if (File.exists(FINAL_LOGPATH))  {
-File.delete(FINAL_LOGPATH);
-}
-
-File.rename(LOGPATH, FINAL_LOGPATH);
+File.append("exiting loc_merge_macro at " + TimeString,FINAL_LOGPATH);
 
 close();
 
