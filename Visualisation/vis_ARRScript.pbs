@@ -1,0 +1,28 @@
+#!/bin/sh
+#  vis_ARRScript.pbs
+#  
+#
+#  Created by Ian Munro on 23/01/2017.
+#
+## ask PBS for time (format hh:mm:ss)
+#PBS -l walltime=00:25:0
+## ask for four nodes with 24 cpus and total 48gb memory (per node)
+#PBS -l select=1:ncpus=24:mem=48gb
+#PBS -J 1-4
+
+
+##load application module
+module load fiji vnc
+
+`vnc_start`
+
+##command line
+## DEBUG=1
+
+$HOME/Visualisation/vis_NodeScript.sh $PBS_ARRAY_INDEX
+
+vnc_stop
+
+exit
+
+

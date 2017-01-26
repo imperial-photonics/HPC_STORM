@@ -1,30 +1,33 @@
 ARGS=getArgument();
+
 setBatchMode(true);
 parts=split(ARGS, ":");
+
 WORK=parts[0];
 FNAME=parts[1];
 
-if (parts.length == 8)  {
-LATERAL_UNCERTAINTY=parts[6];
-HOME=parts[7];
+if (parts.length == 9)  {
+HOME=parts[6];
+LATERAL_UNCERTAINTY=parts[7];
+PBS_INDEX=parts[8];
 }
 else  {
-LATERAL_UNCERTAINTY=parts[5];
-HOME=parts[6];
+HOME=parts[5];
+LATERAL_UNCERTAINTY=parts[6];
+PBS_INDEX=parts[7];
 }
-
 
 fullname=split(FNAME, ".");
 NAME=fullname[0];
 
-LOGPATH = HOME + "/Visualisation/" + NAME + ".log";
-
+LOGPATH = HOME + "/Visualisation/tmp_" + PBS_INDEX + ".log";
 
 if (File.exists(LOGPATH))  {
 File.delete(LOGPATH);
 }
 
 logf = File.open(LOGPATH);
+
 
 getDateAndTime(year, month, dayOfWeek, dayOfMonth, hour, minute, second, msec);
 if (hour<10) {TimeString = "0";} else {TimeString = "";}
@@ -41,18 +44,15 @@ FIRST=parts[2];
 LAST=parts[3];
 BLOCK=parts[4];
 
-
 THREED=0;
 
 if (parts.length == 8)  {
   CALIB=parts[5];
   CALPATH= WORK + "/" + CALIB;
   THREED=File.exists(CALPATH); //Returns "1" (true) if the specified file exists.
-
 }
 
 File.append("Lateral Uncertainty = " + LATERAL_UNCERTAINTY, LOGPATH);
-
 
 FILEPATH=WORK + "/" + FNAME;
 
@@ -71,28 +71,51 @@ Ext.setSeries(0);
 Ext.getSizeX(sizeX);
 Ext.getSizeY(sizeY);
 
-
 File.append("sizeX = " + sizeX, LOGPATH);
 File.append("sizeY = " + sizeY, LOGPATH);
 
-
 CSVPATH = WORK + "/" + NAME + "_reconstr.csv";
+
+run("Camera setup", "isemgain=false pixelsize=126.0 offset=350 photons2adu=0.5");
 
 File.append("Importing .csv file " + CSVPATH,LOGPATH);
 
 run("Import results", "filepath=["+CSVPATH+"] fileformat=[CSV (comma separated)] livepreview=false rawimagestack= startingframe=1 append=false");
 
+// path to config file
+CONFIG= HOME + "/args";
+File.append("Looking for config file " + CONFIG, LOGPATH);
+filestring=File.openAsString(CONFIG);
+rows=split(filestring);
+NSTRIPS=rows.length;
+File.append("Processing on "  + NSTRIPS + " nodes.", LOGPATH);
+
+for (r=0; r<rows.length; r++)  {
+
+// Calculate which section of the final image to visualise
+STRIP_SIZEY= floor(sizeY/NSTRIPS);
+File.append("strip_size = " + STRIP_SIZEY, LOGPATH);
+PBS_INDEX=parseInt(PBS_INDEX);
+File.append("PBS_INDEX = " + PBS_INDEX, LOGPATH);
+IMTOP=STRIP_SIZEY * (PBS_INDEX -1);
+File.append("imtop = " + IMTOP, LOGPATH);
+
+if (PBS_INDEX==4)  {
+STRIP_SIZEY=sizeY - IMTOP;
+}
+
+File.append("imtop = " + IMTOP, LOGPATH);
 
 if(THREED==0)  {
 File.append("Starting 2D visualisation!",LOGPATH);
 
-run("Visualization", "imleft=0.0 imtop=0.0 imwidth=["+sizeX+"] imheight=["+sizeY+"] renderer=[Normalized Gaussian] dxforce=false magnification=12.6 dx=["+LATERAL_UNCERTAINTY+"] colorizez=false threed=false dzforce=false");
-    OUTPATH = WORK + "/" + NAME + "_2D.ome.tif";
+run("Visualization", "imleft=0.0 imtop=["+IMTOP+"] imwidth=["+sizeX+"] imheight=["+STRIP_SIZEY+"] renderer=[Normalized Gaussian] dxforce=false magnification=12.6 dx=["+LATERAL_UNCERTAINTY+"] colorizez=false threed=false dzforce=false");
+    OUTPATH = WORK + "/tmp_" + NAME + "_" + PBS_INDEX + "_2D.ome.tif";
 }
 else  {
 File.append("Starting 3D visualisation!",LOGPATH);
-run("Visualization", "imleft=0.0 imtop=0.0 imwidth=["+sizeX+"] imheight=["+sizeY+"] renderer=[Normalized Gaussian] zrange=-600:30:600 dxforce=false magnification=12.6 dx=["+LATERAL_UNCERTAINTY+"] colorizez=false dz=70.0 threed=true dzforce=false");
-    OUTPATH = WORK + "/" + NAME + "_3D.ome.tif";
+run("Visualization", "imleft=0.0 imtop=["+IMTOP+"] imwidth=["+sizeX+"] imheight=["+STRIP_SIZEY+"] renderer=[Normalized Gaussian] zrange=-600:30:600 dxforce=false magnification=12.6 dx=["+LATERAL_UNCERTAINTY+"] colorizez=false dz=70.0 threed=true dzforce=false");
+    OUTPATH = WORK + "/tmp_" + NAME + "_" + PBS_INDEX + "_3D.ome.tif";
 }
 
 File.append("Exporting visualisaton as ome.tiff to " + OUTPATH, LOGPATH);
