@@ -138,6 +138,7 @@ if (second<10) {TimeString = TimeString+"0";}
 TimeString = TimeString+second;
 
 File.append("exiting Visualisation macro at "+ TimeString, LOGPATH);
+File.append("...",LOGPATH);
 File.close(logf);
 
 
