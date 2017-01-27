@@ -99,7 +99,6 @@ TimeString = TimeString+second;
 
 File.append("exiting vis_merge_macro at " + TimeString,FINAL_LOGPATH);
 
-close();
 
 run("Quit");
 
