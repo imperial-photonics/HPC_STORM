@@ -87,24 +87,25 @@ CONFIG= HOME + "/args";
 File.append("Looking for config file " + CONFIG, LOGPATH);
 filestring=File.openAsString(CONFIG);
 rows=split(filestring);
-NSTRIPS=rows.length;
-File.append("Processing on "  + NSTRIPS + " nodes.", LOGPATH);
+NNODES=rows.length;
+File.append("Processing on "  + NNODES + " nodes.", LOGPATH);
 
 for (r=0; r<rows.length; r++)  {
 
 // Calculate which section of the final image to visualise
-STRIP_SIZEY= floor(sizeY/NSTRIPS);
-File.append("strip_size = " + STRIP_SIZEY, LOGPATH);
+STRIP_SIZEY= floor(sizeY/NNODES);
 PBS_INDEX=parseInt(PBS_INDEX);
 File.append("PBS_INDEX = " + PBS_INDEX, LOGPATH);
 IMTOP=STRIP_SIZEY * (PBS_INDEX -1);
 File.append("imtop = " + IMTOP, LOGPATH);
 
-if (PBS_INDEX==4)  {
-STRIP_SIZEY=sizeY - IMTOP;
-}
 
-File.append("imtop = " + IMTOP, LOGPATH);
+// N.B. if the image is not exactly divisble then some lines may be lost!
+// Unfortunately imagej requires all images in a stack to be thw sam size!
+
+
+File.append("Visualising " + STRIP_SIZEY + " lines from " + IMTOP , LOGPATH);
+
 
 if(THREED==0)  {
 File.append("Starting 2D visualisation!",LOGPATH);
