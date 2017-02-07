@@ -89,19 +89,25 @@ for (r=0; r<rows.length; r++)  {
 
 }
 
+
+//Post_Processing!
+
+POSTPATH = WORK + "/" + NAME + "_reconstr.csv";
+
 // Drift correction
 
-//DRIFTPATH = WORK + "/" + NAME + "_drift.tiff";
+DRIFTPATH = WORK + "/" + NAME + "_drift.tiff";
 
-//File.append("Performing drift correction.", LOGPATH);
-//run("Show results table", "action=drift magnification=12.0 method=[Cross correlation] save=false steps=6 showcorrelations=false");
-//selectWindow("Drift");
-//File.append("Saving drift graph to " + DRIFTPATH, LOGPATH);
-//saveAs("Tiff", DRIFTPATH);
-//close();
-//DRIFTPATH = WORK + "/" + NAME + "_drift.csv";
-//File.append("Saving drift corrected localisations as " + DRIFTPATH, LOGPATH);
-//run("Export results", "filepath=["+DRIFTPATH+"] fileformat=[CSV (comma separated)] id=true frame=true sigma=true bkgstd=true intensity=true saveprotocol=["+SAVEPROTOCOL+"] offset=true uncertainty=true y=true x=true");
+File.append("Performing drift correction.", LOGPATH);
+run("Show results table", "action=drift magnification=12.0 method=[Cross correlation] save=false steps=6 showcorrelations=false");
+selectWindow("Drift");
+File.append("Saving drift graph to " + DRIFTPATH, LOGPATH);
+saveAs("Tiff", DRIFTPATH);
+close();
+
+
+File.append("Saving post-processed localisations as " + POSTPATH, LOGPATH);
+run("Export results", "filepath=["+POSTPATH+"] fileformat=[CSV (comma separated)] id=true frame=true sigma=true bkgstd=true intensity=true saveprotocol=["+SAVEPROTOCOL+"] offset=true uncertainty=true y=true x=true");
 
 
 FINAL_LOGPATH = HOME + "/Localisation/" + NAME + ".log";
