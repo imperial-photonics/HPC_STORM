@@ -20,9 +20,6 @@
 #  hardwired paths TBD
 IJ=/apps/fiji/Fiji.app/ImageJ-linux64
 
-# HOME=/Users/imunro/HPC_STORM
-# IJ=/Applications/Fiji.app/Contents/MacOS/ImageJ-macosx
-
 
 ARGSFILE=$HOME"/args"
 

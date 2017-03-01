@@ -30,7 +30,8 @@ File.append("Looking for config file " + CONFIG, LOGPATH);
 filestring=File.openAsString(CONFIG);
 rows=split(filestring);
 
-NNODES=rows.length;
+//NNODES=rows.length;
+NNODES=4;
 
 File.append("Using " + NNODES + " nodes.", LOGPATH);
 
@@ -39,41 +40,6 @@ WORK=parts[0];
 FNAME=parts[1];
 FULLNAME=split(FNAME, ".");
 NAME=FULLNAME[0];
-
-//TBD 3D loop
-
-for (n=0; n<NNODES; n++)  {
-
-NODE=n+1;
-
-INPATH = WORK + "/tmp_" + NAME + "_" + NODE  + "_2D.ome.tif";
-File.append("Loading file  " + INPATH, LOGPATH);
-
-run("Bio-Formats Importer", "open=["+INPATH+"] color_mode=Default rois_import=[ROI manager] view=[Standard ImageJ] stack_order=Default");
-
-
-File.append("Deleting file  " + INPATH, LOGPATH);
-err=File.delete(INPATH);
-
-
-}
-
-File.append("Converting images to Stack" , LOGPATH);
-run("Images to Stack", "name=Stack title=[] use");
-File.append("Making Montage" , LOGPATH);
-run("Make Montage...", "columns=1 rows=["+NNODES+"] scale=1");
-selectWindow("Montage");
-
-OUTPATH = WORK + "/" + NAME + "_2D.ome.tif";
-File.append("Saving merged image to " + OUTPATH, LOGPATH);
-run("Bio-Formats Exporter", "save=["+OUTPATH+"] compression=Uncompressed");
-
-// close all windows
-while (nImages>0) {
-selectImage(nImages);
-close();
-}
-
 
 
 FINAL_LOGPATH = HOME + "/Visualisation/" + NAME + ".log";
@@ -86,6 +52,78 @@ File.delete(FINAL_LOGPATH);
 }
 
 File.rename(LOGPATH, FINAL_LOGPATH);
+LOGPATH = FINAL_LOGPATH;
+
+
+
+File.append("Nargs =  " + parts.length, LOGPATH);
+
+if (parts.length == 6)  {
+CALIB=parts[5];
+CALPATH= WORK + "/" + CALIB;
+File.append("Looking for calibration file " + CALPATH, LOGPATH);
+THREED=File.exists(CALPATH); //Returns "1" (true) if the specified file exists.
+}
+
+if(THREED==0)  {
+  EXT_STRING="_2D.ome.tif";
+}
+else  {
+  EXT_STRING="_3D.ome.tif";
+}
+
+
+// load output from first 2 nodes to prime pump
+
+NODE=1;
+
+INPATH = WORK + "/tmp_" + NAME + "_" + NODE  + EXT_STRING;
+File.append("Loading file  " + INPATH, LOGPATH);
+run("Bio-Formats Importer", "open=["+INPATH+"] color_mode=Default rois_import=[ROI manager] view=[Standard ImageJ] stack_order=Default");
+File.append("Deleting file  " + INPATH, LOGPATH);
+err=File.delete(INPATH);
+// now find name of imported data
+INPATH = "tmp_" + NAME + "_" + NODE  + EXT_STRING;
+
+
+NODE=2;
+
+INPATH2 = WORK + "/tmp_" + NAME + "_" + NODE  + EXT_STRING;
+File.append("Loading file  " + INPATH2, LOGPATH);
+run("Bio-Formats Importer", "open=["+INPATH2+"] color_mode=Default rois_import=[ROI manager] view=[Standard ImageJ] stack_order=Default");
+File.append("Deleting file  " + INPATH2, LOGPATH);
+err=File.delete(INPATH2);
+INPATH2 = "tmp_" + NAME + "_" + NODE  + EXT_STRING;
+
+File.append("Combining stacks!" , LOGPATH);
+run("Combine...", "stack1=["+INPATH+"] stack2=["+INPATH2+"] combine");
+
+
+
+for (n=2; n<NNODES; n++)  {
+
+NODE=n+1;
+
+INPATH = WORK + "/tmp_" + NAME + "_" + NODE  + EXT_STRING;
+File.append("Loading file  " + INPATH, LOGPATH);
+run("Bio-Formats Importer", "open=["+INPATH+"] color_mode=Default rois_import=[ROI manager] view=[Standard ImageJ] stack_order=Default");
+File.append("Deleting file  " + INPATH, LOGPATH);
+err=File.delete(INPATH);
+INPATH = "tmp_" + NAME + "_" + NODE  + EXT_STRING;
+
+File.append("Combining stacks!" , LOGPATH);
+run("Combine...", "stack1=[Combined Stacks] stack2=["+INPATH+"] combine");
+
+}
+
+
+OUTPATH = WORK + "/" + NAME + EXT_STRING;
+File.append("Saving merged image to " + OUTPATH, LOGPATH);
+run("Bio-Formats Exporter", "save=["+OUTPATH+"] compression=Uncompressed");
+
+
+close();
+
 
 
 getDateAndTime(year, month, dayOfWeek, dayOfMonth, hour, minute, second, msec);

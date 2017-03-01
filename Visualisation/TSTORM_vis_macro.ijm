@@ -46,9 +46,12 @@ BLOCK=parts[4];
 
 THREED=0;
 
-if (parts.length == 8)  {
+File.append("Nargs =  " + parts.length, LOGPATH);
+
+if (parts.length == 9)  {
   CALIB=parts[5];
   CALPATH= WORK + "/" + CALIB;
+  File.append("Looking for calibration file " + CALPATH, LOGPATH);
   THREED=File.exists(CALPATH); //Returns "1" (true) if the specified file exists.
 }
 
@@ -90,7 +93,10 @@ rows=split(filestring);
 NNODES=rows.length;
 File.append("Processing on "  + NNODES + " nodes.", LOGPATH);
 
-for (r=0; r<rows.length; r++)  {
+// 4 blocks for test !
+NNODES=4;
+
+for (r=0; r<NNODES; r++)  {
 
 // Calculate which section of the final image to visualise
 STRIP_SIZEY= floor(sizeY/NNODES);
@@ -100,8 +106,11 @@ IMTOP=STRIP_SIZEY * (PBS_INDEX -1);
 File.append("imtop = " + IMTOP, LOGPATH);
 
 
-// N.B. if the image is not exactly divisble then some lines may be lost!
-// Unfortunately imagej requires all images in a stack to be thw sam size!
+
+if (PBS_INDEX==NNODES)  {
+ STRIP_SIZEY=sizeY - IMTOP;
+}
+
 
 
 File.append("Visualising " + STRIP_SIZEY + " lines from " + IMTOP , LOGPATH);
