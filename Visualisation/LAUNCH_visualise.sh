@@ -10,22 +10,17 @@ echo $answer
 
 if [ "$1" = "general" ]
 then
-one=$(qsub -v LATERAL_RES=$answer $HOME/Visualisation/vis_ARRScript.pbs )
+one=$(qsub -v LATERAL_RES=$answer $HOME/Vis2/vis_Script.pbs )
 echo "launching processing job"
 echo $one
-two=$(qsub -W depend=afterok:$one $HOME/Visualisation/vis_MERGEScript.pbs )
-echo "launching merge job"
-echo $two
+
 
 else
 
 echo "fogim queue"
-one=$(qsub -q pqfogim -v LATERAL_RES=$answer $HOME/Visualisation/vis_ARRScript.pbs )
+one=$(qsub -q pqfogim -v LATERAL_RES=$answer $HOME/Vis2/vis_Script.pbs )
 echo "launching processing job"
 echo $one
-two=$(qsub -q pqfogim -W depend=afterok:$one $HOME/Visualisation/vis_MERGEScript.pbs )
-echo "launching merge job"
-echo $two
 
 
 fi
