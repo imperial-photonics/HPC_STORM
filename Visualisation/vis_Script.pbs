@@ -7,7 +7,7 @@
 
 ## ask PBS for time (format hh:mm:ss)
 #PBS -l walltime=00:30:0
-## ask for one node with 24 cpus and total 8gb memory (per node)
+## ask for one node with 24 cpus and total 48gb memory (per node)
 #PBS -l select=1:ncpus=24:mem=48gb
 #PBS -M i.munro@ic.ac.uk
 #PBS -m ae
@@ -16,9 +16,13 @@
 ##command line
 ## DEBUG=1
 
+echo "Start time $(date)"
 
 #  hardwired paths TBD
 IJ=/apps/fiji/Fiji.app/ImageJ-linux64
+
+# HOME=/Users/imunro/HPC_STORM
+# IJ=/Applications/Fiji.app/Contents/MacOS/ImageJ-macosx
 
 
 ARGSFILE=$HOME"/args"
@@ -27,7 +31,7 @@ ARGSFILE=$HOME"/args"
 ARGS=$(head -1 $ARGSFILE | tail -1)
 
 # add environment variables to args list
-ARGS_FULL="$ARGS":"$LATERAL_RES":"$HOME"
+ARGS_FULL="$ARGS":"$LATERAL_RES":"$HOME":"$TMPDIR"
 
 echo $ARGS_FULL
 
@@ -36,13 +40,19 @@ module load fiji vnc
 
 `vnc_start`
 
+cp $WORK/*reconstr.csv $TMPDIR
+
 echo "running TSTORM macro!"
 
 # run ThunderSTORM
-$IJ --ij2 -macro $HOME/Visualisation/TSTORM_vis_macro.ijm $ARGS_FULL
+$IJ --ij2 -macro $HOME/Vis2/TSTORM_vis_macro.ijm $ARGS_FULL
 
 
 vnc_stop
+
+mv $TMPDIR/*.ome.tif $WORK
+
+echo "End time $(date)"
 
 exit
 
