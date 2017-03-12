@@ -6,12 +6,8 @@
 #  Created by Ian Munro on 4/07/2016.
 #  The script that runs on each node
 
-echo "Start time $(date)"
 
 PBS_ARRAY_INDEX=$(( $1 ))
-
-echo "ncpus on node = "
-echo $NCPUS
 
 
 #  hardwired paths TBD
@@ -37,5 +33,4 @@ echo "running TSTORM macro!"
 sysconfcpus -n $NCPUS $IJ --ij2 -macro $HOME/Localisation/TSTORM_loc_macro.ijm $ARGS_FULL
 
 
-echo "End time $(date)"
 

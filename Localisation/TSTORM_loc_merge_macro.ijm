@@ -1,6 +1,12 @@
-HOME=getArgument();
+ARGS=getArgument();
+
+ARGS=getArgument();
 
 setBatchMode(true);
+parts=split(ARGS, ":");
+
+HOME=parts[0];
+TMPDIR=parts[1];
 
 LOGPATH = HOME + "/Localisation/temp_localisation.log";
 
@@ -32,10 +38,11 @@ rows=split(filestring);
 
 SAVEPROTOCOL = "false";
 
+WORK = TMPDIR;
+
 for (r=0; r<rows.length; r++)  {
 
   parts=split(rows[r], ":");
-  WORK=parts[0];
   FNAME=parts[1];
   FIRST=parts[2];
   BLOCK=parts[4];
@@ -50,6 +57,7 @@ for (r=0; r<rows.length; r++)  {
   else  {
     NEXTBLOCK = "1";
   }
+
 
   if (BLOCK == "1")  {
 
@@ -79,7 +87,7 @@ for (r=0; r<rows.length; r++)  {
     File.append("Deleting file  " + INPATH, LOGPATH);
 
     if (NEXTBLOCK == "1")  {
-      OUTPATH = WORK + "/" + NAME + ".csv";
+      OUTPATH = TMPDIR + "/" + NAME + ".csv";
       File.append("Exporting to file  " + OUTPATH, LOGPATH);
       run("Export results", "filepath=["+OUTPATH+"] fileformat=[CSV (comma separated)] id=true frame=true sigma=true bkgstd=true intensity=true saveprotocol=["+SAVEPROTOCOL+"] offset=true uncertainty=true y=true x=true");
 
@@ -88,6 +96,17 @@ for (r=0; r<rows.length; r++)  {
   }
 
 }
+
+getDateAndTime(year, month, dayOfWeek, dayOfMonth, hour, minute, second, msec);
+if (hour<10) {TimeString = "0";} else {TimeString = "";}
+TimeString = TimeString+hour+":";
+if (minute<10) {TimeString = TimeString+"0";}
+TimeString = TimeString+minute+":";
+if (second<10) {TimeString = TimeString+"0";}
+TimeString = TimeString+second;
+
+
+File.append("Merge complete at  " + TimeString, LOGPATH);
 
 
 //Post_Processing!

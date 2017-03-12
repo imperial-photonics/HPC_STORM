@@ -25,6 +25,10 @@ echo "merging all the localisation log files"
 cat $HOME/Localisation/tmp*.log  > $HOME/Localisation/temp_localisation.log
 rm  $HOME/Localisation/tmp*.log
 
+# add environment variables to args list
+ARGS="$HOME":"$TMPDIR"
+
+mv $WORK/tmp* $TMPDIR
 
 ##load application module
 module load fiji vnc
@@ -32,7 +36,9 @@ module load fiji vnc
 `vnc_start`
 
 echo "running TSTORM loc_merge macro!"
-$IJ --ij2 -macro $HOME/Localisation/TSTORM_loc_merge_macro.ijm $HOME
+$IJ --ij2 -macro $HOME/Localisation/TSTORM_loc_merge_macro.ijm $ARGS
+
+cp $TMPDIR/* $WORK
 
 
 vnc_stop
