@@ -19,7 +19,7 @@ TMPDIR=parts[7];
 fullname=split(FNAME, ".");
 NAME=fullname[0];
 
-LOGPATH = HOME + "/Vis2/" + NAME + ".log";
+LOGPATH = HOME + "/Visualisation/" + NAME + ".log";
 
 
 if (File.exists(LOGPATH))  {
@@ -83,26 +83,11 @@ CSVPATH = WORK + "/" + NAME + "_reconstr.csv";
 
 File.append("Importing .csv file " + CSVPATH,LOGPATH);
 
-getDateAndTime(year, month, dayOfWeek, dayOfMonth, hour, minute, second, msec);
-if (hour<10) {TimeString = "0";} else {TimeString = "";}
-TimeString = TimeString+hour+":";
-if (minute<10) {TimeString = TimeString+"0";}
-TimeString = TimeString+minute+":";
-if (second<10) {TimeString = TimeString+"0";}
-TimeString = TimeString+second;
-File.append("Time =  "+ TimeString, LOGPATH);
+
 
 run("Import results", "filepath=["+CSVPATH+"] fileformat=[CSV (comma separated)] livepreview=false rawimagestack= startingframe=1 append=false");
 
 
-getDateAndTime(year, month, dayOfWeek, dayOfMonth, hour, minute, second, msec);
-if (hour<10) {TimeString = "0";} else {TimeString = "";}
-TimeString = TimeString+hour+":";
-if (minute<10) {TimeString = TimeString+"0";}
-TimeString = TimeString+minute+":";
-if (second<10) {TimeString = TimeString+"0";}
-TimeString = TimeString+second;
-File.append("Time =  "+ TimeString, LOGPATH);
 
 
 if(THREED==0)  {
@@ -118,30 +103,12 @@ run("Visualization", "imleft=0.0 imtop=0.0 imwidth=["+sizeX+"] imheight=["+sizeY
 }
 
 
-getDateAndTime(year, month, dayOfWeek, dayOfMonth, hour, minute, second, msec);
-if (hour<10) {TimeString = "0";} else {TimeString = "";}
-TimeString = TimeString+hour+":";
-if (minute<10) {TimeString = TimeString+"0";}
-TimeString = TimeString+minute+":";
-if (second<10) {TimeString = TimeString+"0";}
-TimeString = TimeString+second;
-File.append("Starting 8-bit conversion at  "+ TimeString, LOGPATH);
-
-
 
 run("Enhance Contrast...", "saturated=0.01 process_all use"); // lets brightest 0.01% of pixels saturate
 run("8-bit");
 
 File.append("Exporting visualisaton as ome.tiff to " + OUTPATH, LOGPATH);
 
-getDateAndTime(year, month, dayOfWeek, dayOfMonth, hour, minute, second, msec);
-if (hour<10) {TimeString = "0";} else {TimeString = "";}
-TimeString = TimeString+hour+":";
-if (minute<10) {TimeString = TimeString+"0";}
-TimeString = TimeString+minute+":";
-if (second<10) {TimeString = TimeString+"0";}
-TimeString = TimeString+second;
-File.append("Time =  "+ TimeString, LOGPATH);
 
 run("Bio-Formats Exporter", "save=["+OUTPATH+"] compression=LZW");
 

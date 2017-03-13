@@ -45,7 +45,7 @@ cp $WORK/*reconstr.csv $TMPDIR
 echo "running TSTORM macro!"
 
 # run ThunderSTORM
-$IJ --ij2 -macro $HOME/Vis2/TSTORM_vis_macro.ijm $ARGS_FULL
+$IJ --ij2 -macro $HOME/Visualisation/TSTORM_vis_macro.ijm $ARGS_FULL
 
 
 vnc_stop

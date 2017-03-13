@@ -10,7 +10,7 @@ echo $answer
 
 if [ "$1" = "general" ]
 then
-one=$(qsub -v LATERAL_RES=$answer $HOME/Vis2/vis_Script.pbs )
+one=$(qsub -v LATERAL_RES=$answer $HOME/Visualisation/vis_Script.pbs )
 echo "launching processing job"
 echo $one
 
@@ -18,7 +18,7 @@ echo $one
 else
 
 echo "fogim queue"
-one=$(qsub -q pqfogim -v LATERAL_RES=$answer $HOME/Vis2/vis_Script.pbs )
+one=$(qsub -q pqfogim -v LATERAL_RES=$answer $HOME/Visualisation/vis_Script.pbs )
 echo "launching processing job"
 echo $one
 
