@@ -6,9 +6,16 @@
 #
 ## ask PBS for time (format hh:mm:ss)
 #PBS -l walltime=04:00:0
-## ask for ten jobs with 24 cpus and total 48gb memory (per node)
-#PBS -l select=1:ncpus=24:mem=48gb
+## ask for ten jobs with 24 cpus and total 64gb memory (per node)
+#PBS -l select=1:ncpus=24:mem=64gb
 #PBS -J 1-10
+
+if [ -d $WORK/Localisation ]
+then
+echo " $WORK/Localisation already exists"
+else
+mkdir $WORK/Localisation
+fi
 
 
 ##load application module

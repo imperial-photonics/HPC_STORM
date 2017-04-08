@@ -16,13 +16,13 @@ IJ=/apps/fiji/Fiji.app/ImageJ-linux64
 #HOME=/Users/imunro/HPC_STORM
 #IJ=/Applications/Fiji.app/Contents/MacOS/ImageJ-macosx
 
-ARGSFILE=$HOME"/args"
+ARGSFILE=$WORK"/args"
 
 #  get arg  list from config file
 ARGS=$(head -$PBS_ARRAY_INDEX $ARGSFILE | tail -1)
 
 # add environment variables to args list
-ARGS_FULL="$ARGS":"$HOME"
+ARGS_FULL="$ARGS":"$TMPDIR"
 
 echo $ARGS_FULL
 
@@ -31,6 +31,8 @@ module load sysconfcpus/0.5
 echo "running TSTORM macro!"
 # run ThunderSTORM
 sysconfcpus -n $NCPUS $IJ --ij2 -macro $HOME/Localisation/TSTORM_loc_macro.ijm $ARGS_FULL
+
+
 
 
 

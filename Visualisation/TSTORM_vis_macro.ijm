@@ -4,23 +4,25 @@ parts=split(ARGS, ":");
 WORK=parts[0];
 FNAME=parts[1];
 
-if (parts.length == 9)  {
+if (parts.length == 10)  {
 LATERAL_UNCERTAINTY=parts[6];
-HOME=parts[7];
+POST=parts[7];
 TMPDIR=parts[8];
+HOME=parts[9];
 }
 else  {
 LATERAL_UNCERTAINTY=parts[5];
-HOME=parts[6];
+POST=parts[6];
 TMPDIR=parts[7];
+HOME=parts[8];
 }
 
 
 fullname=split(FNAME, ".");
 NAME=fullname[0];
 
-LOGPATH = HOME + "/Visualisation/" + NAME + ".log";
 
+LOGPATH = WORK + "/" + NAME + "_" + POST + ".log";
 
 if (File.exists(LOGPATH))  {
 File.delete(LOGPATH);
@@ -79,13 +81,86 @@ Ext.getSizeY(sizeY);
 File.append("sizeY = " + sizeY, LOGPATH);
 
 
-CSVPATH = WORK + "/" + NAME + "_reconstr.csv";
+// Load a single frame simply in order to get the pixel size
+File.append("Importing a single frame from " + FILEPATH, LOGPATH);
+
+//run("Memory & Threads...", "maximum=8192 parallel=20”);
+run("Bio-Formats Importer","open=FILEPATH color_mode=Default specify_range view=[Standard ImageJ] stack_order=Default t_begin=1 t_end=2 t_step=1");
+
+
+// Use imagej to get pixelsize
+getPixelSize(unit, pixelWidth, pixelHeight);
+PIXELWIDTH = pixelWidth * 1000;
+File.append("pixel Width = " + PIXELWIDTH ,LOGPATH);
+
+// find required magnification to get 25nm pixels
+MAGNIFICATION = toString(parseFloat(PIXELWIDTH)/25);
+File.append("Calculated magnification  = " + MAGNIFICATION ,LOGPATH);
+
+
+
+CSVPATH = TMPDIR + "/" + NAME + ".csv";
 
 File.append("Importing .csv file " + CSVPATH,LOGPATH);
 
-
-
 run("Import results", "filepath=["+CSVPATH+"] fileformat=[CSV (comma separated)] livepreview=false rawimagestack= startingframe=1 append=false");
+
+
+
+
+// Post_processing
+
+if(indexOf("SIGMA", POST) > -1)  {
+
+  File.append("Performing sigma filtering.", LOGPATH);
+  PYPATH = HOME + "/Visualisation/csv_sigma_mode.py";
+
+  COMMAND = "python " + PYPATH + " -i " + CSVPATH;
+  MODE = exec(COMMAND);
+
+  if (MODE == -1)  {
+
+    File.append("ERROR! Failed to find Mode of csv file!! " ", LOGPATH);
+  }
+  else {
+
+
+   File.append("Mode of sigma distribution =  " + MODE, LOGPATH);
+
+    MODEF = parseFloat(MODE);
+    RANGE = MODEF * 0.2;
+    UPPER_LIM = toString(MODEF + RANGE,0);
+    LOWER_LIM = toString(MODEF - RANGE,0);
+    FORMULA = "[sigma < " + UPPER_LIM + " & sigma > " + LOWER_LIM + " ]";
+
+    File.append("Filtering with " + FORMULA, LOGPATH);
+
+    run("Show results table", "action=filter formula=["+FORMULA+"]");
+  }
+
+}
+
+if(indexOf("DRIFT", POST) > -1)  {
+
+  File.append("Performing drift correction.", LOGPATH);
+  run("Show results table", "action=drift magnification=["+MAGNIFICATION+"] method=[Cross correlation] save=false steps=6 showcorrelations=false");
+  selectWindow("Drift");
+  DRIFTPATH = WORK + "/" + NAME + "_drift.tiff";
+  File.append("Saving drift graph to " + DRIFTPATH, LOGPATH);
+  saveAs("Tiff", DRIFTPATH);
+  close();
+
+}
+
+
+
+NAME = NAME + "_" + POST;
+
+POSTPATH = TMPDIR + "/" + NAME + ".csv";
+
+File.append("Saving post-processed localisations as " + POSTPATH, LOGPATH);
+run("Export results", "filepath=["+POSTPATH+"] fileformat=[CSV (comma separated)] id=true frame=true sigma=true bkgstd=true intensity=true saveprotocol=true offset=true uncertainty=true y=true x=true");
+
 
 
 
@@ -93,12 +168,12 @@ run("Import results", "filepath=["+CSVPATH+"] fileformat=[CSV (comma separated)]
 if(THREED==0)  {
 File.append("Starting 2D visualisation!",LOGPATH);
 
-run("Visualization", "imleft=0.0 imtop=0.0 imwidth=["+sizeX+"] imheight=["+sizeY+"] renderer=[Normalized Gaussian] dxforce=false magnification=12.6 dx=["+LATERAL_UNCERTAINTY+"] colorizez=false threed=false dzforce=false");
+run("Visualization", "imleft=0.0 imtop=0.0 imwidth=["+sizeX+"] imheight=["+sizeY+"] renderer=[Normalized Gaussian] dxforce=false magnification=["+MAGNIFICATION+"] dx=["+LATERAL_UNCERTAINTY+"] colorizez=false threed=false dzforce=false");
     OUTPATH = TMPDIR + "/" + NAME + "_2D.ome.tif";
 }
 else  {
 File.append("Starting 3D visualisation!",LOGPATH);
-run("Visualization", "imleft=0.0 imtop=0.0 imwidth=["+sizeX+"] imheight=["+sizeY+"] renderer=[Normalized Gaussian] zrange=-600:30:600 dxforce=false magnification=12.6 dx=["+LATERAL_UNCERTAINTY+"] colorizez=false dz=70.0 threed=true dzforce=false");
+run("Visualization", "imleft=0.0 imtop=0.0 imwidth=["+sizeX+"] imheight=["+sizeY+"] renderer=[Normalized Gaussian] zrange=-600:30:600 dxforce=false magnification=["+MAGNIFICATION+"] dx=["+LATERAL_UNCERTAINTY+"] colorizez=false dz=70.0 threed=true dzforce=false");
     OUTPATH = TMPDIR + "/" + NAME + "_3D.ome.tif";
 }
 
@@ -116,6 +191,9 @@ run("Bio-Formats Exporter", "save=["+OUTPATH+"] compression=LZW");
 if(File.exists(OUTPATH) != 1 ) {
 File.append("Failed to write " + OUTPATH, LOGPATH);
 }
+
+// Delete original .csv file from TMPDIR so as not to overwrite unnecessarily
+File.delete(CSVPATH);
 
 
 getDateAndTime(year, month, dayOfWeek, dayOfMonth, hour, minute, second, msec);

@@ -18,6 +18,8 @@ echo "Start time $(date)"
 #  hardwired paths TBD
 IJ=/apps/fiji/Fiji.app/ImageJ-linux64
 
+# add environment variables to args list
+ARGS="$SETUP_ARGS":"$TMPDIR"
 
 ##load application module
 module load fiji vnc
@@ -26,10 +28,12 @@ module load fiji vnc
 
 
 echo "running TSTORM setup macro!"
-$IJ --ij2 -macro $HOME/Localisation/TSTORM_setup_macro.ijm $SETUP_ARGS
+$IJ --ij2 -macro $HOME/Localisation/TSTORM_setup_macro.ijm $ARGS
 
 
 vnc_stop
+
+mv $TMPDIR/args $WORK/args
 
 echo "End time $(date)"
 

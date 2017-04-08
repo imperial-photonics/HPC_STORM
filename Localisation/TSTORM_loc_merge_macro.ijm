@@ -1,14 +1,12 @@
 ARGS=getArgument();
 
-ARGS=getArgument();
-
 setBatchMode(true);
 parts=split(ARGS, ":");
 
-HOME=parts[0];
+WORK=parts[0];
 TMPDIR=parts[1];
 
-LOGPATH = HOME + "/Localisation/temp_localisation.log";
+LOGPATH = WORK + "/Localisation/temp_localisation.log";
 
 if (File.exists(LOGPATH))  {
 File.append("Adding Merge log!", LOGPATH);
@@ -29,7 +27,7 @@ TimeString = TimeString+second;
 File.append("Starting Merge at " + TimeString, LOGPATH);
 
 // path to config file
-CONFIG= HOME + "/args";
+CONFIG= WORK + "/args";
 
 File.append("Looking for config file " + CONFIG, LOGPATH);
 
@@ -38,7 +36,6 @@ rows=split(filestring);
 
 SAVEPROTOCOL = "false";
 
-WORK = TMPDIR;
 
 for (r=0; r<rows.length; r++)  {
 
@@ -62,29 +59,26 @@ for (r=0; r<rows.length; r++)  {
   if (BLOCK == "1")  {
 
     // rename protocol file
-    PROTPATH = WORK + "/tmp_" + NAME + "-protocol.txt";
+    PROTPATH = TMPDIR + "/tmp_" + NAME + "-protocol.txt";
     File.append("Renaming protocol file  " + PROTPATH, LOGPATH);
-    err=File.rename(PROTPATH, WORK + "/" + NAME + "-protocol.txt");
+    err=File.rename(PROTPATH, TMPDIR + "/" + NAME + "-protocol.txt");
 
-    INPATH = WORK + "/tmp_" + NAME + ".csv";
+    INPATH = TMPDIR + "tmp_" + NAME + ".csv";
 
     if (NEXTBLOCK == "1")  {
       // Only one block for this file so no merging required
-      err=File.rename(INPATH, WORK + "/" + NAME + ".csv");
+      err=File.rename(INPATH, TMPDIR + "/" + NAME + ".csv");
     }
     else  {
       File.append("Importing file  " + INPATH, LOGPATH);
       run("Import results", "filepath=["+INPATH+"] fileformat=[CSV (comma separated)] livepreview=true rawimagestack= startingframe=1 append=false");
-      File.append("Deleting file  " + INPATH, LOGPATH);
-      err=File.delete(INPATH);
+
     }
   }
   else {   //BLOCK > 1
-    INPATH = WORK + "/tmp_" + NAME + "_" + BLOCK + ".csv";
+    INPATH = TMPDIR + "/tmp_" + NAME + "_" + BLOCK + ".csv";
     File.append("Importing file  " + INPATH, LOGPATH);
     run("Import results", "filepath=["+INPATH+"] fileformat=[CSV (comma separated)] livepreview=true rawimagestack= startingframe=["+FIRST+"] append=true");
-    err=File.delete(INPATH);
-    File.append("Deleting file  " + INPATH, LOGPATH);
 
     if (NEXTBLOCK == "1")  {
       OUTPATH = TMPDIR + "/" + NAME + ".csv";
@@ -109,27 +103,9 @@ TimeString = TimeString+second;
 File.append("Merge complete at  " + TimeString, LOGPATH);
 
 
-//Post_Processing!
-
-POSTPATH = WORK + "/" + NAME + "_reconstr.csv";
-
-// Drift correction
-
-DRIFTPATH = WORK + "/" + NAME + "_drift.tiff";
-
-File.append("Performing drift correction.", LOGPATH);
-run("Show results table", "action=drift magnification=12.0 method=[Cross correlation] save=false steps=6 showcorrelations=false");
-selectWindow("Drift");
-File.append("Saving drift graph to " + DRIFTPATH, LOGPATH);
-saveAs("Tiff", DRIFTPATH);
-close();
 
 
-File.append("Saving post-processed localisations as " + POSTPATH, LOGPATH);
-run("Export results", "filepath=["+POSTPATH+"] fileformat=[CSV (comma separated)] id=true frame=true sigma=true bkgstd=true intensity=true saveprotocol=["+SAVEPROTOCOL+"] offset=true uncertainty=true y=true x=true");
-
-
-FINAL_LOGPATH = HOME + "/Localisation/" + NAME + ".log";
+FINAL_LOGPATH = WORK + "/Localisation/" + NAME + "_loc.log";
 
 File.append("renaming log file to " + FINAL_LOGPATH,LOGPATH);
 

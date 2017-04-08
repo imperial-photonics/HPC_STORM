@@ -17,20 +17,20 @@ case "$#" in
    echo $USAGE;
    exit 0
    else
-   ARGS="$WORK":"$1":"$HOME"
+   ARGS="$WORK":"$1"
    fi
    ;;
 2)
    if [[ $2 == "general" ]]
    then
    FOGIM=0
-   ARGS="$WORK":"$1":"$HOME"
+   ARGS="$WORK":"$1"
    else
-   ARGS="$WORK":"$1":"$2":"$HOME"
+   ARGS="$WORK":"$1":"$2"
    fi
    ;;
 3)
-   ARGS="$WORK":"$1":"$2":"$HOME"
+   ARGS="$WORK":"$1":"$2"
    FOGIM=0
    ;;
 *)

@@ -8,16 +8,16 @@ LAST=parts[3];
 BLOCK=parts[4];
 
 if (parts.length == 7)  {
-HOME=parts[6];
+TMPDIR=parts[6];
 }
 else  {
-HOME=parts[5];
+TMPDIR=parts[5];
 }
 
 fullname=split(FNAME, ".");
 NAME=fullname[0];
 
-LOGPATH = HOME + "/Localisation/tmp_" + NAME + "_" + BLOCK + ".log";
+LOGPATH = WORK + "/Localisation/tmp_" + NAME + "_" + BLOCK + ".log";
 
 if (File.exists(LOGPATH))  {
 File.delete(LOGPATH);
@@ -38,11 +38,11 @@ File.append("Opened log file at " + TimeString, LOGPATH);
 
 
 if (BLOCK == "1")  {
-OUTPATH = WORK + "/tmp_" + NAME + ".csv";
+OUTPATH = WORK + "/Localisation/tmp_" + NAME + ".csv";
 SAVEPROTOCOL = "true";
 }
 else  {
-OUTPATH = WORK + "/tmp_" + NAME + "_" +BLOCK + ".csv";
+OUTPATH = WORK + "/Localisation/tmp_" + NAME + "_" +BLOCK + ".csv";
 SAVEPROTOCOL = "false";
 }
 
@@ -62,8 +62,16 @@ File.append("2D!",LOGPATH);
 
 //run("Memory & Threads...", "maximum=8192 parallel=20”);
 File.append("Importing file " + FNAME,LOGPATH);
-run("Bio-Formats Importer","open="+WORK+"/"+FNAME+" color_mode=Default specify_range view=Hyperstack stack_order=XYCZT t_begin="+FIRST+" t_end="+LAST+" t_step=1");
-run("Camera setup", "isemgain=false pixelsize=126.0 offset=350 photons2adu=0.5");
+run("Bio-Formats Importer","open="+WORK+"/"+FNAME+" color_mode=Default specify_range view=[Standard ImageJ] stack_order=Default t_begin="+FIRST+" t_end="+LAST+" t_step=1");
+
+
+// Use imagej to get pixelsize
+getPixelSize(unit, pixelWidth, pixelHeight);
+PIXELWIDTH = pixelWidth * 1000;
+File.append("pixel Width = " + PIXELWIDTH ,LOGPATH);
+
+
+run("Camera setup", "isemgain=false pixelsize=["+PIXELWIDTH+"] offset=350 photons2adu=0.5");
 if(THREED==0)  {
 File.append("Starting 2D localisation!",LOGPATH);
 run( "Run analysis", "filter=[Wavelet filter (B-Spline)] scale=2.0 order=3 detector=[Non-maximum suppression] radius=3 threshold=std(Wave.F1) estimator=[PSF: Integrated Gaussian] sigma=1.6 method=[Weighted Least squares] full_image_fitting=false fitradius=4 mfaenabled=false renderer=[No Renderer]");

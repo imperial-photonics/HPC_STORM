@@ -9,13 +9,13 @@ FNAME=parts[1];
 
 if (parts.length == 4)  {
     CALIB=parts[2];
-    HOME=parts[3];
+    TMPDIR=parts[3];
     CALPATH=WORK + "/" + CALIB;
     THREED=File.exists(CALPATH); //Returns "1" (true) if the specified file exists.
 }
 else {
     THREED=0;
-    HOME=parts[2];
+    TMPDIR=parts[2];
 }
 
 FILEPATH=WORK + "/" + FNAME;
@@ -32,9 +32,8 @@ Ext.setId(FILEPATH);
 Ext.setSeries(0);
 Ext.getSizeT(sizeT);
 
-PBS_INDEX=parseInt(PBS_INDEX);
 
-OUTPATH = HOME + "/args";
+OUTPATH = TMPDIR + "/args";
 
 if (File.exists(OUTPATH))  {
 File.delete(OUTPATH);

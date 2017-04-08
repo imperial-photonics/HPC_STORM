@@ -9,8 +9,8 @@
 ## ask PBS for time (format hh:mm:ss)
 #PBS -l walltime=01:00:00
 
-## ask for one node with 24 cpus and total 16gb memory (per node)
-#PBS -l select=1:ncpus=24:mem=16gb
+## ask for one node with 24 cpus and total 48gb memory (per node)
+#PBS -l select=1:ncpus=24:mem=64gb
 #PBS -M i.munro@ic.ac.uk
 #PBS -m ae
 
@@ -20,25 +20,32 @@ IJ=/apps/fiji/Fiji.app/ImageJ-linux64
 #HOME=/Users/imunro/HPC_STORM
 #IJ=/Applications/Fiji.app/Contents/MacOS/ImageJ-macosx
 
-
 echo "merging all the localisation log files"
-cat $HOME/Localisation/tmp*.log  > $HOME/Localisation/temp_localisation.log
-rm  $HOME/Localisation/tmp*.log
+cat $WORK/Localisation/tmp*.log  > $WORK/Localisation/temp_localisation.log
+rm  $WORK/Localisation/tmp*.log
+
+mv $HOME/Localisation/tmp* $TMPDIR
+
+# tidy up PBSPRO outputs for easy deletion
+mv $HOME/Localisation/*.pbs.e* $WORK/Localisation
+mv $HOME/Localisation/*.pbs.o* $WORK/Localisation
 
 # add environment variables to args list
-ARGS="$HOME":"$TMPDIR"
+ARGS="$WORK":"$TMPDIR"
 
-mv $WORK/tmp* $TMPDIR
+mv $WORK/Localisation/tmp_* $TMPDIR
 
 ##load application module
-module load fiji vnc
+module load fiji vnc python
 
 `vnc_start`
 
 echo "running TSTORM loc_merge macro!"
 $IJ --ij2 -macro $HOME/Localisation/TSTORM_loc_merge_macro.ijm $ARGS
 
+rm $TMPDIR/tmp_*
 cp $TMPDIR/* $WORK
+mv $WORK/Localisation/*_loc.log $WORK
 
 
 vnc_stop
