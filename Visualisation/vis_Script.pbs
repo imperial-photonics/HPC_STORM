@@ -33,14 +33,17 @@ ARGS=$(head -1 $ARGSFILE | tail -1)
 echo "lat res = "
 echo $LATERAL_RES
 
-cp $WORK/*.csv $TMPDIR
-
-
 
 # add environment variables to args list
 ARGS_FULL="$ARGS":"$LATERAL_RES":"$POST":"$TMPDIR":"$HOME"
 
 echo $ARGS_FULL
+
+
+cp $WORK/*.csv $TMPDIR
+
+echo "Copied *.csv to TMPDIR"
+
 
 ##load application module
 module load fiji vnc python
@@ -48,7 +51,6 @@ module load fiji vnc python
 
 `vnc_start`
 
-cp $WORK/*.csv $TMPDIR
 
 echo "running TSTORM macro!"
 

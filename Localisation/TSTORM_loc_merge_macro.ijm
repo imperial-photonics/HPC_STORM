@@ -83,7 +83,7 @@ for (r=0; r<rows.length; r++)  {
     if (NEXTBLOCK == "1")  {
       OUTPATH = TMPDIR + "/" + NAME + ".csv";
       File.append("Exporting to file  " + OUTPATH, LOGPATH);
-      run("Export results", "filepath=["+OUTPATH+"] fileformat=[CSV (comma separated)] id=true frame=true sigma=true bkgstd=true intensity=true saveprotocol=["+SAVEPROTOCOL+"] offset=true uncertainty=true y=true x=true");
+      run("Export results", "floatprecision=2 filepath=["+OUTPATH+"] fileformat=[CSV (comma separated)] id=true frame=true sigma=true bkgstd=true intensity=true saveprotocol=["+SAVEPROTOCOL+"] offset=true uncertainty=true y=true x=true");
 
     }
 

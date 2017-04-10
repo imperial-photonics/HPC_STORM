@@ -54,7 +54,6 @@ if (parts.length == 9)  {
   CALIB=parts[5];
   CALPATH= WORK + "/" + CALIB;
   THREED=File.exists(CALPATH); //Returns "1" (true) if the specified file exists.
-
 }
 
 File.append("Lateral Uncertainty = " + LATERAL_UNCERTAINTY, LOGPATH);
@@ -98,19 +97,20 @@ MAGNIFICATION = toString(parseFloat(PIXELWIDTH)/25);
 File.append("Calculated magnification  = " + MAGNIFICATION ,LOGPATH);
 
 
+run("Camera setup", "readoutnoise=0.0 offset=350.0 quantumefficiency=0.9 isemgain=false photons2adu=0.5 pixelsize=["+PIXELWIDTH+"]");
+
 
 CSVPATH = TMPDIR + "/" + NAME + ".csv";
 
 File.append("Importing .csv file " + CSVPATH,LOGPATH);
 
-run("Import results", "filepath=["+CSVPATH+"] fileformat=[CSV (comma separated)] livepreview=false rawimagestack= startingframe=1 append=false");
-
+run("Import results", "detectmeasurementprotocol=false filepath=["+CSVPATH+"] fileformat=[CSV (comma separated)] livepreview=false rawimagestack= startingframe=1 append=false");
 
 
 
 // Post_processing
 
-if(indexOf("SIGMA", POST) > -1)  {
+if(indexOf(POST, "SIGMA") > -1)  {
 
   File.append("Performing sigma filtering.", LOGPATH);
   PYPATH = HOME + "/Visualisation/csv_sigma_mode.py";
@@ -140,10 +140,14 @@ if(indexOf("SIGMA", POST) > -1)  {
 
 }
 
-if(indexOf("DRIFT", POST) > -1)  {
+
+if(indexOf(POST, "DRIFT") > -1)  {
 
   File.append("Performing drift correction.", LOGPATH);
-  run("Show results table", "action=drift magnification=["+MAGNIFICATION+"] method=[Cross correlation] save=false steps=6 showcorrelations=false");
+  run("Show results table", "action=drift magnification=["+MAGNIFICATION+"] method=[Cross correlation] ccsmoothingbandwidth=1.0 save=false steps=6 showcorrelations=false");
+
+
+  File.append("Drift coeection done!", LOGPATH);
   selectWindow("Drift");
   DRIFTPATH = WORK + "/" + NAME + "_drift.tiff";
   File.append("Saving drift graph to " + DRIFTPATH, LOGPATH);
@@ -156,13 +160,11 @@ if(indexOf("DRIFT", POST) > -1)  {
 
 NAME = NAME + "_" + POST;
 
+
 POSTPATH = TMPDIR + "/" + NAME + ".csv";
 
 File.append("Saving post-processed localisations as " + POSTPATH, LOGPATH);
 run("Export results", "filepath=["+POSTPATH+"] fileformat=[CSV (comma separated)] id=true frame=true sigma=true bkgstd=true intensity=true saveprotocol=true offset=true uncertainty=true y=true x=true");
-
-
-
 
 
 if(THREED==0)  {
