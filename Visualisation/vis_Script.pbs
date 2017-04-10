@@ -9,9 +9,6 @@
 #PBS -l walltime=00:30:0
 ## ask for one node with 24 cpus and total 64gb memory (per node)
 #PBS -l select=1:ncpus=24:mem=64gb
-#PBS -M i.munro@ic.ac.uk
-#PBS -m ae
-
 
 ##command line
 ## DEBUG=1
