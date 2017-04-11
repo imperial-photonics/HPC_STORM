@@ -38,11 +38,11 @@ File.append("Opened log file at " + TimeString, LOGPATH);
 
 // NB output to TMPDIR seems to fail here!
 if (BLOCK == "1")  {
-OUTPATH = WORK + "/Localisation/tmp_" + NAME + ".csv";
+OUTPATH = "/var/tmp/STORM_temp/tmp_" + NAME + ".csv";
 SAVEPROTOCOL = "true";
 }
 else  {
-OUTPATH = WORK + "/Localisation/tmp_" + NAME + "_" +BLOCK + ".csv";
+OUTPATH = "/var/tmp/STORM_temp/tmp_" + NAME + "_" +BLOCK + ".csv";
 SAVEPROTOCOL = "false";
 }
 

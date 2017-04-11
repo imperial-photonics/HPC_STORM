@@ -26,11 +26,22 @@ ARGS_FULL="$ARGS":"$TMPDIR"
 
 echo $ARGS_FULL
 
+mkdir /var/tmp/STORM_temp
+
 module load sysconfcpus/0.5
 
 echo "running TSTORM macro!"
+
 # run ThunderSTORM
 sysconfcpus -n $NCPUS $IJ --ij2 -macro $HOME/Localisation/TSTORM_loc_macro.ijm $ARGS_FULL
+
+mv /var/tmp/STORM_temp/tmp_* $WORK/Localisation
+
+rmdir /var/tmp/STORM_temp
+
+
+
+
 
 
 
