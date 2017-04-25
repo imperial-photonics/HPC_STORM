@@ -24,7 +24,6 @@ echo "merging all the localisation log files"
 cat $WORK/Localisation/tmp*.log  > $WORK/Localisation/temp_localisation.log
 rm  $WORK/Localisation/tmp*.log
 
-mv $HOME/Localisation/tmp* $TMPDIR
 
 # tidy up PBSPRO outputs for easy deletion
 mv $HOME/Localisation/*.pbs.e* $WORK/Localisation
@@ -43,11 +42,16 @@ module load fiji vnc python
 echo "running TSTORM loc_merge macro!"
 $IJ --ij2 -macro $HOME/Localisation/TSTORM_loc_merge_macro.ijm $ARGS
 
+
+
+echo "tidying TMPDIR"
 rm $TMPDIR/tmp_*
+echo "copying from TMPDIR to WORK"
 cp $TMPDIR/* $WORK
+echo "moving log file to WORK"
 mv $WORK/Localisation/*_loc.log $WORK
 
-
+echo "stopping vnc!"
 vnc_stop
 
 
