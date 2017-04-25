@@ -63,7 +63,7 @@ for (r=0; r<rows.length; r++)  {
     File.append("Renaming protocol file  " + PROTPATH, LOGPATH);
     err=File.rename(PROTPATH, TMPDIR + "/" + NAME + "-protocol.txt");
 
-    INPATH = TMPDIR + "tmp_" + NAME + ".csv";
+    INPATH = TMPDIR + "/tmp_" + NAME + ".csv";
 
     if (NEXTBLOCK == "1")  {
       // Only one block for this file so no merging required
@@ -71,14 +71,14 @@ for (r=0; r<rows.length; r++)  {
     }
     else  {
       File.append("Importing file  " + INPATH, LOGPATH);
-      run("Import results", "filepath=["+INPATH+"] fileformat=[CSV (comma separated)] livepreview=true rawimagestack= startingframe=1 append=false");
+      run("Import results", "filepath=["+INPATH+"] fileformat=[CSV (comma separated)] livepreview=false rawimagestack= startingframe=1 append=false");
 
     }
   }
   else {   //BLOCK > 1
     INPATH = TMPDIR + "/tmp_" + NAME + "_" + BLOCK + ".csv";
     File.append("Importing file  " + INPATH, LOGPATH);
-    run("Import results", "filepath=["+INPATH+"] fileformat=[CSV (comma separated)] livepreview=true rawimagestack= startingframe=["+FIRST+"] append=true");
+    run("Import results", "filepath=["+INPATH+"] fileformat=[CSV (comma separated)] livepreview=false rawimagestack= startingframe=["+FIRST+"] append=true");
 
     if (NEXTBLOCK == "1")  {
       OUTPATH = TMPDIR + "/" + NAME + ".csv";
@@ -128,7 +128,6 @@ TimeString = TimeString+second;
 
 File.append("exiting loc_merge_macro at " + TimeString,FINAL_LOGPATH);
 
-close();
 
 run("Quit");
 
