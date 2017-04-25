@@ -26,7 +26,13 @@ ARGS_FULL="$ARGS":"$TMPDIR"
 
 echo $ARGS_FULL
 
+if [ -d /var/tmp/STORM_temp ]
+then
+echo " /var/tmp/STORM_temp already exists"
+rm /var/tmp/STORM_temp/*
+else
 mkdir /var/tmp/STORM_temp
+fi
 
 module load sysconfcpus/0.5
 
