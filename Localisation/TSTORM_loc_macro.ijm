@@ -39,11 +39,11 @@ File.append("Opened log file at " + TimeString, LOGPATH);
 // NB output to TMPDIR seems to fail here so TMPDIR points to our own
 //temporary directory
 if (BLOCK == "1")  {
-OUTPATH = TMPDIR + "/" + NAME + ".csv";
+OUTPATH = TMPDIR + "/tmp_" + NAME + ".csv";
 SAVEPROTOCOL = "true";
 }
 else  {
-OUTPATH = TMPDIR + "/" + NAME + "_" +BLOCK + ".csv";
+OUTPATH = TMPDIR + "/tmp_" + NAME + "_" +BLOCK + ".csv";
 SAVEPROTOCOL = "false";
 }
 
