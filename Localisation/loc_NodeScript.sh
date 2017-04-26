@@ -21,17 +21,20 @@ ARGSFILE=$WORK"/args"
 #  get arg  list from config file
 ARGS=$(head -$PBS_ARRAY_INDEX $ARGSFILE | tail -1)
 
+#create our own TMP DIRECTORY inc users name
+TMPSTORM="/var/tmp/STORM_temp"$USER
+
 # add environment variables to args list
-ARGS_FULL="$ARGS":"$TMPDIR"
+ARGS_FULL="$ARGS":"$TMPSTORM"
 
 echo $ARGS_FULL
 
-if [ -d /var/tmp/STORM_temp ]
+if [ -d $TMPSTORM ]
 then
-echo " /var/tmp/STORM_temp already exists"
-rm -rf /var/tmp/STORM_temp/*
+echo " /var/tmp/STORM_temp??? already exists"
+rm -rf $TMPSTORM/*
 else
-mkdir /var/tmp/STORM_temp
+mkdir $TMPSTORM
 fi
 
 module load sysconfcpus/0.5
@@ -41,9 +44,9 @@ echo "running TSTORM macro!"
 # run ThunderSTORM
 sysconfcpus -n $NCPUS $IJ --ij2 -macro $HOME/Localisation/TSTORM_loc_macro.ijm $ARGS_FULL
 
-mv /var/tmp/STORM_temp/tmp_* $WORK/Localisation
+mv $TMPSTORM/tmp_* $WORK/Localisation
 
-rmdir /var/tmp/STORM_temp
+rm -rf $TMPSTORM
 
 
 
