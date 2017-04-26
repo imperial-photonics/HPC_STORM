@@ -57,13 +57,15 @@ echo $three
 else
 
 echo "fogim queue"
-one=$(qsub -q pqfogim -v SETUP_ARGS=$ARGS $HOME/Localisation/setupScript.pbs)
+QUEUE="pqfogim"
+
+one=$(qsub -q $QUEUE -v SETUP_ARGS=$ARGS $HOME/Localisation/setupScript.pbs)
 echo "launching setup job"
 echo $one
-two=$(qsub -q pqfogim -W depend=afterok:$one $HOME/Localisation/loc_ARRScript.pbs)
+two=$(qsub -q $QUEUE -W depend=afterok:$one $HOME/Localisation/loc_ARRScript.pbs)
 echo "launching processing job"
 echo $two
-three=$(qsub -q pqfogim -W depend=afterok:$two $HOME/Localisation/loc_MERGEScript.pbs )
+three=$(qsub -q $QUEUE -W depend=afterok:$two $HOME/Localisation/loc_MERGEScript.pbs )
 echo "launching merge job"
 echo $three
 

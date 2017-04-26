@@ -30,22 +30,24 @@ echo $answer
 cd $HOME/Localisation
 
 echo "fogim queue"
-one=$(qsub -q pqfogim -v SETUP_ARGS=$ARGS $HOME/Localisation/setupScript.pbs)
+QUEUE="pqfogim"
+
+one=$(qsub -q $QUEUE -v SETUP_ARGS=$ARGS $HOME/Localisation/setupScript.pbs)
 echo "launching setup job"
 echo $one
-two=$(qsub -q pqfogim -W depend=afterok:$one $HOME/Localisation/loc_ARRScript.pbs)
+two=$(qsub -q $QUEUE -W depend=afterok:$one $HOME/Localisation/loc_ARRScript.pbs)
 echo "launching Localisation processing job"
 echo $two
-three=$(qsub -q pqfogim -W depend=afterok:$two $HOME/Localisation/loc_MERGEScript.pbs )
+three=$(qsub -q $QUEUE -W depend=afterok:$two $HOME/Localisation/loc_MERGEScript.pbs )
 echo "launching localisation merge job"
 echo $three
 
 cd $HOME/Visualisation
 
-four=$(qsub -q pqfogim -v LATERAL_RES=$answer,POST="SIGMA_FILTER" -W depend=afterok:$three $HOME/Visualisation/vis_Script.pbs )
+four=$(qsub -q $QUEUE -v LATERAL_RES=$answer,POST="SIGMA_FILTER" -W depend=afterok:$three $HOME/Visualisation/vis_Script.pbs )
 echo "launching sigma filtering job"
 echo $four
-five=$(qsub -q pqfogim -v LATERAL_RES=$answer,POST="DRIFT" -W depend=afterok:$three $HOME/Visualisation/vis_Script.pbs )
+five=$(qsub -q $QUEUE -v LATERAL_RES=$answer,POST="DRIFT" -W depend=afterok:$three $HOME/Visualisation/vis_Script.pbs )
 echo "launching drift correction job"
 echo $five
 
