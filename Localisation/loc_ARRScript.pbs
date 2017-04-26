@@ -5,7 +5,7 @@
 #  Created by Ian Munro on 02/07/2016.
 #
 ## ask PBS for time (format hh:mm:ss)
-#PBS -l walltime=04:00:0
+#PBS -l walltime=02:00:0
 ## ask for ten jobs with 24 cpus and total 64gb memory (per node)
 #PBS -l select=1:ncpus=24:mem=64gb
 #PBS -J 1-10
