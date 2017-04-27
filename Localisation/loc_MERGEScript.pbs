@@ -46,8 +46,10 @@ $IJ --ij2 -macro $HOME/Localisation/TSTORM_loc_merge_macro.ijm $ARGS
 
 echo "tidying TMPDIR"
 rm $TMPDIR/tmp_*
-echo "copying from TMPDIR to WORK"
-cp $TMPDIR/* $WORK
+echo "copying .csv from TMPDIR to WORK"
+cp $TMPDIR/*.csv $WORK
+echo "copying .txt from TMPDIR to WORK"
+cp $TMPDIR/*.txt $WORK
 echo "moving log file to WORK"
 mv $WORK/Localisation/*_loc.log $WORK
 
