@@ -57,7 +57,16 @@ $IJ --ij2 -macro $HOME/Visualisation/TSTORM_vis_macro.ijm $ARGS_FULL
 
 vnc_stop
 
-mv $TMPDIR/* $WORK
+echo "copying xxxdrift.tiff to WORK"
+cp $TMPDIR/*drift.tiff $WORK
+echo "copying xxxPOST.*.ome.tif to WORK"
+cp $TMPDIR/*$POST*.ome.tif $WORK
+echo "copying xxxPOST.*.txt to WORK"
+cp $TMPDIR/*$POST*.txt $WORK
+echo "copying xxxPOST.*.csv to WORK"
+cp $TMPDIR/*$POST*.csv $WORK
+
+
 
 echo "End time $(date)"
 
