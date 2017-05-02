@@ -128,8 +128,8 @@ if(indexOf(POST, "SIGMA") > -1)  {
 
     MODEF = parseFloat(MODE);
     RANGE = MODEF * 0.2;
-    UPPER_LIM = toString(MODEF + RANGE,0);
-    LOWER_LIM = toString(MODEF - RANGE,0);
+    UPPER_LIM = toString(MODEF + RANGE,2);
+    LOWER_LIM = toString(MODEF - RANGE,2);
     FORMULA = "[sigma < " + UPPER_LIM + " & sigma > " + LOWER_LIM + " ]";
 
     File.append("Filtering with " + FORMULA, LOGPATH);
