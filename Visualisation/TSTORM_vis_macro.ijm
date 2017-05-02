@@ -170,17 +170,17 @@ if(THREED==0)  {
 File.append("Starting 2D visualisation!",LOGPATH);
 
 
-run("Visualization", "imleft=0.0 imtop=0.0 imwidth=["+sizeX+"] imheight=["+sizeY+"] renderer=[Averaged shifted histograms] magnification=["+MAGNIFICATION+"] colorizez=false threed=false shifts=2");
+//run("Visualization", "imleft=0.0 imtop=0.0 imwidth=["+sizeX+"] imheight=["+sizeY+"] renderer=[Averaged shifted histograms] magnification=["+MAGNIFICATION+"] colorizez=false threed=false shifts=2");
 
-//run("Visualization", "imleft=0.0 imtop=0.0 imwidth=["+sizeX+"] imheight=["+sizeY+"] renderer=[Normalized Gaussian] magnification=["+MAGNIFICATION+"] dx=["+LATERAL_UNCERTAINTY+"] colorizez=false threed=false dzforce=false");
+run("Visualization", "imleft=0.0 imtop=0.0 imwidth=["+sizeX+"] imheight=["+sizeY+"] renderer=[Normalized Gaussian] magnification=["+MAGNIFICATION+"] dx=["+LATERAL_UNCERTAINTY+"] colorizez=false threed=false dzforce=false");
     OUTPATH = TMPDIR + "/" + NAME + "_2D.ome.tif";
 }
 else  {
 File.append("Starting 3D visualisation!",LOGPATH);
 
-run("Visualization", "imleft=0.0 imtop=0.0 imwidth=["+sizeX+"] imheight=["+sizeY+"] renderer=[Averaged shifted histograms] zrange=-600:30:600 magnification=["+MAGNIFICATION+"] colorizez=false threed=true shifts=2 zshifts=2");
+//run("Visualization", "imleft=0.0 imtop=0.0 imwidth=["+sizeX+"] imheight=["+sizeY+"] renderer=[Averaged shifted histograms] zrange=-600:30:600 magnification=["+MAGNIFICATION+"] colorizez=false threed=true shifts=2 zshifts=2");
 
-//run("Visualization", "imleft=0.0 imtop=0.0 imwidth=["+sizeX+"] imheight=["+sizeY+"] renderer=[Normalized Gaussian] zrange=-600:30:600 dxforce=false magnification=["+MAGNIFICATION+"] dx=["+LATERAL_UNCERTAINTY+"] colorizez=false dz=70.0 threed=true dzforce=false");
+run("Visualization", "imleft=0.0 imtop=0.0 imwidth=["+sizeX+"] imheight=["+sizeY+"] renderer=[Normalized Gaussian] zrange=-600:30:600 dxforce=false magnification=["+MAGNIFICATION+"] dx=["+LATERAL_UNCERTAINTY+"] colorizez=false dz=70.0 threed=true dzforce=false");
     OUTPATH = TMPDIR + "/" + NAME + "_3D.ome.tif";
 }
 
