@@ -8,10 +8,10 @@ USAGE="Usage: PREVIEW filename <calibration_filename> "
 
 case "$#" in
 1)
-   ARGS="$WORK":"$1":"$HOME"
+   ARGS="$WORK":"$1"
    ;;
 2)
-   ARGS="$WORK":"$1":"$2":"$HOME"
+   ARGS="$WORK":"$1":"$2"
    ;;
 *)
    echo $USAGE;

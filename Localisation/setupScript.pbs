@@ -21,6 +21,8 @@ IJ=/apps/fiji/Fiji.app/ImageJ-linux64
 # add environment variables to args list
 ARGS="$SETUP_ARGS":"$TMPDIR"
 
+echo $ARGS
+
 rm $WORK/args
 
 ##load application module
