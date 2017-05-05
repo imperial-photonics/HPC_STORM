@@ -80,11 +80,11 @@ COMMAND= "grep Prime95B " + FILEPATH;
 if(indexOf(exec(COMMAND), "matches") > -1)  {
 //Prime95B Camera detected
 File.append(" using Prime95B values for Camera Setup!", LOGPATH);
-run("Camera setup", "readoutnoise=0.0 offset=170.0 quantumefficiency=0.9 isemgain=false photons2adu=2.44 pixelsize=["+PIXELWIDTH+"]");
+run("Camera setup", "readoutnoise=1.8 offset=170.0 quantumefficiency=0.9 isemgain=false photons2adu=2.44 pixelsize=["+PIXELWIDTH+"]");
 }
 else  {
 File.append(" using Orca values for Camera Setup!", LOGPATH);
-run("Camera setup", "readoutnoise=0.0 offset=350.0 quantumefficiency=0.9 isemgain=false photons2adu=0.5 pixelsize=["+PIXELWIDTH+"]");
+run("Camera setup", "readoutnoise=1.5 offset=350.0 quantumefficiency=0.9 isemgain=false photons2adu=0.5 pixelsize=["+PIXELWIDTH+"]");
 }
 
 

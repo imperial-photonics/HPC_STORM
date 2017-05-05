@@ -60,7 +60,7 @@ vnc_stop
 echo "copying xxxdrift.tiff to WORK"
 cp $TMPDIR/*drift.tiff $WORK
 echo "copying xxxPOST.*.ome.tif to WORK"
-cp $TMPDIR/*$POST*.ome.tif $WORK
+cp $TMPDIR/*$POST*.ome.tiff $WORK
 echo "copying xxxPOST.*.txt to WORK"
 cp $TMPDIR/*$POST*.txt $WORK
 echo "copying xxxPOST.*.csv to WORK"

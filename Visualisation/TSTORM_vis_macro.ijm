@@ -95,11 +95,11 @@ COMMAND= "grep Prime95B " + FILEPATH;
 if(indexOf(exec(COMMAND), "matches") > -1)  {
   //Prime95B Camera detected
   File.append(" using Prime95B values for Camera Setup!", LOGPATH);
-  run("Camera setup", "readoutnoise=0.0 offset=170.0 quantumefficiency=0.9 isemgain=false photons2adu=2.44 pixelsize=["+PIXELWIDTH+"]");
+  run("Camera setup", "readoutnoise=1.8 offset=170.0 quantumefficiency=0.9 isemgain=false photons2adu=2.44 pixelsize=["+PIXELWIDTH+"]");
 }
 else  {
   File.append(" using Orca values for Camera Setup!", LOGPATH);
-  run("Camera setup", "readoutnoise=0.0 offset=350.0 quantumefficiency=0.9 isemgain=false photons2adu=0.5 pixelsize=["+PIXELWIDTH+"]");
+  run("Camera setup", "readoutnoise=1.5 offset=350.0 quantumefficiency=0.9 isemgain=false photons2adu=0.5 pixelsize=["+PIXELWIDTH+"]");
 }
 
 
@@ -181,7 +181,7 @@ File.append("Starting 2D visualisation!",LOGPATH);
 //run("Visualization", "imleft=0.0 imtop=0.0 imwidth=["+sizeX+"] imheight=["+sizeY+"] renderer=[Averaged shifted histograms] magnification=["+MAGNIFICATION+"] colorizez=false threed=false shifts=2");
 
 run("Visualization", "imleft=0.0 imtop=0.0 imwidth=["+sizeX+"] imheight=["+sizeY+"] renderer=[Normalized Gaussian] magnification=["+MAGNIFICATION+"] dx=["+LATERAL_UNCERTAINTY+"] colorizez=false threed=false dzforce=false");
-    OUTPATH = TMPDIR + "/" + NAME + "_2D.ome.tif";
+    OUTPATH = TMPDIR + "/" + NAME + "_2D.ome.tiff";
 }
 else  {
 File.append("Starting 3D visualisation!",LOGPATH);
@@ -189,7 +189,7 @@ File.append("Starting 3D visualisation!",LOGPATH);
 //run("Visualization", "imleft=0.0 imtop=0.0 imwidth=["+sizeX+"] imheight=["+sizeY+"] renderer=[Averaged shifted histograms] zrange=-600:30:600 magnification=["+MAGNIFICATION+"] colorizez=false threed=true shifts=2 zshifts=2");
 
 run("Visualization", "imleft=0.0 imtop=0.0 imwidth=["+sizeX+"] imheight=["+sizeY+"] renderer=[Normalized Gaussian] zrange=-600:30:600 dxforce=false magnification=["+MAGNIFICATION+"] dx=["+LATERAL_UNCERTAINTY+"] colorizez=false dz=70.0 threed=true dzforce=false");
-    OUTPATH = TMPDIR + "/" + NAME + "_3D.ome.tif";
+    OUTPATH = TMPDIR + "/" + NAME + "_3D.ome.tiff";
 }
 
 

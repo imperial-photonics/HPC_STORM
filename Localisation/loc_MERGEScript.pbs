@@ -14,6 +14,7 @@
 #PBS -M i.munro@ic.ac.uk
 #PBS -m ae
 
+
 #  hardwired paths TBD
 IJ=/apps/fiji/Fiji.app/ImageJ-linux64
 
