@@ -60,18 +60,32 @@ else  {
 File.append("2D!",LOGPATH);
 }
 
+FILEPATH=WORK + "/" + FNAME;
 
 //run("Memory & Threads...", "maximum=8192 parallel=20”);
-File.append("Importing file " + FNAME,LOGPATH);
-run("Bio-Formats Importer","open="+WORK+"/"+FNAME+" color_mode=Default specify_range view=[Standard ImageJ] stack_order=Default t_begin="+FIRST+" t_end="+LAST+" t_step=1");
+File.append("Importing file " + FILEPATH ,LOGPATH);
+run("Bio-Formats Importer","open="+FILEPATH+" color_mode=Default specify_range view=[Standard ImageJ] stack_order=Default t_begin="+FIRST+" t_end="+LAST+" t_step=1");
 
-
-// Use imagej to get pixelsize
-getPixelSize(unit, pixelWidth, pixelHeight);
+// Use Bio-Formats to find the pixelSize
+run("Bio-Formats Macro Extensions");
+Ext.setId(FILEPATH);
+Ext.setSeries(0);
+Ext.getPixelsPhysicalSizeX(pixelWidth);
 PIXELWIDTH = pixelWidth * 1000;
 File.append("pixel Width = " + PIXELWIDTH ,LOGPATH);
 
+
+// Determine which Camera is in use & setup appropriately
+COMMAND= "grep Prime95B " + FILEPATH;
+if(indexOf(exec(COMMAND), "matches") > -1)  {
+//Prime95B Camera detected
+File.append(" using Prime95B values for Camera Setup!", LOGPATH);
+run("Camera setup", "readoutnoise=0.0 offset=170.0 quantumefficiency=0.9 isemgain=false photons2adu=2.44 pixelsize=["+PIXELWIDTH+"]");
+}
+else  {
+File.append(" using Orca values for Camera Setup!", LOGPATH);
 run("Camera setup", "readoutnoise=0.0 offset=350.0 quantumefficiency=0.9 isemgain=false photons2adu=0.5 pixelsize=["+PIXELWIDTH+"]");
+}
 
 
 if(THREED==0)  {

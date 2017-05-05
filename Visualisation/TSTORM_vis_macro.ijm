@@ -3,14 +3,21 @@ setBatchMode(true);
 parts=split(ARGS, ":");
 WORK=parts[0];
 FNAME=parts[1];
+FIRST=parts[2];
+LAST=parts[3];
+BLOCK=parts[4];
 
 if (parts.length == 10)  {
+CALIB=parts[5];
+CALPATH= WORK + "/" + CALIB;
+THREED=File.exists(CALPATH); //Returns "1" (true) if the specified file exists.
 LATERAL_UNCERTAINTY=parts[6];
 POST=parts[7];
 TMPDIR=parts[8];
 HOME=parts[9];
 }
 else  {
+THREED=0;
 LATERAL_UNCERTAINTY=parts[5];
 POST=parts[6];
 TMPDIR=parts[7];
@@ -43,19 +50,6 @@ File.append("Opened log file at " + TimeString, LOGPATH);
 File.append("TMPDIR = " + TMPDIR , LOGPATH);
 
 
-FIRST=parts[2];
-LAST=parts[3];
-BLOCK=parts[4];
-
-
-THREED=0;
-
-if (parts.length == 9)  {
-  CALIB=parts[5];
-  CALPATH= WORK + "/" + CALIB;
-  THREED=File.exists(CALPATH); //Returns "1" (true) if the specified file exists.
-}
-
 File.append("Lateral Uncertainty = " + LATERAL_UNCERTAINTY, LOGPATH);
 
 
@@ -78,14 +72,13 @@ Ext.getSizeX(sizeX);
 File.append("sizeX = " + sizeX, LOGPATH);
 Ext.getSizeY(sizeY);
 File.append("sizeY = " + sizeY, LOGPATH);
+Ext.getPixelsPhysicalSizeX(pixelWidth);
+PIXELWIDTH = pixelWidth * 1000;
+File.append("pixel Width = " + PIXELWIDTH ,LOGPATH);
 
-
-// Load a single frame simply in order to get the pixel size
-File.append("Importing a single frame from " + FILEPATH, LOGPATH);
 
 //run("Memory & Threads...", "maximum=8192 parallel=20”);
 run("Bio-Formats Importer","open=FILEPATH color_mode=Default specify_range view=[Standard ImageJ] stack_order=Default t_begin=1 t_end=2 t_step=1");
-
 
 // Use imagej to get pixelsize
 getPixelSize(unit, pixelWidth, pixelHeight);
@@ -97,7 +90,17 @@ MAGNIFICATION = toString(parseFloat(PIXELWIDTH)/25);
 File.append("Calculated magnification  = " + MAGNIFICATION ,LOGPATH);
 
 
-run("Camera setup", "readoutnoise=0.0 offset=350.0 quantumefficiency=0.9 isemgain=false photons2adu=0.5 pixelsize=["+PIXELWIDTH+"]");
+// Determine which Camera is in use & setup appropriately
+COMMAND= "grep Prime95B " + FILEPATH;
+if(indexOf(exec(COMMAND), "matches") > -1)  {
+  //Prime95B Camera detected
+  File.append(" using Prime95B values for Camera Setup!", LOGPATH);
+  run("Camera setup", "readoutnoise=0.0 offset=170.0 quantumefficiency=0.9 isemgain=false photons2adu=2.44 pixelsize=["+PIXELWIDTH+"]");
+}
+else  {
+  File.append(" using Orca values for Camera Setup!", LOGPATH);
+  run("Camera setup", "readoutnoise=0.0 offset=350.0 quantumefficiency=0.9 isemgain=false photons2adu=0.5 pixelsize=["+PIXELWIDTH+"]");
+}
 
 
 CSVPATH = TMPDIR + "/" + NAME + ".csv";
@@ -130,7 +133,12 @@ if(indexOf(POST, "SIGMA") > -1)  {
     RANGE = MODEF * 0.2;
     UPPER_LIM = toString(MODEF + RANGE,2);
     LOWER_LIM = toString(MODEF - RANGE,2);
-    FORMULA = "[sigma < " + UPPER_LIM + " & sigma > " + LOWER_LIM + " ]";
+    if(THREED==0)  {
+      FORMULA = "[sigma < " + UPPER_LIM + " & sigma > " + LOWER_LIM + " ]";
+    }
+    else  {
+      FORMULA = "[sigma1 < " + UPPER_LIM + " & sigma1 > " + LOWER_LIM + " ]";
+    }
 
     File.append("Filtering with " + FORMULA, LOGPATH);
 
