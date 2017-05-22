@@ -43,7 +43,7 @@ outf = File.open(OUTPATH);
 
 sizeT=parseInt(sizeT);
 
-BLOCK= floor(sizeT/88);
+BLOCK= floor(sizeT/85);
 
 FIRSTFRAME=1;
 NROWS=10;
@@ -51,7 +51,7 @@ NROWS=10;
 // Create a config file asking for NROWS jobs
 for (r=0; r<NROWS; r++)  {
 
-    LASTFRAME = FIRSTFRAME + ((r+3) * BLOCK);
+    LASTFRAME = FIRSTFRAME + ((r+4) * BLOCK);
 
     if (r== (NROWS -1)) {
         LASTFRAME = sizeT;

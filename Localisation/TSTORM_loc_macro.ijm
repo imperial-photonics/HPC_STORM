@@ -100,7 +100,8 @@ run("Run analysis", "filter=[Wavelet filter (B-Spline)] scale=2.0 order=3 detect
 // Sanity check!! Filter out zero intensities
 FORMULA = "[intensity > 1]";
 File.append("Filtering with " + FORMULA, LOGPATH);
-run("Show results table", "action=filter formula=["+FORMULA+"]");
+//N.B. formula is currently hardcoded due to possible syntax issue.
+run("Show results table", "action=filter formula=[intensity > 1]");
 
 
 File.append("Exporting localisaton as .csv to " + OUTPATH, LOGPATH);
