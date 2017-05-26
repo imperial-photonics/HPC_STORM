@@ -75,15 +75,11 @@ File.append("sizeY = " + sizeY, LOGPATH);
 Ext.getPixelsPhysicalSizeX(pixelWidth);
 PIXELWIDTH = pixelWidth * 1000;
 File.append("pixel Width = " + PIXELWIDTH ,LOGPATH);
+Ext.close();
 
 
 //run("Memory & Threads...", "maximum=8192 parallel=20”);
 run("Bio-Formats Importer","open=FILEPATH color_mode=Default specify_range view=[Standard ImageJ] stack_order=Default t_begin=1 t_end=2 t_step=1");
-
-// Use imagej to get pixelsize
-getPixelSize(unit, pixelWidth, pixelHeight);
-PIXELWIDTH = pixelWidth * 1000;
-File.append("pixel Width = " + PIXELWIDTH ,LOGPATH);
 
 // find required magnification to get 25nm pixels
 MAGNIFICATION = toString(parseFloat(PIXELWIDTH)/25);

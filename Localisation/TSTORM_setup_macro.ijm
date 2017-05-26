@@ -7,6 +7,7 @@ WORK=parts[0];
 FNAME=parts[1];
 
 
+
 if (parts.length == 4)  {
     CALIB=parts[2];
     TMPDIR=parts[3];
@@ -17,6 +18,7 @@ else {
     THREED=0;
     TMPDIR=parts[2];
 }
+
 
 FILEPATH=WORK + "/" + FNAME;
 ERR=File.exists(FILEPATH);
@@ -31,6 +33,7 @@ run("Bio-Formats Macro Extensions");
 Ext.setId(FILEPATH);
 Ext.setSeries(0);
 Ext.getSizeT(sizeT);
+Ext.close();
 
 
 OUTPATH = TMPDIR + "/args";

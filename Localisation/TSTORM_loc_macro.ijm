@@ -73,6 +73,7 @@ Ext.setSeries(0);
 Ext.getPixelsPhysicalSizeX(pixelWidth);
 PIXELWIDTH = pixelWidth * 1000;
 File.append("pixel Width = " + PIXELWIDTH ,LOGPATH);
+Ext.close();
 
 
 // Determine which Camera is in use & setup appropriately
