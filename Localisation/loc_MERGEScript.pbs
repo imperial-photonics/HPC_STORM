@@ -41,8 +41,12 @@ module load fiji vnc python
 `vnc_start`
 
 echo "running TSTORM loc_merge macro!"
-$IJ --ij2 -macro $HOME/Localisation/TSTORM_loc_merge_macro.ijm $ARGS
 
+module load sysconfcpus/0.5
+
+
+# run ThunderSTORM
+sysconfcpus -n $NCPUS $IJ --ij2 -macro $HOME/Localisation/TSTORM_loc_merge_macro.ijm $ARGS
 
 
 echo "tidying TMPDIR"
