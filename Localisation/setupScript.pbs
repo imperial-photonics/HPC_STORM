@@ -10,7 +10,7 @@
 #PBS -l walltime=01:00:00
 
 ## ask for one node with 24 cpus and total 16gb memory (per node)
-#PBS -l select=1:ncpus=24:mem=16gb
+#PBS -l select=1:ncpus=24:mem=64gb
 
 
 echo "Start time $(date)"
@@ -32,8 +32,12 @@ module load fiji vnc
 
 
 echo "running TSTORM setup macro!"
-$IJ --ij2 -macro $HOME/Localisation/TSTORM_setup_macro.ijm $ARGS
 
+module load sysconfcpus/0.5
+
+
+# run ThunderSTORM
+sysconfcpus -n $NCPUS $IJ --ij2 -macro $HOME/Localisation/TSTORM_setup_macro.ijm $ARGS
 
 vnc_stop
 
