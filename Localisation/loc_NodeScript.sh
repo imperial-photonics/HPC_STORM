@@ -24,25 +24,37 @@ ARGS=$(head -$PBS_ARRAY_INDEX $ARGSFILE | tail -1)
 #create our own TMP DIRECTORY inc users name
 TMPSTORM="/var/tmp/STORM_temp"$USER
 
+#ARRARGS=(${ARGS//:/ })
+
+#FNAME=${ARRARGS[1]}
+#echo "FNAME = "
+#echo $FNAME
+
 # add environment variables to args list
 ARGS_FULL="$ARGS":"$TMPSTORM"
 
 echo $ARGS_FULL
 
-if [ -d $TMPSTORM ]
+# if tmp directory already exists
+if [ ! -d $TMPSTORM ]
 then
-echo " /var/tmp/STORM_temp??? already exists"
-rm -rf $TMPSTORM/*
-else
 mkdir $TMPSTORM
 fi
 
+# if current data file does not exist then copy
+#if [ ! -f $TMPSTORM"/"$FNAME ]
+#then
+#rm $TMPSTORM"/*"
+#cp $WORK"/"$FNAME $TMPSTORM"/"$FNAME
+#fi
+
+
 module load sysconfcpus/0.5
 
-echo "running TSTORM macro!"
 
 # run ThunderSTORM
 sysconfcpus -n $NCPUS $IJ --ij2 -macro $HOME/Localisation/TSTORM_loc_macro.ijm $ARGS_FULL
+
 
 mv $TMPSTORM/tmp_* $WORK/Localisation
 
