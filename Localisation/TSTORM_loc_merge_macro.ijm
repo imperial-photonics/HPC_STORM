@@ -4,7 +4,7 @@ setBatchMode(true);
 parts=split(ARGS, ":");
 
 WORK=parts[0];
-TMPDIR=parts[1];
+FNAME=parts[1];
 
 LOGPATH = WORK + "/Localisation/temp_localisation.log";
 
@@ -16,6 +16,22 @@ logf = File.open(LOGPATH);
 File.append("Failed to find Localisation log file!",LOGPATH);
 }
 
+
+if (parts.length == 4)  {
+NJOBS=parts[2];
+TMPDIR=parts[3];
+
+}
+else  {
+NJOBS=parts[3];
+TMPDIR=parts[4];
+}
+
+fullname=split(FNAME, ".");
+NAME=fullname[0];
+
+
+
 getDateAndTime(year, month, dayOfWeek, dayOfMonth, hour, minute, second, msec);
 if (hour<10) {TimeString = "0";} else {TimeString = "";}
 TimeString = TimeString+hour+":";
@@ -26,37 +42,14 @@ TimeString = TimeString+second;
 
 File.append("Starting Merge at " + TimeString, LOGPATH);
 
-// path to config file
-CONFIG= WORK + "/args";
 
-File.append("Looking for config file " + CONFIG, LOGPATH);
-
-filestring=File.openAsString(CONFIG);
-rows=split(filestring);
 
 SAVEPROTOCOL = "false";
 
 
-for (r=0; r<rows.length; r++)  {
+for (j=0; j<NJOBS; j++)  {
 
-  parts=split(rows[r], ":");
-  FNAME=parts[1];
-  FIRST=parts[2];
-  BLOCK=parts[4];
-  FULLNAME=split(FNAME, ".");
-  NAME=FULLNAME[0];
-
-
-  if (r < (rows.length - 1))  {
-    parts=split(rows[r +1], ":");
-    NEXTBLOCK=parts[4];
-  }
-  else  {
-    NEXTBLOCK = "1";
-  }
-
-
-  if (BLOCK == "1")  {
+  if (j == 0)  {
 
     // rename protocol file
     PROTPATH = TMPDIR + "/tmp_" + NAME + "-protocol.txt";
@@ -65,7 +58,7 @@ for (r=0; r<rows.length; r++)  {
 
     INPATH = TMPDIR + "/tmp_" + NAME + ".csv";
 
-    if (NEXTBLOCK == "1")  {
+    if (NJOBS == 1)  {
       // Only one block for this file so no merging required
       err=File.rename(INPATH, TMPDIR + "/" + NAME + ".csv");
     }
@@ -75,12 +68,23 @@ for (r=0; r<rows.length; r++)  {
 
     }
   }
-  else {   //BLOCK > 1
-    INPATH = TMPDIR + "/tmp_" + NAME + "_" + BLOCK + ".csv";
+  else {   //j > 1
+
+    JOB = toString(j + 1);
+
+    // Get first frame from config file
+    CONFPATH = TMPDIR + "/tmp_conf_" + NAME + "_" + JOB + ".txt";
+    //File.append("Reading config from " + CONFPATH, LOGPATH);
+    filestring=File.openAsString(CONFPATH);
+    parts=split(filestring, ":");
+    FIRST=parts[0];
+    File.append("First frame = " + FIRST, LOGPATH);
+
+    INPATH = TMPDIR + "/tmp_" + NAME + "_" + JOB + ".csv";
     File.append("Importing file  " + INPATH, LOGPATH);
     run("Import results", "filepath=["+INPATH+"] fileformat=[CSV (comma separated)] livepreview=false rawimagestack= startingframe=["+FIRST+"] append=true");
 
-    if (NEXTBLOCK == "1")  {
+    if (j == NJOBS -1)  {
       OUTPATH = TMPDIR + "/" + NAME + ".csv";
       File.append("Exporting to file  " + OUTPATH, LOGPATH);
       run("Export results", "floatprecision=2 filepath=["+OUTPATH+"] fileformat=[CSV (comma separated)] id=true frame=true sigma=true bkgstd=true intensity=true saveprotocol=["+SAVEPROTOCOL+"] offset=true uncertainty=true y=true x=true");
@@ -101,8 +105,6 @@ TimeString = TimeString+second;
 
 
 File.append("Merge complete at  " + TimeString, LOGPATH);
-
-
 
 
 FINAL_LOGPATH = WORK + "/Localisation/" + NAME + "_loc.log";

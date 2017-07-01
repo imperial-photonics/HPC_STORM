@@ -1,0 +1,41 @@
+#!/bin/sh
+
+#  TIDYScript.sh
+#  
+#
+#  Created by Ian Munro on 18/06/2017.
+#
+
+## ask PBS for time (format hh:mm:ss)
+#PBS -l walltime=01:00:00
+
+## ask for one node with 24 cpus and total 48gb memory (per node)
+#PBS -l select=1:ncpus=24:mem=64gb
+
+echo "clearing local TMPSTORM"
+rm -rf "/var/tmp/STORM_temp"$USER
+
+echo "clearing remote TMPSTORM"
+HOSTS="cx1-101-14-1 cx1-101-14-2 cx1-101-14-3 cx1-101-14-4"
+SCRIPT="rm -rf "/var/tmp/STORM_temp"$USER"
+for HNAME in ${HOSTS} ; do
+if [ "$HNAME" != "$HOSTNAME" ]; then
+ssh -l ${USER} ${HNAME} "${SCRIPT}"
+fi
+done
+
+
+# tidy up PBSPRO outputs for easy deletion
+mv $HOME/Localisation/*.pbs.e* $WORK/Localisation
+mv $HOME/Localisation/*.pbs.o* $WORK/Localisation
+
+exit
+
+
+
+
+
+
+
+
+

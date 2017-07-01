@@ -3,14 +3,16 @@ setBatchMode(true);
 parts=split(ARGS, ":");
 WORK=parts[0];
 FNAME=parts[1];
-FIRST=parts[2];
-LAST=parts[3];
-BLOCK=parts[4];
 
-if (parts.length == 7)  {
-TMPDIR=parts[6];
+if (parts.length == 5)  {
+NJOBS=parts[2];
+BLOCK=parts[3];
+TMPDIR=parts[4];
+
 }
 else  {
+NJOBS=parts[3];
+BLOCK=parts[4];
 TMPDIR=parts[5];
 }
 
@@ -25,6 +27,7 @@ File.delete(LOGPATH);
 
 logf = File.open(LOGPATH);
 
+
 getDateAndTime(year, month, dayOfWeek, dayOfMonth, hour, minute, second, msec);
 if (hour<10) {TimeString = "0";} else {TimeString = "";}
 TimeString = TimeString+hour+":";
@@ -34,6 +37,12 @@ if (second<10) {TimeString = TimeString+"0";}
 TimeString = TimeString+second;
 
 File.append("Opened log file at " + TimeString, LOGPATH);
+
+
+COMMAND = "echo ${HOSTNAME}";
+HOSTNAME = exec(COMMAND);
+File.append("Host = " + HOSTNAME, LOGPATH);
+
 
 
 // NB output to TMPDIR seems to fail here so TMPDIR points to our own
@@ -50,68 +59,96 @@ SAVEPROTOCOL = "false";
 
 THREED=0;
 
-if (parts.length == 7)  {
-  CALIB=parts[5];
+if (parts.length == 6)  {
+  CALIB=parts[2];
   CALPATH= WORK + "/" + CALIB;
   THREED=File.exists(CALPATH); //Returns "1" (true) if the specified file exists.
 File.append("3D!",LOGPATH);
 }
-else  {
-File.append("2D!",LOGPATH);
-}
-
-FILEPATH=WORK + "/" + FNAME;
-
-//run("Memory & Threads...", "maximum=65536 parallel=24”);
-File.append("Importing file " + FILEPATH ,LOGPATH);
-run("Bio-Formats Importer","open="+FILEPATH+" color_mode=Default specify_range view=[Standard ImageJ] stack_order=Default t_begin="+FIRST+" t_end="+LAST+" t_step=1");
 
 
-// Use Bio-Formats to find the pixelSize
+FILEPATH=TMPDIR + "/" + FNAME;
+
+
+// Use Bio-Formats to find the pixelSize & sizeT
 run("Bio-Formats Macro Extensions");
 Ext.setId(FILEPATH);
 Ext.setSeries(0);
 Ext.getPixelsPhysicalSizeX(pixelWidth);
 PIXELWIDTH = pixelWidth * 1000;
 File.append("pixel Width = " + PIXELWIDTH ,LOGPATH);
+Ext.getSizeT(sizeT);
+sizeT=parseInt(sizeT);
 
-// Look for Camera Name
-field="Camera Name";
-CAMERANAME="";
-Ext.getMetadataValue(field,CAMERANAME);
+if(NJOBS == "1")  {
 
-if(indexOf(CAMERANAME, "Andor") > -1)  {
-field="GainMultiplier";
-GAINEM="";
-Ext.getMetadataValue(field,GAINEM);
-File.append("gain = " + GAINEM ,LOGPATH);
-
-File.append(" using Andor DU-897 values for Camera Setup! With Gainem " + GAINEM, LOGPATH);
-run("Camera setup", "offset=99.74 quantumefficiency=1.0 isemgain=true photons2adu=5.32 gainem=["+GAINEM+"] pixelsize=["+PIXELWIDTH+"]");
+FIRST = 1;
+LAST = sizeT;
 }
 else {
+
+  b1 = parseInt(BLOCK) - 1;
+  SUB = floor(sizeT * 0.2);
+  if (b1 < 4)  {
+    FIRST = (b1 * SUB) + 1;
+  }
+  else {
+    SUB4 = 4 * SUB;
+    sizeREM = sizeT - SUB4;
+    SUB = floor(sizeREM/4);
+    FIRST = ((b1 -4) * SUB) + SUB4 + 1;
+  }
+
+  if (BLOCK == NJOBS) {
+    LAST = sizeT;
+  }
+  else  {
+    LAST = FIRST + SUB - 1;
+  }
+
+}
+
+File.append("Frames from " + FIRST + " to " + LAST, LOGPATH);
+
+//run("Memory & Threads...", "maximum=65536 parallel=24”);
+//File.append("Importing file " + FILEPATH ,LOGPATH);
+run("Bio-Formats Importer","open="+FILEPATH+" color_mode=Default specify_range view=[Standard ImageJ] stack_order=Default t_begin="+FIRST+" t_end="+LAST+" t_step=1");
+
+
+// Look for Camera Name
+//field="Camera Name";
+//CAMERANAME="";
+//Ext.getMetadataValue(field,CAMERANAME);
+
+//if(indexOf(CAMERANAME, "Andor") > -1)  {
+//field="GainMultiplier";
+//GAINEM="";
+//Ext.getMetadataValue(field,GAINEM);
+
+//File.append("Using Andor DU-897 values for Camera Setup! With Gainem " + GAINEM, LOGPATH);
+//run("Camera setup", "offset=99.74 quantumefficiency=1.0 isemgain=true photons2adu=5.32 gainem=["+GAINEM+"] pixelsize=["+PIXELWIDTH+"]");
+//}
+//else {
 
 // Determine which Camera is in use & setup appropriately
 COMMAND= "grep Prime95B " + FILEPATH;
 if(indexOf(exec(COMMAND), "matches") > -1)  {
 //Prime95B Camera detected
-File.append(" using Prime95B values for Camera Setup!", LOGPATH);
+File.append("Using Prime95B values for Camera Setup!", LOGPATH);
 run("Camera setup", "readoutnoise=1.8 offset=170.0 quantumefficiency=0.9 isemgain=false photons2adu=2.44 pixelsize=["+PIXELWIDTH+"]");
 }
 else  {
-File.append(" using Orca values for Camera Setup!", LOGPATH);
+File.append("Using Orca values for Camera Setup!", LOGPATH);
 run("Camera setup", "readoutnoise=1.5 offset=350.0 quantumefficiency=0.9 isemgain=false photons2adu=0.5 pixelsize=["+PIXELWIDTH+"]");
 }
-}
+//}
 
 Ext.close();
 
 
-
-
 if(THREED==0)  {
 File.append("Starting 2D localisation!",LOGPATH);
-run( "Run analysis", "filter=[Wavelet filter (B-Spline)] scale=2.0 order=3 detector=[Non-maximum suppression] radius=3 threshold=[std(Wave.F1)] estimator=[PSF: Integrated Gaussian] sigma=1.6 method=[Weighted Least squares] full_image_fitting=false fitradius=4 mfaenabled=false renderer=[No Renderer]");
+run( "Run analysis", "filter=[Wavelet filter (B-Spline)] scale=2.0 order=3 detector=[Non-maximum suppression] radius=3 threshold=[1.25 * std(Wave.F1)] estimator=[PSF: Integrated Gaussian] sigma=1.6 method=[Weighted Least squares] full_image_fitting=false fitradius=4 mfaenabled=false renderer=[No Renderer]");
 
 
 
@@ -132,8 +169,10 @@ run("Show results table", "action=filter formula=[intensity > 1 & 1/uncertainty_
 }
 
 
-File.append("Exporting localisaton as .csv to " + OUTPATH, LOGPATH);
+File.append("Exporting localisations to " + OUTPATH, LOGPATH);
 run("Export results", "floatprecision=2 filepath=["+OUTPATH+"] fileformat=[CSV (comma separated)] id=true frame=true sigma=true bkgstd=true intensity=true saveprotocol=["+SAVEPROTOCOL+"] offset=true uncertainty=true y=true x=true");
+
+close();
 
 
 getDateAndTime(year, month, dayOfWeek, dayOfMonth, hour, minute, second, msec);
@@ -148,5 +187,15 @@ File.append("exiting loc_macro at " + TimeString,LOGPATH);
 File.append("...",LOGPATH);
 File.close(logf);
 
-close();
+// Now write a config file N.B. Must be after closing log file or File.open() fails!!
+CONFPATH = TMPDIR + "/tmp_conf_" + NAME + "_" + BLOCK + ".txt";
+if (File.exists(CONFPATH))  {
+File.delete(CONFPATH);
+}
+conff = File.open(CONFPATH);
+LINE = toString(FIRST) + ":" + toString(LAST);
+File.append(LINE, CONFPATH);
+File.close(conff);
+
+
 run("Quit");

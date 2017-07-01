@@ -39,7 +39,9 @@ case "$#" in
    ;;
 esac
 
-echo $ARGS
+# set no of jobs
+NJOBS=8;
+ARGS="$ARGS":"$NJOBS"
 
 if [[ $FOGIM -ne 1 ]]
 then
@@ -59,14 +61,14 @@ else
 echo "fogim queue"
 QUEUE="pqfogim"
 
-one=$(qsub -q $QUEUE -v SETUP_ARGS=$ARGS $HOME/Localisation/setupScript.pbs)
-echo "launching setup job"
-echo $one
-two=$(qsub -q $QUEUE -W depend=afterok:$one $HOME/Localisation/loc_ARRScript.pbs)
+one=$(qsub -q $QUEUE -v SETUP_ARGS=$ARGS $HOME/Localisation/loc_ARRScript.pbs)
 echo "launching processing job"
-echo $two
-three=$(qsub -q $QUEUE -W depend=afterok:$two $HOME/Localisation/loc_MERGEScript.pbs )
+echo $one
+two=$(qsub -q $QUEUE -W depend=afterok:$one -v SETUP_ARGS=$ARGS $HOME/Localisation/loc_MERGEScript.pbs )
 echo "launching merge job"
+echo $two
+three=$(qsub -q $QUEUE -W depend=afterok:$one $HOME/Localisation/loc_TIDYScript.pbs )
+echo "launching tidy job"
 echo $three
 
 fi

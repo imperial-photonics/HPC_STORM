@@ -26,12 +26,9 @@ cat $WORK/Localisation/tmp*.log  > $WORK/Localisation/temp_localisation.log
 rm  $WORK/Localisation/tmp*.log
 
 
-# tidy up PBSPRO outputs for easy deletion
-mv $HOME/Localisation/*.pbs.e* $WORK/Localisation
-mv $HOME/Localisation/*.pbs.o* $WORK/Localisation
-
 # add environment variables to args list
-ARGS="$WORK":"$TMPDIR"
+ARGS_FULL="$SETUP_ARGS":"$TMPDIR"
+
 
 mv $WORK/Localisation/tmp_* $TMPDIR
 
@@ -40,13 +37,13 @@ module load fiji vnc python
 
 `vnc_start`
 
-echo "running TSTORM loc_merge macro!"
+#echo "running TSTORM loc_merge macro!"
 
 module load sysconfcpus/0.5
 
 
 # run ThunderSTORM
-sysconfcpus -n $NCPUS $IJ --ij2 -macro $HOME/Localisation/TSTORM_loc_merge_macro.ijm $ARGS
+sysconfcpus -n $NCPUS $IJ --ij2 -macro $HOME/Localisation/TSTORM_loc_merge_macro.ijm $ARGS_FULL
 
 
 echo "tidying TMPDIR"
@@ -58,7 +55,7 @@ cp $TMPDIR/*.txt $WORK
 echo "moving log file to WORK"
 mv $WORK/Localisation/*_loc.log $WORK
 
-echo "stopping vnc!"
+#echo "stopping vnc!"
 vnc_stop
 
 
