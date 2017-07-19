@@ -1,0 +1,47 @@
+#!/bin/sh
+
+#  MERGEScript.sh
+#  
+#
+#  Created by Ian Munro on 18/07/2016.
+#
+
+## ask PBS for time (format hh:mm:ss)
+#PBS -l walltime=01:00:00
+
+## ask for one node with 24 cpus and total 16gb memory (per node)
+#PBS -l select=1:ncpus=24:mem=16gb
+
+
+#  hardwired paths TBD
+#IJ=/apps/fiji/Fiji.app/ImageJ-linux64
+
+
+##load application module
+module load python
+
+#get the most recent reconstrr.csv file
+RECON=$(ls -t -U $WORK | grep -m 1 ".csv")
+
+echo $RECON
+
+RECONSTR="$WORK/$RECON"
+
+echo $RECONSTR
+
+
+MODE=$(python $HOME/Visualisation/csv_sigma_mode.py -i $RECONSTR)
+
+
+echo $MODE
+
+exit
+
+
+
+
+
+
+
+
+
