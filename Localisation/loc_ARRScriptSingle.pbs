@@ -1,0 +1,38 @@
+#!/bin/sh
+#  loc_ARRScriptSingle.pbs
+#  
+#
+#  Created by Ian Munro on 14/07/2017.
+#
+## launches an array of 2 jobs (minimum allowed )
+## but no 2 is a dummy - should return v. quickly
+## ask PBS for time (format hh:mm:ss)
+#PBS -l walltime=02:00:0
+## ask for a single job with 24 cpus and total 64gb memory (per node)
+#PBS -l select=1:ncpus=24:mem=110gb
+#PBS -J 1-2
+
+
+
+
+# add environment variables to args list
+ARGS="$SETUP_ARGS":"$PBS_ARRAY_INDEX"
+
+##load application module
+module load fiji vnc
+
+
+`vnc_start`
+
+##command line
+## DEBUG=1
+
+$HOME/Localisation/loc_NodeScript.sh $ARGS
+
+vnc_stop
+
+
+
+exit
+
+
