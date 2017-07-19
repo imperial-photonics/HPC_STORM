@@ -19,7 +19,11 @@ TMPDIR=parts[5];
 fullname=split(FNAME, ".");
 NAME=fullname[0];
 
-LOGPATH = WORK + "/Localisation/tmp_" + NAME + "_" + BLOCK + ".log";
+
+parts2=split(TMPDIR, "/");
+JOBNO=parts2[parts2.length - 1];
+
+LOGPATH = WORK + "/" + JOBNO + "/tmp_" + NAME + "_" + BLOCK + ".log";
 
 if (File.exists(LOGPATH))  {
 File.delete(LOGPATH);
@@ -38,14 +42,7 @@ TimeString = TimeString+second;
 
 File.append("Opened log file at " + TimeString, LOGPATH);
 
-
-COMMAND = "echo ${HOSTNAME}";
-HOSTNAME = exec(COMMAND);
-File.append("Host = " + HOSTNAME, LOGPATH);
-
-
-
-// NB output to TMPDIR seems to fail here so TMPDIR points to our own
+// NB TMPDIR points to our own
 //temporary directory
 if (BLOCK == "1")  {
 OUTPATH = TMPDIR + "/tmp_" + NAME + ".csv";
@@ -63,11 +60,13 @@ if (parts.length == 6)  {
   CALIB=parts[2];
   CALPATH= WORK + "/" + CALIB;
   THREED=File.exists(CALPATH); //Returns "1" (true) if the specified file exists.
-File.append("3D!",LOGPATH);
 }
-
-
+ 
 FILEPATH=TMPDIR + "/" + FNAME;
+
+if (!File.exists(FILEPATH))  {
+File.append("Error failed to find " + FILEPATH, LOGPATH);
+}
 
 
 // Use Bio-Formats to find the pixelSize & sizeT

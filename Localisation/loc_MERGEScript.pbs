@@ -21,16 +21,30 @@ IJ=/apps/fiji/Fiji.app/ImageJ-linux64
 #HOME=/Users/imunro/HPC_STORM
 #IJ=/Applications/Fiji.app/Contents/MacOS/ImageJ-macosx
 
-echo "merging all the localisation log files"
-cat $WORK/Localisation/tmp*.log  > $WORK/Localisation/temp_localisation.log
-rm  $WORK/Localisation/tmp*.log
+ARRARGS=(${SETUP_ARGS//:/ })
+WORKPATH=${ARRARGS[0]}
+FNAME=${ARRARGS[1]}
 
+
+echo "merging all the localisation log files"
+cat "${WORKPATH}"/"${JOBNO}"/tmp*.log  > $WORKPATH/$JOBNO/temp_localisation.log
+rm  $WORKPATH/$JOBNO/tmp*.log
 
 # add environment variables to args list
-ARGS_FULL="$SETUP_ARGS":"$TMPDIR"
+ARGS_FULL="$SETUP_ARGS":"$TMPDIR":"$JOBNO":"$LATERAL_RES":"$POST"
+
+mv "${WORKPATH}"/"${JOBNO}"/tmp_* $TMPDIR
+
+echo $ARGS_FULL
 
 
-mv $WORK/Localisation/tmp_* $TMPDIR
+if [ "$LATERAL_RES" != "0" ]; then
+# non-zero lateral res so copy files needed to TMPDIR
+
+cp "${WORKPATH}"/"${FNAME}" $TMPDIR
+cp "${HOME}"/Localisation/csv_sigma_mode.py $TMPDIR
+
+fi
 
 ##load application module
 module load fiji vnc python
@@ -46,16 +60,19 @@ module load sysconfcpus/0.5
 sysconfcpus -n $NCPUS $IJ --ij2 -macro $HOME/Localisation/TSTORM_loc_merge_macro.ijm $ARGS_FULL
 
 
+
 echo "tidying TMPDIR"
 rm $TMPDIR/tmp_*
+echo "copying .ome.tiff from TMPDIR to WORK"
+cp $TMPDIR/*.ome.tiff $WORKPATH
 echo "copying .csv from TMPDIR to WORK"
-cp $TMPDIR/*.csv $WORK
+cp $TMPDIR/*.csv $WORKPATH
 echo "copying .txt from TMPDIR to WORK"
-cp $TMPDIR/*.txt $WORK
+cp $TMPDIR/*.txt $WORKPATH
 echo "moving log file to WORK"
-mv $WORK/Localisation/*_loc.log $WORK
+mv "${WORKPATH}"/"${JOBNO}"/*_loc.log $WORKPATH
 
-#echo "stopping vnc!"
+echo "stopping vnc!"
 vnc_stop
 
 

@@ -12,12 +12,19 @@
 ## ask for one node with 24 cpus and total 48gb memory (per node)
 #PBS -l select=1:ncpus=24:mem=64gb
 
+ARRARGS=(${SETUP_ARGS//:/ })
+WORKPATH=${ARRARGS[0]}
+FNAME=${ARRARGS[1]}
+echo "FNAME = "
+echo $FNAME
+
 echo "clearing local TMPSTORM"
-rm -rf "/var/tmp/STORM_temp"$USER
+rm -rf /var/tmp/STORM_temp_${USER}/${JOBNO}
 
 echo "clearing remote TMPSTORM"
 HOSTS="cx1-101-14-1 cx1-101-14-2 cx1-101-14-3 cx1-101-14-4"
-SCRIPT="rm -rf "/var/tmp/STORM_temp"$USER"
+SCRIPT="rm -rf /var/tmp/STORM_temp_${USER}/${JOBNO}"
+
 for HNAME in ${HOSTS} ; do
 if [ "$HNAME" != "$HOSTNAME" ]; then
 ssh -l ${USER} ${HNAME} "${SCRIPT}"
@@ -26,8 +33,9 @@ done
 
 
 # tidy up PBSPRO outputs for easy deletion
-mv $HOME/Localisation/*.pbs.e* $WORK/Localisation
-mv $HOME/Localisation/*.pbs.o* $WORK/Localisation
+mv "${HOME}"/Localisation/*.pbs.e"${JOBNO}".* "${WORKPATH}"/"${JOBNO}"
+mv "${HOME}"/Localisation/*.pbs.o"${JOBNO}".* "${WORKPATH}"/"${JOBNO}"
+
 
 exit
 
