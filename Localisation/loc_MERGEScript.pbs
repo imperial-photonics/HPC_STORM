@@ -35,8 +35,6 @@ ARGS_FULL="$SETUP_ARGS":"$TMPDIR":"$JOBNO":"$LATERAL_RES":"$POST"
 
 mv "${WORKPATH}"/"${JOBNO}"/tmp_* $TMPDIR
 
-echo $ARGS_FULL
-
 
 if [ "$LATERAL_RES" != "0" ]; then
 # non-zero lateral res so copy files needed to TMPDIR
@@ -61,7 +59,7 @@ sysconfcpus -n $NCPUS $IJ --ij2 -macro $HOME/Localisation/TSTORM_loc_merge_macro
 
 
 
-echo "tidying TMPDIR"
+#echo "tidying TMPDIR"
 rm $TMPDIR/tmp_*
 echo "copying .ome.tiff from TMPDIR to WORK"
 cp $TMPDIR/*.ome.tiff $WORKPATH
@@ -72,7 +70,7 @@ cp $TMPDIR/*.txt $WORKPATH
 echo "moving log file to WORK"
 mv "${WORKPATH}"/"${JOBNO}"/*_loc.log $WORKPATH
 
-echo "stopping vnc!"
+#echo "stopping vnc!"
 vnc_stop
 
 
