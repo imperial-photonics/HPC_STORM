@@ -4,46 +4,67 @@
 #
 
 
-USAGE="Usage: BATCH_localise filename(inc path) <calibration_filename> <-b> "
+USAGE="Usage: LAUNCH_localise filename(inc path) <calibration_file(name only - must be in same directory> <-b> "
 
 function parse {
-WORKPATH=$(dirname "${FULLNAME}")
-echo $PATH
-FNAME=$(basename "${FULLNAME}")
-echo $FNAME
+  INPATH=$(dirname "${FULLNAME}")
+  FNAME=$(basename "${FULLNAME}")
+  if [[ $(hostname -s) == "login-2-internal" ]]
+  then
+    if [ -f ${FULLNAME} ]
+    then
+      echo "File found!"
+    else
+      echo "Error! File not found!"
+      exit 0
+    fi
+  else
+    COMMAND="[ -f "${FULLNAME}" ]"
+    if ssh ${USER}@login-2-internal ${COMMAND}
+    then
+      echo "File found!"
+    else
+      echo "Error! File not found!"
+      exit 0
+    fi
+  fi
 }
+
 
 echo "fogim queue"
 QUEUE="pqfogim"
 
 
 FULLNAME=$1
-WORKPATH=""
+INPATH=""
 FNAME=""
 
 NJOBS=8
+3D=0
 
 case "$#" in
 1)
 parse
-ARGS="$WORKPATH":"$FNAME"
+ARGS="$INPATH":"$FNAME"
 ;;
 2)
   parse
   if [ $2 == "-b" ]
   then 
     NJOBS=1
-    ARGS="$WORKPATH":"$FNAME"
+    ARGS="$INPATH":"$FNAME"
   else
-    ARGS="$WORKPATH":"$FNAME":"$2"
+    3D=1
+    ARGS="$INPATH":"$FNAME":"$2"
   fi
 ;;
 3)
   parse
   if [ $3 == "-b" ]
   then 
+    3D=1
     NJOBS=1
-    ARGS="$WORKPATH":"$FNAME":"$2"
+    ARGS="$INPATH":"$FNAME":"$2"
   else
     echo $USAGE;
     exit 0
@@ -55,11 +76,31 @@ exit 0
 ;;
 esac
 
-echo $ARGS
 
-# set no of jobs
-ARGS="$ARGS":"$NJOBS"
+if [[ $(hostname -s) == "login-2-internal" ]]
+then
+  if [ -f ${INPATH}/${2} ]
+  then
+    echo "Calibration file found!"
+  else
+    echo "Error!  Calibration file not found!"
+    exit 0
+  fi
+else
+  COMMAND="[ -f "${INPATH}"/"${2}" ]"
+  if ssh ${USER}@login-2-internal ${COMMAND}
+  then
+    echo "Calibration file found!"
+  else
+    echo "Error!  Calibration file not found!"
+    exit 0
+  fi
+fi
 
+
+
+# set  work directory and no of jobs
+ARGS="$ARGS":"$WORK":"$NJOBS"
 
 
 if [ $NJOBS == "1" ]
