@@ -13,8 +13,6 @@
 #PBS -J 1-2
 
 
-
-
 # add environment variables to args list
 ARGS="$SETUP_ARGS":"$PBS_ARRAY_INDEX"
 

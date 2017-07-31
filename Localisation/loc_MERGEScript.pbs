@@ -37,17 +37,18 @@ mv "${WORK}"/"${JOBNO}"/tmp_* $TMPDIR
 
 
 if [ "$LATERAL_RES" != "0" ]; then
-# non-zero lateral res so copy files needed to TMPDIR
+  # non-zero lateral res so copy files needed to TMPDIR
 
-if [[ $INPATH == "/external"* ]]
-then
-  echo "secure copying one .ome.tiff from Input Dir to TMPDIR"
-  scp -q ${USER}@login-2-internal:${INPATH}/${FNAME} ${TMPDIR}
-else
-cp "${INPATH}"/"${FNAME}" ${TMPDIR}
-fi
+  if [[ $INPATH == "/external"* ]]
+  then
+    echo "secure copying one .ome.tiff from Input Dir to TMPDIR"
+    scp -q ${USER}@login-2-internal:${INPATH}/${FNAME} ${TMPDIR}
+    echo "done!"
+  else
+    cp "${INPATH}"/"${FNAME}" ${TMPDIR}
+  fi
 
-cp "${HOME}"/Localisation/csv_sigma_mode.py $TMPDIR
+  cp "${HOME}"/Localisation/csv_sigma_mode.py $TMPDIR
 
 fi
 
@@ -71,20 +72,22 @@ vnc_stop
 rm ${TMPDIR}/tmp_*
 
 chmod 666 ${TMPDIR}/*
+chmod 666 "${WORK}"/"${JOBNO}"/*_loc.log
+
 
 if [[ $INPATH == "/external"* ]]
 then
   
   echo "secure copying .csv from TMPDIR to Input Dir"
-  scp -q ${TMPDIR}/*.csv ${USER}@login-2-internal:${INPATH}
+  scp -q -p ${TMPDIR}/*.csv ${USER}@login-2-internal:${INPATH}
   echo "secure copying protocol file from TMPDIR to Input Dir"
-  scp -q ${TMPDIR}/*protocol.txt ${USER}@login-2-internal:${INPATH}
+  scp -q -p ${TMPDIR}/*protocol.txt ${USER}@login-2-internal:${INPATH}
   echo "copying log file to Input Dir using scp"
-  scp -q "${WORK}"/"${JOBNO}"/*_loc.log ${USER}@login-2-internal:${INPATH}  
+  scp -q -p "${WORK}"/"${JOBNO}"/*_loc.log ${USER}@login-2-internal:${INPATH}  
   echo "secure copying .ome.tiff from TMPDIR to Input Dir"
-  scp -q ${TMPDIR}/*D.ome.tiff ${USER}@login-2-internal:${INPATH} 
+  scp -q -p ${TMPDIR}/*D.ome.tiff ${USER}@login-2-internal:${INPATH} 
   echo "secure copying drift.tiff from TMPDIR to Input Dir"   
-  scp -q ${TMPDIR}/*_drift.tiff ${USER}@login-2-internal:${INPATH}
+  scp -q -p ${TMPDIR}/*_drift.tiff ${USER}@login-2-internal:${INPATH}
   
   
 else
@@ -98,7 +101,7 @@ else
   echo "copying .ome.tiff from TMPDIR to Input Dir"
   cp $TMPDIR/*D.ome.tiff $INPATH
   echo "copying drift.tiff from TMPDIR to Input Dir"
-  scp -q ${TMPDIR}/*_drift.tiff ${USER}@login-2-internal:${INPATH}
+  cp ${TMPDIR}/*_drift.tiff ${INPATH}
 
 fi
 
