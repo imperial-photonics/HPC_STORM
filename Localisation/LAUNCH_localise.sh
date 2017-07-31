@@ -40,7 +40,7 @@ INPATH=""
 FNAME=""
 
 NJOBS=8
-3D=0
+THREED=0
 
 case "$#" in
 1)
@@ -54,7 +54,7 @@ ARGS="$INPATH":"$FNAME"
     NJOBS=1
     ARGS="$INPATH":"$FNAME"
   else
-    3D=1
+    THREED=1
     ARGS="$INPATH":"$FNAME":"$2"
   fi
 ;;
@@ -62,7 +62,7 @@ ARGS="$INPATH":"$FNAME"
   parse
   if [ $3 == "-b" ]
   then 
-    3D=1
+    THREED=1
     NJOBS=1
     ARGS="$INPATH":"$FNAME":"$2"
   else
@@ -76,24 +76,27 @@ exit 0
 ;;
 esac
 
-
-if [[ $(hostname -s) == "login-2-internal" ]]
+## check calibration file , if needed, exists
+if [ $THREED == 1 ]
 then
-  if [ -f ${INPATH}/${2} ]
+  if [[ $(hostname -s) == "login-2-internal" ]]
   then
-    echo "Calibration file found!"
+    if [ -f ${INPATH}/${2} ]
+    then
+      echo "Calibration file found!"
+    else
+      echo "Error!  Calibration file not found!"
+      exit 0
+    fi
   else
-    echo "Error!  Calibration file not found!"
-    exit 0
-  fi
-else
-  COMMAND="[ -f "${INPATH}"/"${2}" ]"
-  if ssh ${USER}@login-2-internal ${COMMAND}
-  then
-    echo "Calibration file found!"
-  else
-    echo "Error!  Calibration file not found!"
-    exit 0
+    COMMAND="[ -f "${INPATH}"/"${2}" ]"
+    if ssh ${USER}@login-2-internal ${COMMAND}
+    then
+      echo "Calibration file found!"
+    else
+      echo "Error!  Calibration file not found!"
+      exit 0
+    fi
   fi
 fi
 
