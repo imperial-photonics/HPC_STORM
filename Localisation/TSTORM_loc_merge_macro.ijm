@@ -17,7 +17,7 @@ if (parts.length == 8)  {
   POST=parts[7];
 }
 else  {
-  WORK=parts[3]
+  WORK=parts[3];
   NJOBS=parts[4];
   TMPDIR=parts[5];
   JOBNO=parts[6];
