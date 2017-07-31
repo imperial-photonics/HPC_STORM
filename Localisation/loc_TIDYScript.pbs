@@ -13,7 +13,6 @@
 #PBS -l select=1:ncpus=24:mem=64gb
 
 ARRARGS=(${SETUP_ARGS//:/ })
-WORKPATH=${ARRARGS[0]}
 FNAME=${ARRARGS[1]}
 echo "FNAME = "
 echo $FNAME
@@ -33,8 +32,8 @@ done
 
 
 # tidy up PBSPRO outputs for easy deletion
-mv "${HOME}"/Localisation/*.pbs.e"${JOBNO}".* "${WORKPATH}"/"${JOBNO}"
-mv "${HOME}"/Localisation/*.pbs.o"${JOBNO}".* "${WORKPATH}"/"${JOBNO}"
+mv "${HOME}"/Localisation/*.pbs.e"${JOBNO}".* "${WORK}"/"${JOBNO}"
+mv "${HOME}"/Localisation/*.pbs.o"${JOBNO}".* "${WORK}"/"${JOBNO}"
 
 
 exit

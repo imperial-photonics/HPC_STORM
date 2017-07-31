@@ -3,24 +3,26 @@ ARGS=getArgument();
 setBatchMode(true);
 parts=split(ARGS, ":");
 
-WORK=parts[0];
+INPATH=parts[0];
 FNAME=parts[1];
 
 THREED=0;
 
-if (parts.length == 7)  {
-  NJOBS=parts[2];
-  TMPDIR=parts[3];
-  JOBNO=parts[4];
-  LATERAL_RES=parts[5];
-  POST=parts[6];
-}
-else  {
+if (parts.length == 8)  {
+  WORK=parts[2];
   NJOBS=parts[3];
   TMPDIR=parts[4];
   JOBNO=parts[5];
   LATERAL_RES=parts[6];
   POST=parts[7];
+}
+else  {
+  WORK=parts[3]
+  NJOBS=parts[4];
+  TMPDIR=parts[5];
+  JOBNO=parts[6];
+  LATERAL_RES=parts[7];
+  POST=parts[8];
   THREED=1;
 }
 

@@ -1,19 +1,19 @@
 ARGS=getArgument()
 setBatchMode(true);
 parts=split(ARGS, ":");
-WORK=parts[0];
 FNAME=parts[1];
 
-if (parts.length == 5)  {
-NJOBS=parts[2];
-BLOCK=parts[3];
-TMPDIR=parts[4];
-
-}
-else  {
+if (parts.length == 6)  {
+WORK=parts[2];
 NJOBS=parts[3];
 BLOCK=parts[4];
 TMPDIR=parts[5];
+}
+else  {
+  WORK=parts[3];
+  NJOBS=parts[4];
+  BLOCK=parts[5];
+  TMPDIR=parts[6];
 }
 
 fullname=split(FNAME, ".");
@@ -56,9 +56,9 @@ SAVEPROTOCOL = "false";
 
 THREED=0;
 
-if (parts.length == 6)  {
+if (parts.length == 7)  {
   CALIB=parts[2];
-  CALPATH= WORK + "/" + CALIB;
+  CALPATH= TMPDIR + "/" + CALIB;
   THREED=File.exists(CALPATH); //Returns "1" (true) if the specified file exists.
 }
  
@@ -84,9 +84,8 @@ FIRST = 1;
 LAST = sizeT;
 }
 else {
-
   b1 = parseInt(BLOCK) - 1;
-  SUB = floor(sizeT * 0.2);
+  SUB = floor(sizeT * 0.15);
   if (b1 < 4)  {
     FIRST = (b1 * SUB) + 1;
   }
