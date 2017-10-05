@@ -38,9 +38,14 @@ then
 
 
   # split name of temp dir to get pbsjob no
-  ARR=(${TMPDIR//[/ })
-  STR=${ARR[0]}
-  JOBNO="${STR:(-7)}"
+  ARR=(${TMPDIR//./ })
+  STR=${ARR[1]}
+  ARR=(${STR//[/ })
+  JOBNO=${ARR[0]}
+  
+  
+  echo "Jobno = "
+  echo $JOBNO
 
 
   #create a subdir to hold the outputs from this job
@@ -92,6 +97,7 @@ then
     then
       echo "secure copying data file"
       scp -q ${USER}@login-2-internal:${INPATH}/${NAME}*.ome.tif ${TMPSTORM}
+      # ssh ${USER}@login-2-internal “cd ${INPATH};tar zcf ${NAME}*.ome.tif ” | tar  zxf –
     else
       echo "copying data file"
       cp ${INPATH}/${NAME}*.ome.tif ${TMPSTORM}
