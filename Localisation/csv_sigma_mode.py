@@ -89,7 +89,7 @@ if header_txt != "FAIL!":
   sig = df[header_txt]
   sigma = numpy.array(sig)
   rounded = numpy.around(sigma, decimals=1)
-  mask = rounded < 150
+  mask = rounded < 210
   result = rounded[mask,...]
   #mean  = numpy.mean(result)
   #mean = numpy.around(mean, decimals=1)
