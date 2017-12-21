@@ -17,6 +17,13 @@ FNAME=${ARRARGS[1]}
 echo "FNAME = "
 echo $FNAME
 
+echo "JOBNO = "
+echo $JOBNO
+
+echo "HOSTNAME = "
+echo $HOSTNAME
+
+
 echo "clearing local TMPSTORM"
 rm -rf /var/tmp/STORM_temp_${USER}/${JOBNO}
 
