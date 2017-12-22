@@ -18,9 +18,10 @@
 
 
 ##load application module
-module load python
+module load anaconda3/personal
 
-#get the most recent reconstrr.csv file
+
+#get the most recent .csv file
 RECON=$(ls -t -U $WORK | grep -m 1 ".csv")
 
 echo $RECON
@@ -30,7 +31,7 @@ RECONSTR="$WORK/$RECON"
 echo $RECONSTR
 
 
-MODE=$(python $HOME/Visualisation/csv_sigma_mode.py -i $RECONSTR)
+MODE=$(python $HOME/Localisation/csv_sigma_mode.py -i $RECONSTR)
 
 
 echo $MODE
