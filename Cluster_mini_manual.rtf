@@ -1,0 +1,97 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1404\cocoasubrtf470
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;\red56\green110\blue255;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww16360\viewh13340\viewkind0
+\deftab720
+\pard\pardeftab720\partightenfactor0
+
+\f0\fs26 \cf0 \expnd0\expndtw0\kerning0
+Attached is a new version of my \'a0cluster scripts.\
+\
+There has been a complete re-design with the aim of better performance (at the cost of some loss of fexibility)\'a0\
+and adding a couple of new features.\
+\
+The big changes are:\
+\
+1) Your data can now reside in any location either on the Cluster $WORK filesystem or the SMLM share on fogim.\
+2) \'a0Producing a preview image \'a0is no longer a separate step but an optional step in the merge job.\
+3) Batch mode now allows you to process each dataset on a single node , rather than split across four, allowing higher throughput when you\'a0\
+\'a0have multiple images to process.\
+\
+\pard\pardeftab720\partightenfactor0
+
+\b \cf0 To run
+\b0 \
+\
+As \'a0result of 1) you now have to give the script the full path to your dataset.\
+\
+To run the code cd to /Localisations\
+then run e.g.\
+\
+2D example from $WORK\'a0\
+./LAUNCH_localise.sh /work/Ian/A1_640_HHcube_3D_proc1/A1_640_HHcube_3D_1_MMStack_Pos0.ome.tif beads_640_HH_2\
+\
+2D example from fogim\
+./LAUNCH_localise.sh /external/{\field{\*\fldinst{HYPERLINK "http://ph.ic.ac.uk/ph-nas-04/SMLM_data/Stina/A1_640_HHcube_3D_proc1/A1_640_HHcube_3D_1_MMStack_Pos0.ome.tif"}}{\fldrslt \cf2 \ul \ulc2 ph.ic.ac.uk/ph-nas-04/SMLM_data/Stina/A1_640_HHcube_3D_proc1/A1_640_HHcube_3D_1_MMStack_Pos0.ome.tif}}\
+\
+For 3D (whatever the path) just add the name of the Cailbration file as a second argument (N.B this file MUST be in the same Dir as the .ome.tifs)\
+./LAUNCH_localise.sh /external/{\field{\*\fldinst{HYPERLINK "http://ph.ic.ac.uk/ph-nas-04/SMLM_data/Stina/A1_640_HHcube_3D_proc1/A1_640_HHcube_3D_1_MMStack_Pos0.ome.tif"}}{\fldrslt \cf2 \ul \ulc2 ph.ic.ac.uk/ph-nas-04/SMLM_data/Stina/A1_640_HHcube_3D_proc1/A1_640_HHcube_3D_1_MMStack_Pos0.ome.tif}} beads_640_HH_2\
+\
+As a result of 2) you will be prompted to enter a lateral resolution\
+If you don\'92t want Preview images just enter 0 here.\
+\
+If you wish to process any dataset in batch mode 3) simply add a \'93-b\'94 as an extra argument at the end of the command.\
+\
+Using the Tab key to autocomplete the path \'a0for the fogim-datastore will work 
+\b some
+\b0  of the time (it depends where you are when you login to the cluster.)\
+Sometimes however it won\'92t work beyond /external/{\field{\*\fldinst{HYPERLINK "http://ph.ic.ac.uk/ph-nas-04/SMLM_data"}}{\fldrslt \cf2 \ul \ulc2 ph.ic.ac.uk/ph-nas-04/SMLM_data}} and you will have to type the rest.\
+I\'92m working an a solution.\
+\
+\
+
+\b To Install
+\b0 \
+
+\b \
+\pard\pardeftab720\partightenfactor0
+
+\b0 \cf0 Delete or rename your old Localisation dir then unzip the attached into a new one.\
+chmod +x all .pbs, .sh and .py scripts\
+Change the e-mail address in merge loc_MERGEScript.pbs to your own address.\
+\
+\pard\pardeftab720\partightenfactor0
+
+\b \cf0 Maintenance
+\b0 \
+
+\b \
+\pard\pardeftab720\partightenfactor0
+
+\b0 \cf0 The code will create working directories in your $WORK home directory.\
+These can be used to monitor progress if needed but will need to be tidied up afterwards as before.\
+The cluster software also creates some files in your $HOME directory that will also need to be deleted\
+from time to time.\
+\
+\pard\pardeftab720\partightenfactor0
+
+\b \cf0 IMPORTANT Points to Note
+\b0 \
+
+\b \
+Edwin: This code cannot handle spaces anywhere in the path I\'92m afraid!!
+\b0 \
+
+\b The load-balancing doesn\'92t work well for Stina/Sheila\'92s data, where 90% of the work seems to be in the first few hundred frames.
+\b0 \
+
+\b Stina: Let\'92s keep an eye on the log files and see how bad this is & we can tweak the algorithm for your data , in your copy, if needed.
+\b0 \
+
+\b \
+\
+\pard\pardeftab720\partightenfactor0
+
+\b0 \cf0 \
+\
+}
