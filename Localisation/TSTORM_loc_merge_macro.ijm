@@ -122,13 +122,19 @@ if (LATERAL_RES != "0")  {
   ERR=File.exists(FILEPATH);
 
   if(ERR!=1)  {
-    File.append("Unable to find raw data file!",LOGPATH)
+    File.append("Unable to find raw data file! Aborting Visualisation!",LOGPATH)
   }
-  else {
-    
-    // .csv must be imported as the merger simply renames
+  
+  INPATH = TMPDIR + "/" + NAME + ".csv";
+  if (parseInt(File.length(INPATH)) < 100)  {
+       File.append(".csv Localisations file too small! Aborting Visualisation!",LOGPATH)
+  }
+ 
+  
+  if(ERR==1  &&  parseInt(File.length(INPATH)) > 100)  {
+  
+    // .csv must be imported as the merge simply renames
     if (NJOBS == 1)  {
-      INPATH = TMPDIR + "/" + NAME + ".csv";
       File.append("Importing .csv file  " + INPATH, LOGPATH);
       run("Import results", "filepath=["+INPATH+"] detectmeasurementprotocol=true fileformat=[CSV (comma separated)] livepreview=false rawimagestack= startingframe=1 append=false");
       
@@ -187,7 +193,9 @@ if (LATERAL_RES != "0")  {
       File.append("Performing sigma filtering.", LOGPATH);
       PYPATH = TMPDIR + "/csv_sigma_mode.py";
       
-      COMMAND = "python " + PYPATH + " -i " + CSVPATH;
+      COMMAND = "python " + PYPATH + " -i " + INPATH;
+      
+      File.append("Command = " + COMMAND, LOGPATH);
       MODE = exec(COMMAND);
       
       if (MODE == -1)  {
@@ -218,11 +226,16 @@ if (LATERAL_RES != "0")  {
       File.append("Performing drift correction.", LOGPATH);
       run("Show results table", "action=drift magnification=["+MAGNIFICATION+"] method=[Cross correlation] ccsmoothingbandwidth=1.0 save=false steps=6 showcorrelations=false");
       File.append("Drift correction done!", LOGPATH);
-      selectWindow("Drift");
-      DRIFTPATH = TMPDIR + "/" + NAME + "_drift.tiff";
-      File.append("Saving drift graph to " + DRIFTPATH, LOGPATH);
-      saveAs("Tiff", DRIFTPATH);
-      close();
+
+      if(nImages > 0)  {
+        selectWindow("Drift");
+        DRIFTPATH = TMPDIR + "/" + NAME + "_drift.tiff";
+        File.append("Saving drift graph to " + DRIFTPATH, LOGPATH);
+        saveAs("Tiff", DRIFTPATH);
+        close();
+      }
+      else
+        File.append("Warning! No drift results to save! ", LOGPATH);
     }
 
 
@@ -252,6 +265,7 @@ if (LATERAL_RES != "0")  {
     if(File.exists(OUTPATH) != 1 ) {
       File.append("Failed to write " + OUTPATH, LOGPATH);
     }
+    
 
   }
 }  //End of Visualisation
