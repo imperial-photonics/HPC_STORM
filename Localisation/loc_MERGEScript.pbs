@@ -53,7 +53,8 @@ if [ "$LATERAL_RES" != "0" ]; then
 fi
 
 ##load application module
-module load fiji vnc python
+module load fiji vnc
+module load anaconda3/personal
 
 `vnc_start`
 
@@ -84,10 +85,13 @@ then
   scp -q -p ${TMPDIR}/*protocol.txt ${USER}@login-2-internal:${INPATH}
   echo "copying log file to Input Dir using scp"
   scp -q -p "${WORK}"/"${JOBNO}"/*_loc.log ${USER}@login-2-internal:${INPATH}  
-  echo "secure copying .ome.tiff from TMPDIR to Input Dir"
+  if [ $LATERAL_RES != "0" ]
+  then
+  echo "secure copying D.ome.tiff from TMPDIR to Input Dir"
   scp -q -p ${TMPDIR}/*D.ome.tiff ${USER}@login-2-internal:${INPATH} 
   echo "secure copying drift.tiff from TMPDIR to Input Dir"   
   scp -q -p ${TMPDIR}/*_drift.tiff ${USER}@login-2-internal:${INPATH}
+fi
   
   
 else
@@ -98,10 +102,13 @@ else
   cp $TMPDIR/*protocol.txt $INPATH
   echo "moving log file to Input Dir"
   mv "${WORK}"/"${JOBNO}"/*_loc.log $INPATH
+  if [ $LATERAL_RES != "0" ]
+  then
   echo "copying .ome.tiff from TMPDIR to Input Dir"
   cp $TMPDIR/*D.ome.tiff $INPATH
   echo "copying drift.tiff from TMPDIR to Input Dir"
   cp ${TMPDIR}/*_drift.tiff ${INPATH}
+fi
 
 fi
 
