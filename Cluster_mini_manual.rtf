@@ -15,8 +15,8 @@ The HPC_STORM code in this repo has the following features.\
 \
 \pard\pardeftab720\partightenfactor0
 
-\b \cf0 To run
-\b0 \
+\b \cf0 \ul \ulc0 To run
+\b0 \ulnone \
 \
 As \'a0result of 1) you now have to give the script the full path to your dataset.\
 \
@@ -45,19 +45,24 @@ I\'92m working an a solution.\
 \
 \
 
-\b To Install\
+\b \ul To Install\ulnone \
 \
 Before use you will need to setup python  in your  home directory on cx1.\
 Please follow the instructions at:\
 https://www.imperial.ac.uk/admin-services/ict/self-service/research-support/rcs/support/applications/python/\
 but replacing \'93numpy\'94 with \'93pandas\'94 which is the package used by the python in this repository.\
 \
-\
+You will also need to setup a vnc password by running  "vncpasswd" once. VNC won't start without it.
+\b0 \
+
+\b \
 \pard\pardeftab720\partightenfactor0
 
 \b0 \cf0 Delete or rename your old Localisation dir then unzip the attached into a new one.\
 chmod +x all .pbs, .sh and .py scripts\
 Change the e-mail address in merge loc_MERGEScript.pbs to your own address.\
+\
+N.B. Unzipping the files on Windows or e-mailing them unzipped on a Windows system can result in them being corrupted.\
 \
 \pard\pardeftab720\partightenfactor0
 
@@ -77,7 +82,11 @@ Some temporary directories are created on each processing node.\
 in the normal course of events TidyScript will delete these, however, if there is a failure these will need to be deleted manually.\
 Simply SSH onto each cluster node in turn , as shown in TidyScript.pbs,  then go to 
 \f1 \kerning1\expnd0\expndtw0 \CocoaLigature0 /var/tmp/STORM_temp_$\{USER\} \
-and delete old directories.
+and delete old directories.\
+\
+Alternatively the provided loc_MaintenanceScript.pbs can be used to do the deletion\
+by typing \
+qsub -q pqfogim loc_MaintenanceScript.pbs
 \f0 \expnd0\expndtw0\kerning0
 \CocoaLigature1 \
 \
