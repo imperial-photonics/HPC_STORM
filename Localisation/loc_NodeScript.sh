@@ -5,6 +5,12 @@
 #
 #  Created by Ian Munro on 4/07/2016.
 #  The script that runs on each node
+#
+#   Expects to be called with one arguement which is a colon seperated list.  This is either
+#   ARGS = {input file directory}:{input file name}:{working directory}:{numbero of jobs}:{PBS_array_index}
+#   or
+#   ARGS = {input file directory}:{input filename}:{calibration filename}:{working directory}:{number of jobs}:{PBS_array_index}
+
 
 echo "Start Localization time $(date)"
 
@@ -27,6 +33,8 @@ else
   NJOBS=${ARRARGS[4]}
 fi
 
+# add environment variables to args list
+ARGS_FULL="$1":"$TMPDIR"
 
 # if NJOBS == 1 &&  jobs and PBS_ARRAY_INDEX > 1
 # then this is a dummy array job so do nothing
@@ -50,61 +58,27 @@ then
 
   #create a subdir to hold the outputs from this job
 
-  if [ ! -d $WORK/$JOBNO ]
+  if [ ! -d $INPATH/$JOBNO ]
   then
-    mkdir $WORK/$JOBNO
-  fi
-
-  # create our own TMP DIRECTORY for this job
-  # persistent across all the jobs of the array
-  TMPSTORMU="/var/tmp/STORM_temp_"$USER
-  TMPSTORM="/var/tmp/STORM_temp_"$USER"/"$JOBNO
-
-
-  # add environment variables to args list
-  ARGS_FULL="$1":"$TMPSTORM"
-
-  #echo $ARGS_FULL
-
-  # if tmp directory does not exist
-  if [ ! -d $TMPSTORMU ]
-  then
-    mkdir $TMPSTORMU
-  fi
-
-  if [ ! -d $TMPSTORMU ]
-  then 
-    echo  "failed to create user temporary dir!!"
-  fi
-
-
-  # if tmp directory does not exist
-  if [ ! -d $TMPSTORM ]
-  then
-    mkdir $TMPSTORM
-  fi
-
-  if [ ! -d $TMPSTORM ]
-  then 
-    echo  "failed to create job temporary dir!!"
+    mkdir $INPATH/$JOBNO
   fi
 
   #if current data file does not exist then copy
-  if [ ! -f $TMPSTORM"/"$FNAME ]
+  if [ ! -f $TMPDIR"/"$FNAME ]
   then
-    rm ${TMPSTORM}"/*"
+    rm ${TMPDIR}"/*"
     if [[ $INPATH == "/external"* ]]
     then
       echo "secure copying data file"
-      scp -q ${USER}@login-2-internal:${INPATH}/${NAME}*.ome.tif ${TMPSTORM}
+      scp -q ${USER}@login-2-internal:${INPATH}/${NAME}*.ome.tif ${TMPDIR}
       # ssh ${USER}@login-2-internal “cd ${INPATH};tar zcf ${NAME}*.ome.tif ” | tar  zxf –
     else
       echo "copying data file"
-      cp ${INPATH}/${NAME}*.ome.tif ${TMPSTORM}
+      cp ${INPATH}/${NAME}*.ome.tif ${TMPDIR}
     fi
   fi
   
-  if [ ! -f $TMPSTORM"/"$FNAME ]
+  if [ ! -f $TMPDIR"/"$FNAME ]
   then
     echo "Copy failed!"
     exit 0
@@ -113,19 +87,18 @@ then
 
   if [ ${#ARRARGS[@]} == "6" ]
   then
-    if [ ! -f $TMPSTORM"/"$CALIB ]
+    if [ ! -f $TMPDIR"/"$CALIB ]
     then
       if [[ $INPATH == "/external"* ]]
       then
         echo "secure copying calibration file"
-        scp -q ${USER}@login-2-internal:${INPATH}/${CALIB} ${TMPSTORM}
+        scp -q ${USER}@login-2-internal:${INPATH}/${CALIB} ${TMPDIR}
       else
         echo "copying calibration file"
-        cp ${INPATH}/${CALIB} ${TMPSTORM}
+        cp ${INPATH}/${CALIB} ${TMPDIR}
       fi
     fi
   fi
-
 
   module load sysconfcpus/0.5
 
@@ -137,9 +110,12 @@ then
   #echo "returned from Macro"
 
 
-awk -v job_index=$PBS_ARRAY_INDEX -v job_no=$NJOBS 'BEGIN{FS=",";OFS=",";OFMT="%.2f"; getline }{$2=job_no*($2-1)+job_index; print $0}' $WORK/$JOBNO/tmp_"$NAME"_slice_$PBS_ARRAY_INDEX.csv  > $WORK/$JOBNO/tmp_"$NAME"_$PBS_ARRAY_INDEX.csv 
+awk -v job_index=$PBS_ARRAY_INDEX -v job_no=$NJOBS 'BEGIN{FS=",";OFS=",";OFMT="%.2f"; getline }{$2=job_no*($2-1)+job_index; print $0}' $TMPDIR/tmp_"$NAME"_slice_$PBS_ARRAY_INDEX.csv  > $WORK/$JOBNO/tmp_"$NAME"_$PBS_ARRAY_INDEX.csv
 
-#mv $TMPSTORM/tmp_* $WORK/$JOBNO
+if [ $PBS_ARRAY_INDEX == 1]
+then
+    head -1 $TMPDIR/tmp_"$NAME"_slice_1.csv > $WORK/$JOBNO/"$NAME".csv
+fi
 
 echo "Finishing Localization time $(date)"
 

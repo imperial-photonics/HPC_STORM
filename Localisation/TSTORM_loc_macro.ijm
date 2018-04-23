@@ -45,11 +45,11 @@ File.append("Opened log file at " + TimeString, LOGPATH);
 // NB TMPDIR points to our own
 //temporary directory
 if (BLOCK == "1")  {
-OUTPATH = WORK + "/" + JOBNO + "/tmp_" + NAME + "_slice_1.csv";
+OUTPATH = TMPDIR + "/tmp_" + NAME + "_slice_1.csv";
 SAVEPROTOCOL = "true";
 }
 else  {
-OUTPATH = WORK + "/" + JOBNO  + "/tmp_" + NAME + "_slice_" +BLOCK + ".csv";
+OUTPATH = TMPDIR + "/tmp_" + NAME + "_slice_" +BLOCK + ".csv";
 SAVEPROTOCOL = "false";
 }
 

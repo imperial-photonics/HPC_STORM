@@ -1,17 +1,10 @@
 #!/bin/bash
 #
-#   Created by Ian Munro on 19/07/2017.
-#   Modified by Mark Neil on 23/04/2018.
+#  Created by Ian Munro on 19/07/2017.
 #
-#   Checks that required files are present and then submits localisation jobs to the PBS queuing system
-#   followed by a single merge and postprocessing job
-#
-#   Expects arguments of a full path to a data set to be processesd and optionally a callibration file if
-#   3D localisation is to take place.  Adding a callibration file therefore triggers 3D localisation.
-#   An optional arguement of -b in position 1 forces only a single job to run.
 
 
-USAGE="Usage: LAUNCH_localise [-b] filename(inc path) [calibration_file(name only - must be in same directory] <-b> "
+USAGE="Usage: LAUNCH_localise filename(inc path) <calibration_file(name only - must be in same directory> <-b> "
 
 function parse {
   INPATH=$(dirname "${FULLNAME}")
@@ -114,11 +107,9 @@ fi
 # set  work directory and no of jobs
 ARGS="$ARGS":"$WORK":"$NJOBS"
 
-#   $ARGS now contains the arguements to pass to the localisation script as a colon separated list.  THese are either
-#   ARGS = {input file directory}:{input file name}:{working directory}:{numbero of jobs}
-#   or
-#   ARGS = {input file directory}:{input filename}:{calibration filename}:{working directory}:{number of jobs}
-#   where does $THREED go?
+echo $ARGS
+
+exit
 
 if [ $NJOBS == "1" ]
 then
@@ -140,9 +131,9 @@ two=$(qsub -q $QUEUE -W depend=afterok:$one -v SETUP_ARGS=$ARGS,JOBNO=$JNO,LATER
 
 echo "launching merge job"
 echo $two
-#three=$(qsub -q $QUEUE -W depend=afterok:$two -v SETUP_ARGS=$ARGS,JOBNO=$JNO $HOME/Localisation/loc_TIDYScript.pbs )
-#echo "launching tidy job"
-#echo $three
+three=$(qsub -q $QUEUE -W depend=afterok:$two -v SETUP_ARGS=$ARGS,JOBNO=$JNO $HOME/Localisation/loc_TIDYScript.pbs )
+echo "launching tidy job"
+echo $three
 
 
 

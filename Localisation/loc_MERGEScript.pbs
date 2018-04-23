@@ -38,18 +38,7 @@ fi
 
 echo "Start Merging time $(date)"
 
-touch $WORK/$JOBNO/tmp_"$NAME"_sort_1.csv
-
-head -1 $WORK/$JOBNO/tmp_"$NAME"_slice_1.csv > header
-
-for ((n=1; n<=$NJOBS; n++))
-do
-	sort_tmp=`expr $n + 1`
-	echo "Merging block : $n"
-	sort -t ',' -k2n,2 -k1n,1 -m $WORK/$JOBNO/tmp_"$NAME"_"$n".csv $WORK/$JOBNO/tmp_"$NAME"_sort_"$n".csv > $WORK/$JOBNO/tmp_"$NAME"_sort_"$sort_tmp".csv
-done
-
-cat header $WORK/$JOBNO/tmp_"$NAME"_sort_"$sort_tmp".csv > $WORK/$JOBNO/"$NAME".csv
+sort -t ',' -k2n,2 -k1n,1 -m $WORK/$JOBNO/tmp_"$NAME"_"$n".csv $WORK/$JOBNO/tmp_"$NAME"_sort_*.csv >> $WORK/$JOBNO/"$NAME".csv
 
 echo "merging all the localisation log files"
 cat "${WORK}"/"${JOBNO}"/tmp*.log  > $WORK/$JOBNO/temp_localisation.log
@@ -58,17 +47,14 @@ rm  $WORK/$JOBNO/tmp*.log
 
 echo "Start Postprocess time $(date)"
 
-TMPSTORM="/var/tmp/STORM_temp_"$USER"/"$JOBNO
-
 # add environment variables to args list
-ARGS_FULL="$SETUP_ARGS":"$TMPSTORM":"$JOBNO":"$LATERAL_RES":"$POST"
+ARGS_FULL="$SETUP_ARGS":"$TMPDIR":"$JOBNO":"$LATERAL_RES":"$POST"
 
 ## cp "${WORK}"/"${JOBNO}"/tmp_* $TMPSTORM
 
-
 if [ "$LATERAL_RES" != "0" ]; then
   # non-zero lateral res so copy files needed to TMPDIR
-  if [ ! -f $TMPSTORM"/"$FNAME ]
+  if [ ! -f $TMPDIR"/"$FNAME ]
   then
 	if [[ $INPATH == "/external"* ]]	
 	then
@@ -135,8 +121,6 @@ else
   cp "${WORK}"/"${JOBNO}"/*_drift.tiff ${INPATH}
 
 fi
-
-rm ${TMPSTORM}/* 
 
 echo "Finishing Postprocess time $(date)"
 
