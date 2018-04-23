@@ -39,7 +39,9 @@ FULLNAME=$1
 INPATH=""
 FNAME=""
 
-NJOBS=8
+echo "How many HPC nodes do you have?"
+read -p "Enter node number of the HPC: " NJOBS
+
 THREED=0
 
 case "$#" in
@@ -122,11 +124,11 @@ JNO=${ARR[0]}
 echo "Please enter Lateral uncertainty [nm] ? "
 read -p " enter zero to disable preview images ? " lateral
 
+two=$(qsub -q $QUEUE -W depend=afterok:$one -v SETUP_ARGS=$ARGS,JOBNO=$JNO,LATERAL_RES=$lateral,POST="DRIFT" $HOME/Localisation/loc_MERGEScript.pbs)
 
-two=$(qsub -q $QUEUE -W depend=afterok:$one -v SETUP_ARGS=$ARGS,JOBNO=$JNO,LATERAL_RES=$lateral,POST="SIGMA_DRIFT" $HOME/Localisation/loc_MERGEScript.pbs )
 echo "launching merge job"
 echo $two
-three=$(qsub -q $QUEUE -W depend=afterok:$one -v SETUP_ARGS=$ARGS,JOBNO=$JNO $HOME/Localisation/loc_TIDYScript.pbs )
+three=$(qsub -q $QUEUE -W depend=afterok:$two -v SETUP_ARGS=$ARGS,JOBNO=$JNO $HOME/Localisation/loc_TIDYScript.pbs )
 echo "launching tidy job"
 echo $three
 

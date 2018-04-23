@@ -45,11 +45,11 @@ File.append("Opened log file at " + TimeString, LOGPATH);
 // NB TMPDIR points to our own
 //temporary directory
 if (BLOCK == "1")  {
-OUTPATH = TMPDIR + "/tmp_" + NAME + ".csv";
+OUTPATH = WORK + "/" + JOBNO + "/tmp_" + NAME + "_slice_1.csv";
 SAVEPROTOCOL = "true";
 }
 else  {
-OUTPATH = TMPDIR + "/tmp_" + NAME + "_" +BLOCK + ".csv";
+OUTPATH = WORK + "/" + JOBNO  + "/tmp_" + NAME + "_slice_" +BLOCK + ".csv";
 SAVEPROTOCOL = "false";
 }
 
@@ -78,38 +78,50 @@ PIXELWIDTH = pixelWidth * 1000;
 File.append("pixel Width = " + PIXELWIDTH ,LOGPATH);
 Ext.getSizeT(sizeT);
 sizeT=parseInt(sizeT);
+//sizeT=100;
+
+//FIRST_INDEX=newArray(0, 0.03, 0.07, 0.12, 0.20, 0.30, 0.40, 0.50, 0.60, 0.70, 0.80, 0.90, 1.0);
+/*
+FIRST_INDEX=newArray(0, 0.15, 0.35, 0.65, 1.0);
 
 if(NJOBS == "1")  {
 FIRST = 1;
 LAST = sizeT;
 }
 else {
-  b1 = parseInt(BLOCK) - 1;
-  SUB = floor(sizeT * 0.15);
-  if (b1 < 4)  {
-    FIRST = (b1 * SUB) + 1;
-  }
-  else {
-    SUB4 = 4 * SUB;
-    sizeREM = sizeT - SUB4;
-    SUB = floor(sizeREM/4);
-    FIRST = ((b1 -4) * SUB) + SUB4 + 1;
-  }
+  b1 = parseInt(BLOCK)-1;
+  FIRST = sizeT * FIRST_INDEX[b1] + 1;
 
   if (BLOCK == NJOBS) {
     LAST = sizeT;
   }
   else  {
-    LAST = FIRST + SUB - 1;
+    LAST = sizeT * FIRST_INDEX[b1+1];
   }
-
 }
+*/
+FIRST = parseInt(BLOCK);
+LAST = sizeT;
+//LAST = 3000;
+//LAST = 7000;
+//LAST = 20000;
 
 File.append("Frames from " + FIRST + " to " + LAST, LOGPATH);
 
 //run("Memory & Threads...", "maximum=65536 parallel=24”);
 //File.append("Importing file " + FILEPATH ,LOGPATH);
-run("Bio-Formats Importer","open="+FILEPATH+" color_mode=Default specify_range view=[Standard ImageJ] stack_order=Default t_begin="+FIRST+" t_end="+LAST+" t_step=1");
+run("Bio-Formats Importer","open="+FILEPATH+" color_mode=Default specify_range view=[Standard ImageJ] stack_order=Default t_begin="+FIRST+" t_end="+LAST+" t_step="+NJOBS+"");
+
+
+getDateAndTime(year, month, dayOfWeek, dayOfMonth, hour, minute, second, msec);
+if (hour<10) {TimeString = "0";} else {TimeString = "";}
+TimeString = TimeString+hour+":";
+if (minute<10) {TimeString = TimeString+"0";}
+TimeString = TimeString+minute+":";
+if (second<10) {TimeString = TimeString+"0";}
+TimeString = TimeString+second;
+
+File.append("Imported Dataset to FIJI at " + TimeString, LOGPATH);
 
 
 // Look for Camera Name
@@ -147,20 +159,32 @@ if(THREED==0)  {
 File.append("Starting 2D localisation!",LOGPATH);
 run( "Run analysis", "filter=[Wavelet filter (B-Spline)] scale=2.0 order=3 detector=[Non-maximum suppression] radius=3 threshold=[1.25 * std(Wave.F1)] estimator=[PSF: Integrated Gaussian] sigma=1.6 method=[Weighted Least squares] full_image_fitting=false fitradius=4 mfaenabled=false renderer=[No Renderer]");
 // Sanity check!! Filter out zero intensities
-FORMULA = "[intensity > 1]";
-File.append("Filtering with " + FORMULA, LOGPATH);
+//FORMULA = "[intensity > 1]";
+//File.append("Filtering with " + FORMULA, LOGPATH);
 //N.B. formula is currently hardcoded due to possible syntax issue.
-run("Show results table", "action=filter formula=[intensity > 1]");
+//run("Show results table", "action=filter formula=[intensity > 1]");
 }
 else  {
 File.append("Starting 3D localisation!",LOGPATH);
 run("Run analysis", "filter=[Wavelet filter (B-Spline)] scale=2.0 order=3 detector=[Local maximum] connectivity=8-neighbourhood threshold=[1.25 * std(Wave.F1)] estimator=[PSF: Elliptical Gaussian (3D astigmatism)] sigma=1.6 fitradius=8 method=[Weighted Least squares] calibrationpath=["+CALPATH+"] full_image_fitting=false mfaenabled=false renderer=[No Renderer]");
 // Sanity check!! Filter out zero intensities & uncertainty_z == Infinity
-FORMULA = "[intensity > 1 & 1/uncertainty_z > 0]";
-File.append("Filtering with " + FORMULA, LOGPATH);
+//FORMULA = "[intensity > 1 & 1/uncertainty_z > 0]";
+//File.append("Filtering with " + FORMULA, LOGPATH);
 //N.B. formula is currently hardcoded due to possible syntax issue.
-run("Show results table", "action=filter formula=[intensity > 1 & 1/uncertainty_z > 0 ]");
+//run("Show results table", "action=filter formula=[intensity > 1 & 1/uncertainty_z > 0 ]");
 }
+
+
+getDateAndTime(year, month, dayOfWeek, dayOfMonth, hour, minute, second, msec);
+if (hour<10) {TimeString = "0";} else {TimeString = "";}
+TimeString = TimeString+hour+":";
+if (minute<10) {TimeString = TimeString+"0";}
+TimeString = TimeString+minute+":";
+if (second<10) {TimeString = TimeString+"0";}
+TimeString = TimeString+second;
+
+File.append("Finished Localization at " + TimeString, LOGPATH);
+
 
 
 File.append("Exporting localisations to " + OUTPATH, LOGPATH);
@@ -177,12 +201,12 @@ TimeString = TimeString+minute+":";
 if (second<10) {TimeString = TimeString+"0";}
 TimeString = TimeString+second;
 
-File.append("exiting loc_macro at " + TimeString,LOGPATH);
+File.append("Exported CSV result at " + TimeString,LOGPATH);
 File.append("...",LOGPATH);
 File.close(logf);
 
 // Now write a config file N.B. Must be after closing log file or File.open() fails!!
-CONFPATH = TMPDIR + "/tmp_conf_" + NAME + "_" + BLOCK + ".txt";
+CONFPATH = WORK + "/" + JOBNO  + "/tmp_conf_" + NAME + "_" + BLOCK + ".txt";
 if (File.exists(CONFPATH))  {
 File.delete(CONFPATH);
 }

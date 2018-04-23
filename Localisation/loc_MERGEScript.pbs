@@ -7,16 +7,15 @@
 #
 
 ## ask PBS for time (format hh:mm:ss)
-#PBS -l walltime=01:00:00
+#PBS -l walltime=02:00:00
 
 ## ask for one node with 24 cpus and total 110gb memory
-#PBS -l select=1:ncpus=24:mem=110gb
-#PBS -M i.munro@ic.ac.uk
+#PBS -l select=1:ncpus=48:mem=110gb
 #PBS -m ae
 
 
 #  hardwired paths TBD
-IJ=/apps/fiji/Fiji.app/ImageJ-linux64
+#IJ=/apps/fiji/Fiji.app/ImageJ-linux64
 
 #HOME=/Users/imunro/HPC_STORM
 #IJ=/Applications/Fiji.app/Contents/MacOS/ImageJ-macosx
@@ -25,36 +24,68 @@ ARRARGS=(${SETUP_ARGS//:/ })
 INPATH=${ARRARGS[0]}
 FNAME=${ARRARGS[1]}
 
+ARRFNAME=(${FNAME//.ome/ })
+NAME=${ARRFNAME[0]}
+
+echo "${ARRARGS}"
+
+if [ ${#ARRARGS[@]} == "4" ];then
+  NJOBS=${ARRARGS[3]}
+else
+  CALIB=${ARRARGS[2]}
+  NJOBS=${ARRARGS[4]}
+fi
+
+echo "Start Merging time $(date)"
+
+touch $WORK/$JOBNO/tmp_"$NAME"_sort_1.csv
+
+head -1 $WORK/$JOBNO/tmp_"$NAME"_slice_1.csv > header
+
+for ((n=1; n<=$NJOBS; n++))
+do
+	sort_tmp=`expr $n + 1`
+	echo "Merging block : $n"
+	sort -t ',' -k2n,2 -k1n,1 -m $WORK/$JOBNO/tmp_"$NAME"_"$n".csv $WORK/$JOBNO/tmp_"$NAME"_sort_"$n".csv > $WORK/$JOBNO/tmp_"$NAME"_sort_"$sort_tmp".csv
+done
+
+cat header $WORK/$JOBNO/tmp_"$NAME"_sort_"$sort_tmp".csv > $WORK/$JOBNO/"$NAME".csv
 
 echo "merging all the localisation log files"
 cat "${WORK}"/"${JOBNO}"/tmp*.log  > $WORK/$JOBNO/temp_localisation.log
 rm  $WORK/$JOBNO/tmp*.log
+#cat "$TMPDIR"/tmp*.log  > $TMPDIR/temp_localisation.log
+
+echo "Start Postprocess time $(date)"
+
+TMPSTORM="/var/tmp/STORM_temp_"$USER"/"$JOBNO
 
 # add environment variables to args list
-ARGS_FULL="$SETUP_ARGS":"$TMPDIR":"$JOBNO":"$LATERAL_RES":"$POST"
+ARGS_FULL="$SETUP_ARGS":"$TMPSTORM":"$JOBNO":"$LATERAL_RES":"$POST"
 
-mv "${WORK}"/"${JOBNO}"/tmp_* $TMPDIR
+## cp "${WORK}"/"${JOBNO}"/tmp_* $TMPSTORM
 
 
 if [ "$LATERAL_RES" != "0" ]; then
   # non-zero lateral res so copy files needed to TMPDIR
-
-  if [[ $INPATH == "/external"* ]]
+  if [ ! -f $TMPSTORM"/"$FNAME ]
   then
-    echo "secure copying one .ome.tiff from Input Dir to TMPDIR"
-    scp -q ${USER}@login-2-internal:${INPATH}/${FNAME} ${TMPDIR}
-    echo "done!"
-  else
-    cp "${INPATH}"/"${FNAME}" ${TMPDIR}
+	if [[ $INPATH == "/external"* ]]	
+	then
+		echo "secure copying one .ome.tiff from Input Dir to TMPDIR"
+		scp -q ${USER}@login-2-internal:${INPATH}/${FNAME} ${TMPSTORM}
+		echo "done!"
+	else
+		echo "copying source ome.tiff from Input Dir to TMPDIR"
+		cp "${INPATH}"/"${FNAME}" ${TMPSTORM}
+	fi
   fi
 
-  cp "${HOME}"/Localisation/csv_sigma_mode.py $TMPDIR
-
+  cp "${HOME}"/Localisation/csv_sigma_mode.py $TMPSTORM
 fi
 
 ##load application module
-module load fiji vnc
-module load anaconda3/personal
+module load fiji vnc anaconda3/personal
 
 `vnc_start`
 
@@ -64,15 +95,14 @@ module load sysconfcpus/0.5
 
 
 # run ThunderSTORM
-sysconfcpus -n $NCPUS $IJ --ij2 -macro $HOME/Localisation/TSTORM_loc_merge_macro.ijm $ARGS_FULL
+#sysconfcpus -n $NCPUS $IJ --ij2 -macro $HOME/Localisation/TSTORM_loc_merge_macro.ijm $ARGS_FULL
+# sysconfcpus -n 24 fiji -macro $HOME/Localisation/TSTORM_loc_merge_mac
+sysconfcpus -n 48 fiji --ij2 -macro $HOME/Localisation/TSTORM_loc_post_macro.ijm $ARGS_FULL
 
 #echo "stopping vnc!"
 vnc_stop
 
-#echo "tidying TMPDIR"
-rm ${TMPDIR}/tmp_*
-
-chmod 666 ${TMPDIR}/*
+#chmod 666 ${TMPSTORM}/*
 chmod 666 "${WORK}"/"${JOBNO}"/*_loc.log
 
 
@@ -80,38 +110,35 @@ if [[ $INPATH == "/external"* ]]
 then
   
   echo "secure copying .csv from TMPDIR to Input Dir"
-  scp -q -p ${TMPDIR}/*.csv ${USER}@login-2-internal:${INPATH}
+  scp -q -p "${WORK}"/"${JOBNO}"/*.csv ${USER}@login-2-internal:${INPATH}
   echo "secure copying protocol file from TMPDIR to Input Dir"
-  scp -q -p ${TMPDIR}/*protocol.txt ${USER}@login-2-internal:${INPATH}
+  scp -q -p "${WORK}"/"${JOBNO}"/*protocol.txt ${USER}@login-2-internal:${INPATH}
   echo "copying log file to Input Dir using scp"
   scp -q -p "${WORK}"/"${JOBNO}"/*_loc.log ${USER}@login-2-internal:${INPATH}  
-  if [ $LATERAL_RES != "0" ]
-  then
-  echo "secure copying D.ome.tiff from TMPDIR to Input Dir"
-  scp -q -p ${TMPDIR}/*D.ome.tiff ${USER}@login-2-internal:${INPATH} 
+  echo "secure copying .ome.tiff from TMPDIR to Input Dir"
+  scp -q -p "${WORK}"/"${JOBNO}"/*D.ome.tiff ${USER}@login-2-internal:${INPATH} 
   echo "secure copying drift.tiff from TMPDIR to Input Dir"   
-  scp -q -p ${TMPDIR}/*_drift.tiff ${USER}@login-2-internal:${INPATH}
-fi
+  scp -q -p "${WORK}"/"${JOBNO}"/*_drift.tiff ${USER}@login-2-internal:${INPATH}
   
   
 else
   
   echo "copying .csv from TMPDIR to Input Dir"
-  cp $TMPDIR/*.csv $INPATH
+  cp "${WORK}"/"${JOBNO}"/*.csv ${INPATH}
   echo "copying protocol file from TMPDIR to Input Dir"
-  cp $TMPDIR/*protocol.txt $INPATH
+  cp "${WORK}"/"${JOBNO}"/*protocol.txt ${INPATH}
   echo "moving log file to Input Dir"
-  mv "${WORK}"/"${JOBNO}"/*_loc.log $INPATH
-  if [ $LATERAL_RES != "0" ]
-  then
+  cp "${WORK}"/"${JOBNO}"/*_loc.log ${INPATH}
   echo "copying .ome.tiff from TMPDIR to Input Dir"
-  cp $TMPDIR/*D.ome.tiff $INPATH
+  cp "${WORK}"/"${JOBNO}"/*D.ome.tiff ${INPATH}
   echo "copying drift.tiff from TMPDIR to Input Dir"
-  cp ${TMPDIR}/*_drift.tiff ${INPATH}
-fi
+  cp "${WORK}"/"${JOBNO}"/*_drift.tiff ${INPATH}
 
 fi
 
+rm ${TMPSTORM}/* 
+
+echo "Finishing Postprocess time $(date)"
 
 exit
 

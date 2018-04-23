@@ -39,13 +39,13 @@ ifile=''
 
 # Read command line args
 if len(sys.argv) != 3:
-    print ('Usage: csv_uncertainty_mode -i <inputfile>')
+    print 'Usage: csv_uncertainty_mode -i <inputfile>'
     sys.exit(1)
 
 try:
     opts, args = getopt.getopt(sys.argv[1:],"i:")
 except getopt.GetoptError:
-    print ('Usage: csv_uncertainty_mode -i <inputfile>')
+    print 'Usage: csv_uncertainty_mode -i <inputfile>'
     sys.exit(1)
 
 ###############################
@@ -56,7 +56,7 @@ for o, a in opts:
     if o == '-i':
         ifile=a
     else:
-        print ('Usage: csv_sigma_mode -i <inputfile>')
+        print 'Usage: csv_sigma_mode -i <inputfile>'
         sys.exit(1)
 
 
@@ -89,7 +89,7 @@ if header_txt != "FAIL!":
   sig = df[header_txt]
   sigma = numpy.array(sig)
   rounded = numpy.around(sigma, decimals=1)
-  mask = rounded < 210
+  mask = rounded < 150
   result = rounded[mask,...]
   #mean  = numpy.mean(result)
   #mean = numpy.around(mean, decimals=1)

@@ -6,7 +6,7 @@
 #  Created by Ian Munro on 4/07/2016.
 #  The script that runs on each node
 
-echo "Start time $(date)"
+echo "Start Localization time $(date)"
 
 #  hardwired paths TBD
 IJ=/apps/fiji/Fiji.app/ImageJ-linux64
@@ -130,12 +130,18 @@ then
   module load sysconfcpus/0.5
 
   # run ThunderSTORM
-  sysconfcpus -n $NCPUS $IJ --ij2 -macro $HOME/Localisation/TSTORM_loc_macro.ijm $ARGS_FULL
-
+  
+  # sysconfcpus -n $NCPUS $IJ --ij2 -macro $HOME/Localisation/TSTORM_loc_macro.ijm $ARGS_FULL
+  sysconfcpus -n 48 fiji --ij2 -macro $HOME/Localisation/TSTORM_loc_macro.ijm $ARGS_FULL
+  # sysconfcpus -n 24 fiji -macro $HOME/Localisation/TSTORM_loc_macro.ijm $ARGS_FULL
   #echo "returned from Macro"
 
 
-  mv $TMPSTORM/tmp_* $WORK/$JOBNO
+awk -v job_index=$PBS_ARRAY_INDEX -v job_no=$NJOBS 'BEGIN{FS=",";OFS=",";OFMT="%.2f"; getline }{$2=job_no*($2-1)+job_index; print $0}' $WORK/$JOBNO/tmp_"$NAME"_slice_$PBS_ARRAY_INDEX.csv  > $WORK/$JOBNO/tmp_"$NAME"_$PBS_ARRAY_INDEX.csv 
+
+#mv $TMPSTORM/tmp_* $WORK/$JOBNO
+
+echo "Finishing Localization time $(date)"
 
 else
   echo "Dummy job returning!"

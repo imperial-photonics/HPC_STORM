@@ -10,25 +10,18 @@
 #PBS -l walltime=01:00:00
 
 ## ask for one node with 24 cpus and total 48gb memory (per node)
-#PBS -l select=1:ncpus=24:mem=64gb
+#PBS -l select=1:ncpus=48:mem=64gb
 
 ARRARGS=(${SETUP_ARGS//:/ })
 FNAME=${ARRARGS[1]}
 echo "FNAME = "
 echo $FNAME
 
-echo "JOBNO = "
-echo $JOBNO
-
-echo "HOSTNAME = "
-echo $HOSTNAME
-
-
 echo "clearing local TMPSTORM"
 rm -rf /var/tmp/STORM_temp_${USER}/${JOBNO}
 
 echo "clearing remote TMPSTORM"
-HOSTS="cx1-101-14-1 cx1-101-14-2 cx1-101-14-3 cx1-101-14-4"
+HOSTS="cx1-140-12-1 cx1-140-12-2 cx1-140-12-3 cx1-140-12-4"
 SCRIPT="rm -rf /var/tmp/STORM_temp_${USER}/${JOBNO}"
 
 for HNAME in ${HOSTS} ; do
@@ -39,9 +32,7 @@ done
 
 
 # tidy up PBSPRO outputs for easy deletion
-mv "${HOME}"/Localisation/*.pbs.e"${JOBNO}".* "${WORK}"/"${JOBNO}"
-mv "${HOME}"/Localisation/*.pbs.o"${JOBNO}".* "${WORK}"/"${JOBNO}"
-
+mv "${HOME}"/Localisation/*.pbs.* "${WORK}"/"${JOBNO}"
 
 exit
 
