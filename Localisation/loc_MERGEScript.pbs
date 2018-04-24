@@ -21,7 +21,7 @@
 #IJ=/Applications/Fiji.app/Contents/MacOS/ImageJ-macosx
 
 set > $WORK/loc_MERGEScript.log
-echo $* >> $WORK/loc_NodeScript$PBS_ARRAY_INDEX.log
+echo $* >> $WORK/loc_MERGEScript.log
 exit
 
 ARRARGS=(${SETUP_ARGS//:/ })
