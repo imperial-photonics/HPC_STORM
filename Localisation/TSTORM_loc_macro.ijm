@@ -1,4 +1,4 @@
-ARGS=getArgument()
+ARGS=getArgument();
 setBatchMode(true);
 parts=split(ARGS, ":");
 
