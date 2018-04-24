@@ -105,7 +105,11 @@ if [ $THREED == 1 ]; then
     fi
 fi
 
-#   environment variables $INPATH $FNAME $NJOBS $THREED $CALIB now contain the necessary information for the other scrips to work
+ARRFNAME=(${FNAME//.ome/ })
+export $NAME=${ARRFNAME[0]}
+
+
+#   environment variables $INPATH $FNAME $NJOBS $THREED $CALIB $NAME now contain the necessary information for the other scripts to work
 
 if [ $NJOBS == "1" ]; then
   one=$(qsub -q $QUEUE -V $HOME/Localisation/loc_ARRScriptSingle.pbs)
@@ -118,6 +122,8 @@ echo $one
 # split name of first job to get pbsjob no
 ARR=(${one//[/ })
 export JOBNO=${ARR[0]}
+
+mkdir ${WORK}/${JOBNO}        # Create a directory in $WORK to take shared temporary output files
 
 echo "Please enter Lateral uncertainty for reconstruction [nm] ? "
 read -p " enter zero to disable preview images ? " lateral
