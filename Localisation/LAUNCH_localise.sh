@@ -16,7 +16,7 @@ USAGE="Usage: LAUNCH_localise [-b] filename(inc path) [calibration_file(name onl
 echo "fogim queue"
 QUEUE="pqfogim"
 
-FULLNAME=$1
+
 INPATH=""
 FNAME=""
 
@@ -28,21 +28,35 @@ export THREED=0
 
 case "$#" in
     1)
+        FULLNAME=$1
         ;;
     2)
-        if [ $2 == "-b" ]
+        if [ $1 == "-b" ]
         then
             NJOBS=1
+            FULLNAME=$2
+        elif [ $2 == "-b" ]
+        then
+            NJOBS=1
+            FULLNAME=$1
         else
             THREED=1
+            FULLNAME=$1
             export CALIB=$2
         fi
         ;;
     3)
-        if [ $3 == "-b" ]
+        THREED=1
+        NJOBS=1
+        if [ $1 == "-b" ]
         then
-            THREED=1
-            NJOBS=1
+            FULLNAME=$2
+            export CALIB=$3
+        elif [ $2 == "-b" ]
+            FULLNAME=$1
+            export CALIB=$3
+        elif [ $3 == "-b" ]
+            FULLNAME=$1
             export CALIB=$2
         else
             echo $USAGE;
@@ -55,7 +69,7 @@ case "$#" in
         ;;
 esac
 
-## check calibration file , if needed, exists
+## check input data and calibration file, if needed, exist
 
 export INPATH=$(dirname "${FULLNAME}")
 export FNAME=$(basename "${FULLNAME}")
@@ -101,9 +115,6 @@ then
     fi
 fi
 
-# set  work directory and no of jobs
-ARGS="$ARGS":"$WORK":"$NJOBS"
-
 #   environment variables $INPATH $FNAME $NJOBS $THREED $CALIB now contain the necessary information for the other scrips to work
 
 if [ $NJOBS == "1" ]
@@ -119,10 +130,10 @@ echo $one
 ARR=(${one//[/ })
 export JOBNO=${ARR[0]}
 
-echo "Please enter Lateral uncertainty [nm] ? "
+echo "Please enter Lateral uncertainty for reconstruction [nm] ? "
 read -p " enter zero to disable preview images ? " lateral
 
-export LATERAL_RES=lateral
+export LATERAL_RES=$lateral
 export POST_PROC="DRIFT"
 #   environment variables $JOBNO, $POST_PROC and $LATERAL_RES are exported for use in merge and post processing scripts
 
