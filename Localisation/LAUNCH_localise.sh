@@ -31,12 +31,10 @@ case "$#" in
         FULLNAME=$1
         ;;
     2)
-        if [ $1 == "-b" ]
-        then
+        if [ $1 == "-b" ] then
             NJOBS=1
             FULLNAME=$2
-        elif [ $2 == "-b" ]
-        then
+        elif [ $2 == "-b" ] then
             NJOBS=1
             FULLNAME=$1
         else
@@ -48,14 +46,13 @@ case "$#" in
     3)
         THREED=1
         NJOBS=1
-        if [ $1 == "-b" ]
-        then
+        if [ $1 == "-b" ] then
             FULLNAME=$2
             export CALIB=$3
-        elif [ $2 == "-b" ]
+        elif [ $2 == "-b" ] then
             FULLNAME=$1
             export CALIB=$3
-        elif [ $3 == "-b" ]
+        elif [ $3 == "-b" ] then
             FULLNAME=$1
             export CALIB=$2
         else
@@ -73,10 +70,8 @@ esac
 
 export INPATH=$(dirname "${FULLNAME}")
 export FNAME=$(basename "${FULLNAME}")
-if [[ $(hostname -s) == "login-2-internal" ]]
-then
-    if [ -f ${FULLNAME} ]
-    then
+if [[ $(hostname -s) == "login-2-internal" ]] then
+    if [ -f ${FULLNAME} ] then
         echo "File found!"
     else
         echo "Error! File not found!"
@@ -84,8 +79,7 @@ then
     fi
 else
     COMMAND="[ -f "${FULLNAME}" ]"
-    if ssh ${USER}@login-2-internal ${COMMAND}
-    then
+    if ssh ${USER}@login-2-internal ${COMMAND} then
         echo "File found!"
     else
         echo "Error! File not found!"
@@ -94,10 +88,8 @@ else
 fi
 if [ $THREED == 1 ]
 then
-    if [[ $(hostname -s) == "login-2-internal" ]]
-    then
-        if [ -f ${INPATH}/${CALIB} ]
-        then
+    if [[ $(hostname -s) == "login-2-internal" ]] then
+        if [ -f ${INPATH}/${CALIB} ] then
             echo "Calibration file found!"
         else
             echo "Error!  Calibration file not found!"
@@ -105,8 +97,7 @@ then
         fi
     else
         COMMAND="[ -f "${INPATH}"/"${CALIB}" ]"
-        if ssh ${USER}@login-2-internal ${COMMAND}
-        then
+        if ssh ${USER}@login-2-internal ${COMMAND} then
             echo "Calibration file found!"
         else
             echo "Error!  Calibration file not found!"
@@ -117,8 +108,7 @@ fi
 
 #   environment variables $INPATH $FNAME $NJOBS $THREED $CALIB now contain the necessary information for the other scrips to work
 
-if [ $NJOBS == "1" ]
-then
+if [ $NJOBS == "1" ] then
   one=$(qsub -q $QUEUE -V $HOME/Localisation/loc_ARRScriptSingle.pbs)
 else
   one=$(qsub -q $QUEUE -V $HOME/Localisation/loc_ARRScript.pbs)
