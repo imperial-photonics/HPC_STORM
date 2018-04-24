@@ -13,53 +13,6 @@
 
 USAGE="Usage: LAUNCH_localise [-b] filename(inc path) [calibration_file(name only - must be in same directory] <-b> "
 
-function parse_and_check {
-    export INPATH=$(dirname "${FULLNAME}")
-    export FNAME=$(basename "${FULLNAME}")
-    if [[ $(hostname -s) == "login-2-internal" ]]
-    then
-        if [ -f ${FULLNAME} ]
-        then
-            echo "File found!"
-        else
-            echo "Error! File not found!"
-            exit 0
-        fi
-    else
-        COMMAND="[ -f "${FULLNAME}" ]"
-        if ssh ${USER}@login-2-internal ${COMMAND}
-        then
-            echo "File found!"
-        else
-            echo "Error! File not found!"
-            exit 0
-        fi
-    fi
-    if [ $THREED == 1 ]
-    then
-        if [[ $(hostname -s) == "login-2-internal" ]]
-        then
-            if [ -f ${INPATH}/${CALIB} ]
-            then
-                echo "Calibration file found!"
-            else
-                echo "Error!  Calibration file not found!"
-                exit 0
-            fi
-        else
-            COMMAND="[ -f "${INPATH}"/"${CALIB}" ]"
-            if ssh ${USER}@login-2-internal ${COMMAND}
-            then
-                echo "Calibration file found!"
-            else
-                echo "Error!  Calibration file not found!"
-                exit 0
-            fi
-        fi
-    fi
-}
-
-
 echo "fogim queue"
 QUEUE="pqfogim"
 
@@ -104,7 +57,49 @@ esac
 
 ## check calibration file , if needed, exists
 
-parse_and_check
+export INPATH=$(dirname "${FULLNAME}")
+export FNAME=$(basename "${FULLNAME}")
+if [[ $(hostname -s) == "login-2-internal" ]]
+then
+    if [ -f ${FULLNAME} ]
+    then
+        echo "File found!"
+    else
+        echo "Error! File not found!"
+        exit 0
+    fi
+else
+    COMMAND="[ -f "${FULLNAME}" ]"
+    if ssh ${USER}@login-2-internal ${COMMAND}
+    then
+        echo "File found!"
+    else
+        echo "Error! File not found!"
+        exit 0
+    fi
+fi
+if [ $THREED == 1 ]
+then
+    if [[ $(hostname -s) == "login-2-internal" ]]
+    then
+        if [ -f ${INPATH}/${CALIB} ]
+        then
+            echo "Calibration file found!"
+        else
+            echo "Error!  Calibration file not found!"
+            exit 0
+        fi
+    else
+        COMMAND="[ -f "${INPATH}"/"${CALIB}" ]"
+        if ssh ${USER}@login-2-internal ${COMMAND}
+        then
+            echo "Calibration file found!"
+        else
+            echo "Error!  Calibration file not found!"
+            exit 0
+        fi
+    fi
+fi
 
 # set  work directory and no of jobs
 ARGS="$ARGS":"$WORK":"$NJOBS"
@@ -113,9 +108,9 @@ ARGS="$ARGS":"$WORK":"$NJOBS"
 
 if [ $NJOBS == "1" ]
 then
-  one=$(qsub -q $QUEUE -v $HOME/Localisation/loc_ARRScriptSingle.pbs)
+  one=$(qsub -q $QUEUE -V $HOME/Localisation/loc_ARRScriptSingle.pbs)
 else
-  one=$(qsub -q $QUEUE -v $HOME/Localisation/loc_ARRScript.pbs)
+  one=$(qsub -q $QUEUE -V $HOME/Localisation/loc_ARRScript.pbs)
 fi
 echo "launching processing job"
 echo $one
@@ -131,7 +126,7 @@ export LATERAL_RES=lateral
 export POST_PROC="DRIFT"
 #   environment variables $JOBNO, $POST_PROC and $LATERAL_RES are exported for use in merge and post processing scripts
 
-two=$(qsub -q $QUEUE -W depend=afterok:$one -v $HOME/Localisation/loc_MERGEScript.pbs)
+two=$(qsub -q $QUEUE -W depend=afterok:$one -V $HOME/Localisation/loc_MERGEScript.pbs)
 
 echo "launching merge job"
 echo $two
