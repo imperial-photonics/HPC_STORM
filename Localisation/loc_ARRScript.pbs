@@ -10,24 +10,17 @@
 #PBS -l select=1:ncpus=48:mem=110gb
 #PBS -J 1-4
 
-
-# add environment variables to args list
-ARGS="$SETUP_ARGS":"$PBS_ARRAY_INDEX"
-
 ##load application module
 module load fiji vnc
-
 
 `vnc_start`
 
 ##command line
 ## DEBUG=1
 
-$HOME/Localisation/loc_NodeScript.sh $ARGS
+$HOME/Localisation/loc_NodeScript.sh
 
 vnc_stop
-
-
 
 exit
 
