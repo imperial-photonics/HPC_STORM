@@ -50,7 +50,7 @@ if [[ $NJOBS  != 1  ]] || [[  $PBS_ARRAY_INDEX == 1 ]]; then
         exit 0
     fi
 
-    if [ $THREED==1 ]; then
+    if [ $THREED == 1 ]; then
         if [[ $INPATH == "/external"* ]]; then
             echo "secure copying calibration file"
             scp -q ${USER}@login-2-internal:${INPATH}/${CALIB} ${TMPDIR}
@@ -69,10 +69,10 @@ if [[ $NJOBS  != 1  ]] || [[  $PBS_ARRAY_INDEX == 1 ]]; then
     # sysconfcpus -n 24 fiji -macro $HOME/Localisation/TSTORM_loc_macro.ijm $ARGS_FULL
     #echo "returned from Macro"
 
-    awk -v job_index=$PBS_ARRAY_INDEX -v job_no=$NJOBS 'BEGIN{FS=",";OFS=",";OFMT="%.2f"; getline }{$2=job_no*($2-1)+job_index; print $0}' ${TMPDIR}/tmp_${NAME}_slice_$PBS_ARRAY_INDEX.csv  > ${WORK}/${JOBNO}/tmp_${NAME}_${PBS_ARRAY_INDEX}.csv
+    echo "awk -v job_index=$PBS_ARRAY_INDEX -v job_no=$NJOBS 'BEGIN{FS=",";OFS=",";OFMT="%.2f"; getline }{$2=job_no*($2-1)+job_index; print $0}' ${TMPDIR}/tmp_${NAME}_slice_$PBS_ARRAY_INDEX.csv  > ${WORK}/${JOBNO}/tmp_${NAME}_${PBS_ARRAY_INDEX}.csv"
 
     if [ $PBS_ARRAY_INDEX == 1 ]; then
-        head -1 ${TMPDIR}/tmp_${NAME}_slice_1.csv > ${INPATH}/${JOBNO}/${NAME}.csv
+        echo "head -1 ${TMPDIR}/tmp_${NAME}_slice_1.csv > ${INPATH}/${JOBNO}/${NAME}.csv"
     fi
 
     echo "Finishing Localization time $(date)"

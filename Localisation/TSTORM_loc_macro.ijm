@@ -55,6 +55,9 @@ if (!File.exists(FILEPATH))  {
     File.append("Error failed to find " + FILEPATH, LOGPATH);
 }
 
+File.close(logf);
+run("Quit");
+
 // Use Bio-Formats to find the pixelSize & sizeT
 run("Bio-Formats Macro Extensions");
 Ext.setId(FILEPATH);
