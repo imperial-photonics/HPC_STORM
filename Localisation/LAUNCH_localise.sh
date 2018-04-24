@@ -106,7 +106,7 @@ if [ $THREED == 1 ]; then
 fi
 
 ARRFNAME=(${FNAME//.ome/ })
-export $NAME=${ARRFNAME[0]}
+export NAME=${ARRFNAME[0]}
 
 
 #   environment variables $INPATH $FNAME $NJOBS $THREED $CALIB $NAME now contain the necessary information for the other scripts to work
