@@ -113,9 +113,9 @@ ARGS="$ARGS":"$WORK":"$NJOBS"
 
 if [ $NJOBS == "1" ]
 then
-  one=$(qsub -q $QUEUE $HOME/Localisation/loc_ARRScriptSingle.pbs)
+  one=$(qsub -q $QUEUE -v $HOME/Localisation/loc_ARRScriptSingle.pbs)
 else
-  one=$(qsub -q $QUEUE $HOME/Localisation/loc_ARRScript.pbs)
+  one=$(qsub -q $QUEUE -v $HOME/Localisation/loc_ARRScript.pbs)
 fi
 echo "launching processing job"
 echo $one
@@ -131,7 +131,7 @@ export LATERAL_RES=lateral
 export POST_PROC="DRIFT"
 #   environment variables $JOBNO, $POST_PROC and $LATERAL_RES are exported for use in merge and post processing scripts
 
-two=$(qsub -q $QUEUE -W depend=afterok:$one -v SETUP_ARGS=$ARGS,JOBNO=$JNO,LATERAL_RES=$lateral,POST="DRIFT" $HOME/Localisation/loc_MERGEScript.pbs)
+two=$(qsub -q $QUEUE -W depend=afterok:$one -v $HOME/Localisation/loc_MERGEScript.pbs)
 
 echo "launching merge job"
 echo $two
