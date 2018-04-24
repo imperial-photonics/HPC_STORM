@@ -14,8 +14,8 @@
 USAGE="Usage: LAUNCH_localise [-b] filename(inc path) [calibration_file(name only - must be in same directory] <-b> "
 
 function parse {
-  INPATH=$(dirname "${FULLNAME}")
-  FNAME=$(basename "${FULLNAME}")
+  export INPATH=$(dirname "${FULLNAME}")
+  export FNAME=$(basename "${FULLNAME}")
   if [[ $(hostname -s) == "login-2-internal" ]]
   then
     if [ -f ${FULLNAME} ]

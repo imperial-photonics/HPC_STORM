@@ -12,6 +12,7 @@
 #   ARGS = {input file directory}:{input filename}:{calibration filename}:{working directory}:{number of jobs}:{PBS_array_index}
 
 set > $WORK/loc_NodeScript$PBS_ARRAY_INDEX.log
+echo $* >> $WORK/loc_NodeScript$PBS_ARRAY_INDEX.log
 exit
 
 echo "Start Localization time $(date)"
