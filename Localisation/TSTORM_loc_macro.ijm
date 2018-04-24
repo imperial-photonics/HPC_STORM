@@ -1,36 +1,25 @@
 ARGS=getArgument()
 setBatchMode(true);
 parts=split(ARGS, ":");
-FNAME=parts[1];
 
-if (parts.length == 6)  {
-WORK=parts[2];
-NJOBS=parts[3];
-BLOCK=parts[4];
-TMPDIR=parts[5];
-}
-else  {
-  WORK=parts[3];
-  NJOBS=parts[4];
-  BLOCK=parts[5];
-  TMPDIR=parts[6];
-}
+WORK=parts[1];
+FNAME=parts[2];
+JOBNO=parts[3];
+NJOBS=parts[4];
+BLOCK=parts[5];
+THREED=parts[6];
+CALIB=parts[7];
 
 fullname=split(FNAME, ".");
 NAME=fullname[0];
 
-
-parts2=split(TMPDIR, "/");
-JOBNO=parts2[parts2.length - 1];
-
 LOGPATH = WORK + "/" + JOBNO + "/tmp_" + NAME + "_" + BLOCK + ".log";
 
 if (File.exists(LOGPATH))  {
-File.delete(LOGPATH);
+    File.delete(LOGPATH);
 }
 
 logf = File.open(LOGPATH);
-
 
 getDateAndTime(year, month, dayOfWeek, dayOfMonth, hour, minute, second, msec);
 if (hour<10) {TimeString = "0";} else {TimeString = "";}
@@ -43,31 +32,26 @@ TimeString = TimeString+second;
 File.append("Opened log file at " + TimeString, LOGPATH);
 
 // NB TMPDIR points to our own
-//temporary directory
+// temporary directory
+// but we should already be running form there anyway
 if (BLOCK == "1")  {
-OUTPATH = TMPDIR + "/tmp_" + NAME + "_slice_1.csv";
-SAVEPROTOCOL = "true";
+    OUTPATH = "tmp_" + NAME + "_slice_1.csv";
+    SAVEPROTOCOL = "true";
+} else {
+    OUTPATH = "tmp_" + NAME + "_slice_" +BLOCK + ".csv";
+    SAVEPROTOCOL = "false";
 }
-else  {
-OUTPATH = TMPDIR + "/tmp_" + NAME + "_slice_" +BLOCK + ".csv";
-SAVEPROTOCOL = "false";
-}
 
-
-THREED=0;
-
-if (parts.length == 7)  {
-  CALIB=parts[2];
-  CALPATH= TMPDIR + "/" + CALIB;
-  THREED=File.exists(CALPATH); //Returns "1" (true) if the specified file exists.
+if (THREED == 1)  {
+    CALPATH=CALIB;
 }
  
-FILEPATH=TMPDIR + "/" + FNAME;
+//FILEPATH=TMPDIR + "/" + FNAME;
+FILEPATH=FNAME;
 
 if (!File.exists(FILEPATH))  {
-File.append("Error failed to find " + FILEPATH, LOGPATH);
+    File.append("Error failed to find " + FILEPATH, LOGPATH);
 }
-
 
 // Use Bio-Formats to find the pixelSize & sizeT
 run("Bio-Formats Macro Extensions");
@@ -80,31 +64,8 @@ Ext.getSizeT(sizeT);
 sizeT=parseInt(sizeT);
 //sizeT=100;
 
-//FIRST_INDEX=newArray(0, 0.03, 0.07, 0.12, 0.20, 0.30, 0.40, 0.50, 0.60, 0.70, 0.80, 0.90, 1.0);
-/*
-FIRST_INDEX=newArray(0, 0.15, 0.35, 0.65, 1.0);
-
-if(NJOBS == "1")  {
-FIRST = 1;
-LAST = sizeT;
-}
-else {
-  b1 = parseInt(BLOCK)-1;
-  FIRST = sizeT * FIRST_INDEX[b1] + 1;
-
-  if (BLOCK == NJOBS) {
-    LAST = sizeT;
-  }
-  else  {
-    LAST = sizeT * FIRST_INDEX[b1+1];
-  }
-}
-*/
 FIRST = parseInt(BLOCK);
 LAST = sizeT;
-//LAST = 3000;
-//LAST = 7000;
-//LAST = 20000;
 
 File.append("Frames from " + FIRST + " to " + LAST, LOGPATH);
 
@@ -122,7 +83,6 @@ if (second<10) {TimeString = TimeString+"0";}
 TimeString = TimeString+second;
 
 File.append("Imported Dataset to FIJI at " + TimeString, LOGPATH);
-
 
 // Look for Camera Name
 //field="Camera Name";
