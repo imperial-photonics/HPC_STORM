@@ -26,12 +26,12 @@ sort -t ',' -k2n,2 -k1n,1 -m ${WORK}/${JOBNO}/tmp_"$NAME"_*.csv | awk 'BEGIN{FS=
 
 echo "merging all the localisation log files"
 cat ${WORK}/${JOBNO}/tmp*.log  > ${WORK}/${JOBNO}/temp_localisation.log
-rm  $WORK/$JOBNO/tmp*.log
+rm  ${WORK}/${JOBNO}/tmp*.log
 
 echo "Start Postprocess time $(date)"
 
 # Read pixel size from protocol file
-export PIXELSIZE=`cat ${WORK}/tmp_1000_frames_only_slice_1-protocol.txt | sed ' s/^.*pixelSize": // ; s/,.*$//'`
+export PIXELSIZE=`cat ${WORK}/${JOBNO}/tmp_1000_frames_only_slice_1-protocol.txt | sed ' s/^.*pixelSize": // ; s/,.*$//'`
 
 ##load application module
 module load fiji vnc #anaconda3/personal

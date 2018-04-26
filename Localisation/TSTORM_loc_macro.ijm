@@ -57,6 +57,8 @@ PIXELWIDTH = pixelWidth * 1000;
 File.append("pixel Width = " + PIXELWIDTH ,LOGPATH);
 Ext.getSizeT(sizeT);
 sizeT=parseInt(sizeT);
+Ext.getSizeX(sizeX);
+Ext.getSizeY(sizeY);
 Ext.close();
 
 FIRST = parseInt(BLOCK);
@@ -116,7 +118,7 @@ if (File.exists(CONFPATH))  {
     File.delete(CONFPATH);
 }
 conff = File.open(CONFPATH);
-LINE = toString(FIRST) + ":" + toString(LAST);
+LINE = toString(FIRST) + ":" + toString(LAST) + ":" + toString(PIXELWIDTH) ":" + sizeX + ":" sizeY;
 File.append(LINE, CONFPATH);
 File.close(conff);
 
