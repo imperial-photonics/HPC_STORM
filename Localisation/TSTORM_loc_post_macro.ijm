@@ -11,8 +11,7 @@ BLOCK=parts[4];
 THREED=parts[5];
 CAMERA=parts[6];
 CALIB=parts[7];
-PIXELSIZE=parts[8];
-POST=parts[9];
+POST=parts[8];
 
 fullname=split(FNAME, ".");
 NAME=fullname[0];
