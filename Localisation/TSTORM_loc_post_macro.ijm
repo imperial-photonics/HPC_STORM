@@ -12,27 +12,28 @@ THREED=parts[5];
 CAMERA=parts[6];
 CALIB=parts[7];
 POST=parts[8];
+LATERAL_RES=parts[9];
 
 fullname=split(FNAME, ".");
 NAME=fullname[0];
 
 CONF=File.openAsString(WORK+"/"+JOBNO+"/tmp_conf_"+NAME+"_1.txt");
 parts=split(CONF,":");
-PIXELSIZE=parts[2];
+PIXELWIDTH=parts[2];
 sizeX=parts[3];
 sizeY=parts[4];
 
 LOGPATH = WORK + "/" + JOBNO + "/temp_localisation.log";
 
 if (File.exists(LOGPATH))  {
-  File.append("Adding Merge log!", LOGPATH);
+    File.append("Adding Merge log!", LOGPATH);
 }
 else  {
-  logf = File.open(LOGPATH);
-  File.append("Failed to find Localisation log file!",LOGPATH);
+    logf = File.open(LOGPATH);
+    File.append("Failed to find Localisation log file!",LOGPATH);
 }
 
-File.append("Configuration: Pixelwidth="+PIXELSIZE+", sizeX="+sizeX+", sizeY="+sizeY);
+File.append("Configuration: Pixelwidth="+PIXELWIDTH+", sizeX="+sizeX+", sizeY="+sizeY, LOGPATH);
 File.append("Starting Import Result at " + getTimeString(), LOGPATH);
 
 //sizeX=1200;
@@ -54,10 +55,7 @@ File.append("Import complete at  " + getTimeString(), LOGPATH);
 if (LATERAL_RES != "0")  {
     File.append("Lateral_res =  " + LATERAL_RES, LOGPATH);
 
-    FILEPATH=TMPDIR + "/" + FNAME;
-    ERR=File.exists(FILEPATH);
-
-	File.append("Begin PostPorcessing at " + detTimeString(), LOGPATH);
+	File.append("Begin PostProcessing at " + getTimeString(), LOGPATH);
 
     if (CAMERA=="Prime95B")  {
         //Prime95B Camera detected
@@ -102,7 +100,7 @@ if (LATERAL_RES != "0")  {
             File.append("Finished Filtering at " + getTimeStrin(), LOGPATH);
 		}
     } else {
-		FORMULA = "[(intensity > 1)]";
+		FORMULA = "(intensity > 1)";
         File.append("Filtering with " + FORMULA, LOGPATH);
         run("Show results table", "action=filter formula=["+FORMULA+"]");
 
@@ -120,7 +118,7 @@ if (LATERAL_RES != "0")  {
         saveAs("Tiff", DRIFTPATH);
         close();
 
-		File.append("Finished Drift Correction at " + geetTimeString(), LOGPATH);
+		File.append("Finished Drift Correction at " + getTimeString(), LOGPATH);
     }
 
     POSTNAME = NAME + "_final";
@@ -133,8 +131,7 @@ if (LATERAL_RES != "0")  {
         File.append("Starting 2D visualisation!",LOGPATH);
 	    run("Visualization", "imleft=0.0 imtop=0.0 imwidth=["+sizeX+"] imheight=["+sizeY+"] renderer=[Averaged shifted histograms] magnification=["+MAGNIFICATION+"] colorize=false threed=false shifts=2");
         OUTPATH = WORK + "/" + JOBNO  + "/" + POSTNAME + "_2D.ome.tiff";
-    }
-    else  {
+    } else  {
         File.append("Starting 3D visualisation!",LOGPATH);
 	    run("Visualization", "imleft=0.0 imtop=0.0 imwidth=["+sizeX+"] imheight=["+sizeY+"] renderer=[Averaged shifted histograms] zrange=-600:60:600 pickedlut=[16 colors] magnification=["+MAGNIFICATION+"] colorize=true threed=true shifts=2 zshifts=2");
         OUTPATH = WORK + "/" + JOBNO  + "/" + POSTNAME + "_3D.ome.tiff";
@@ -151,8 +148,6 @@ if (LATERAL_RES != "0")  {
     if(File.exists(OUTPATH) != 1 ) {
       File.append("Failed to write " + OUTPATH, LOGPATH);
     }
-
-  }
 }  //End of Visualisation
 
 File.append("closing " + toString(nImages) + " images." ,LOGPATH);
@@ -163,8 +158,6 @@ while (nImages>0) {
 }
 
 File.append("exiting loc_post_macro at " + getTimeString(), LOGPATH);
-
-File.close(logf);
 
 run("Quit");
 

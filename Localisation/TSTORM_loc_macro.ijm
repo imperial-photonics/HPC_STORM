@@ -118,7 +118,7 @@ if (File.exists(CONFPATH))  {
     File.delete(CONFPATH);
 }
 conff = File.open(CONFPATH);
-LINE = toString(FIRST)+":"+LAST+":"+PIXELWIDTH+":"+sizeX+":"+sizeY;
+LINE = toString(FIRST)+":"+LAST+":"+PIXELWIDTH+":"+sizeX+":"+sizeY+":";
 File.append(LINE, CONFPATH);
 File.close(conff);
 

@@ -13,78 +13,69 @@
 #PBS -l select=1:ncpus=48:mem=110gb
 #PBS -m ae
 
-
 #  hardwired paths TBD
 #IJ=/apps/fiji/Fiji.app/ImageJ-linux64
 
 #HOME=/Users/imunro/HPC_STORM
 #IJ=/Applications/Fiji.app/Contents/MacOS/ImageJ-macosx
 
-echo "Start Merging time $(date)"
-
-sort -t ',' -k2n,2 -k1n,1 -m ${WORK}/${JOBNO}/tmp_${NAME}_*.csv | awk 'BEGIN{FS=",";OFS=","; OFMT="%.2f" }{$1=NR; print $0}' >> ${WORK}/${JOBNO}/${NAME}.csv
-
 echo "merging all the localisation log files"
-cat ${WORK}/${JOBNO}/tmp*.log  > ${WORK}/${JOBNO}/temp_localisation.log
+export LOGFILE=${WORK}/${JOBNO}/temp_localisation.log
+cat ${WORK}/${JOBNO}/tmp*.log  > ${LOGFILE}
 rm  ${WORK}/${JOBNO}/tmp*.log
 
-echo "Start Postprocess time $(date)"
+echo "Start Merging time $(date)" >> ${LOGFILE}
 
-# Read pixel size from protocol file
-#export PIXELSIZE=`cat ${WORK}/${JOBNO}/tmp_1000_frames_only_slice_1-protocol.txt | sed ' s/^.*pixelSize": // ; s/,.*$//'`
+cp ${WORK}/${JOBNO}/header ${WORK}/${JOBNO}/${NAME}.csv
+sort -t ',' -k2n,2 -k1n,1 -m ${WORK}/${JOBNO}/tmp_${NAME}_*.csv | awk 'BEGIN{FS=",";OFS=","; OFMT="%.2f" }{$1=NR; print $0}' >> ${WORK}/${JOBNO}/${NAME}.csv
+
+echo "Start Postprocess time $(date)" >> ${LOGFILE}
 
 ##load application module
 module load fiji vnc #anaconda3/personal
 
 `vnc_start`
 
-#echo "running TSTORM loc_merge macro!"
+echo "running TSTORM loc_merge macro!"
 
 module load sysconfcpus/0.5
-
 
 # run ThunderSTORM
 #sysconfcpus -n $NCPUS $IJ --ij2 -macro $HOME/Localisation/TSTORM_loc_merge_macro.ijm $ARGS_FULL
 # sysconfcpus -n 24 fiji -macro $HOME/Localisation/TSTORM_loc_merge_mac
-sysconfcpus -n 48 fiji --ij2 -macro $HOME/Localisation/TSTORM_loc_post_macro.ijm ${WORK}:${FNAME}:${JOBNO}:${NJOBS}:${PBS_ARRAY_INDX:-1}:${THREED}:${CAMERA:-Unknown}:${CALIB:-NULL}:${POST_PROC}
+sysconfcpus -n 48 fiji --ij2 -macro $HOME/Localisation/TSTORM_loc_post_macro.ijm ${WORK}:${FNAME}:${JOBNO}:${NJOBS}:${PBS_ARRAY_INDX:-1}:${THREED}:${CAMERA:-Unknown}:${CALIB:-NULL}:${POST_PROC}:${LATERAL_RES}
+#/Applications/Fiji.app/Contents/MacOS/ImageJ-macosx -macro $HOME/Documents/Github/HPC_STORM/Localisation/TSTORM_loc_post_macro.ijm ${WORK}:${FNAME}:${JOBNO}:${NJOBS}:${PBS_ARRAY_INDX:-1}:${THREED}:${CAMERA:-Unknown}:${CALIB:-NULL}:${POST_PROC}:${LATERAL_RES}
 
-#echo "stopping vnc!"
+echo "stopping vnc!"
+
 vnc_stop
-
-#chmod 666 ${TMPSTORM}/*
-#chmod 666 ${WORK}/${JOBNO}/*_loc.log
 
 if [[ $INPATH == "/external"* ]]
 then
-  
-  echo "secure copying .csv from WORK to Input Dir"
-  scp -q -p "${WORK}"/"${JOBNO}"/*.csv ${USER}@login-2-internal:${INPATH}
-  echo "secure copying protocol file from TMPDIR to Input Dir"
-  scp -q -p "${WORK}"/"${JOBNO}"/*protocol.txt ${USER}@login-2-internal:${INPATH}
-  echo "copying log file to Input Dir using scp"
-  scp -q -p "${WORK}"/"${JOBNO}"/*.log ${USER}@login-2-internal:${INPATH}
-  echo "secure copying .ome.tiff from TMPDIR to Input Dir"
-  scp -q -p "${WORK}"/"${JOBNO}"/*D.ome.tiff ${USER}@login-2-internal:${INPATH} 
-  echo "secure copying drift.tiff from TMPDIR to Input Dir"   
-  scp -q -p "${WORK}"/"${JOBNO}"/*_drift.tiff ${USER}@login-2-internal:${INPATH}
-  
-  
+    echo "secure copying .csv from WORK to Input Dir" >> ${LOGFILE}
+    scp -q -p ${WORK}/${JOBNO}/${NAME}*.csv ${USER}@login-2-internal:${INPATH}
+    echo "secure copying protocol file from TMPDIR to Input Dir"
+    scp -q -p ${WORK}/${JOBNO}/*protocol.txt ${USER}@login-2-internal:${INPATH}
+    echo "copying log file to Input Dir using scp" >> ${LOGFILE}
+    scp -q -p ${WORK}/${JOBNO}/*.log ${USER}@login-2-internal:${INPATH}
+    echo "secure copying output .ome.tiff from TMPDIR to Input Dir" >> ${LOGFILE}
+    scp -q -p ${WORK}/${JOBNO}/*D.ome.tiff ${USER}@login-2-internal:${INPATH}
+    echo "secure copying drift.tiff from TMPDIR to Input Dir" >> ${LOGFILE}
+    scp -q -p ${WORK}/${JOBNO}/*_drift.tiff ${USER}@login-2-internal:${INPATH}
 else
-  
-  echo "copying .csv from WORK to Input Dir"
-  cp "${WORK}"/"${JOBNO}"/*.csv ${INPATH}
-  echo "copying protocol file from TMPDIR to Input Dir"
-  cp "${WORK}"/"${JOBNO}"/*protocol.txt ${INPATH}
-  echo "moving log file to Input Dir"
-  cp "${WORK}"/"${JOBNO}"/*.log ${INPATH}
-  echo "copying .ome.tiff from TMPDIR to Input Dir"
-  cp "${WORK}"/"${JOBNO}"/*D.ome.tiff ${INPATH}
-  echo "copying drift.tiff from TMPDIR to Input Dir"
-  cp "${WORK}"/"${JOBNO}"/*_drift.tiff ${INPATH}
-
+    echo "copying .csv from WORK to Input Dir" >> ${LOGFILE}
+    cp ${WORK}/${JOBNO}/${NAME}*.csv ${INPATH}
+    echo "copying protocol file from TMPDIR to Input Dir" >> ${LOGFILE}
+    cp ${WORK}/${JOBNO}/*protocol.txt ${INPATH}
+    echo "moving log file to Input Dir" >> ${LOGFILE}
+    cp ${WORK}/${JOBNO}/*.log ${INPATH}
+    echo "copying output .ome.tiff from TMPDIR to Input Dir" >> ${LOGFILE}
+    cp ${WORK}/${JOBNO}/*D.ome.tiff ${INPATH}
+    echo "copying drift.tiff from TMPDIR to Input Dir" >> ${LOGFILE}
+    cp ${WORK}/${JOBNO}/*_drift.tiff ${INPATH}
 fi
 
-echo "Finishing Postprocess time $(date)"
+echo "Finishing Postprocess time $(date)" >> ${LOGFILE}
 
 exit
 
