@@ -19,6 +19,8 @@ IJ=/apps/fiji/Fiji.app/ImageJ-linux64
 #HOME=/Users/imunro/HPC_STORM
 #IJ=/Applications/Fiji.app/Contents/MacOS/ImageJ-macosx
 
+rm /tmp/ImageJ-maan-_3-7.stub
+
 # if NJOBS == 1 &&  jobs and PBS_ARRAY_INDEX > 1
 # then this is a dummy array job so do nothing
 if [[ $NJOBS  != 1  ]] || [[  $PBS_ARRAY_INDEX == 1 ]]; then
