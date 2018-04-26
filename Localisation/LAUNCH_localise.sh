@@ -16,7 +16,6 @@ USAGE="Usage: LAUNCH_localise [-b] filename(inc path) [calibration_file(name onl
 echo "fogim queue"
 QUEUE="pqfogim"
 
-
 INPATH=""
 FNAME=""
 
@@ -107,9 +106,9 @@ fi
 
 ARRFNAME=(${FNAME//.ome/ })
 export NAME=${ARRFNAME[0]}
+export CAMERA=`tail -c 2000000 ${FULLNAME} | strings | grep Detector |  sed 's/^.*Detector ID="// ; s/".*$//'`
 
-
-#   environment variables $INPATH $FNAME $NJOBS $THREED $CALIB $NAME now contain the necessary information for the other scripts to work
+#   environment variables $INPATH $FNAME $NJOBS $THREED $CALIB $NAME $CAMERA now contain the necessary information for the other scripts to work
 
 if [ $NJOBS == "1" ]; then
   one=$(qsub -q $QUEUE -V $HOME/Localisation/loc_ARRScriptSingle.pbs)

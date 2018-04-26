@@ -63,16 +63,15 @@ if [[ $NJOBS  != 1  ]] || [[  $PBS_ARRAY_INDEX == 1 ]]; then
     module load sysconfcpus/0.5
 
     # run ThunderSTORM
-    set > $WORK/loc_NodeScript$PBS_ARRAY_INDEX.log
-    # sysconfcpus -n $NCPUS $IJ --ij2 -macro $HOME/Localisation/TSTORM_loc_macro.ijm $ARGS_FULL
-    sysconfcpus -n 48 fiji --ij2 -macro $HOME/Localisation/TSTORM_loc_macro.ijm ${WORK}:${FNAME}:${JOBNO}:${NJOBS}:${PBS_ARRAY_INDX:-1}:${THREED}:${CALIB:-NULL}
-    # sysconfcpus -n 24 fiji -macro $HOME/Localisation/TSTORM_loc_macro.ijm $ARGS_FULL
+    # set > $WORK/loc_NodeScript$PBS_ARRAY_INDEX.log
+    sysconfcpus -n 48 fiji --ij2 -macro $HOME/Localisation/TSTORM_loc_macro.ijm ${WORK}:${FNAME}:${JOBNO}:${NJOBS}:${PBS_ARRAY_INDX:-1}:${THREED}:${CAMERA:-Unknown}:${CALIB:-NULL}
     #echo "returned from Macro"
 
     echo "awk -v job_index=$PBS_ARRAY_INDEX -v job_no=$NJOBS 'BEGIN{FS=",";OFS=",";OFMT="%.2f"; getline }{$2=job_no*($2-1)+job_index; print $0}' ${TMPDIR}/tmp_${NAME}_slice_$PBS_ARRAY_INDEX.csv  > ${WORK}/${JOBNO}/tmp_${NAME}_${PBS_ARRAY_INDEX}.csv"
 
-    if [ $PBS_ARRAY_INDEX == 1 ]; then
-        echo "head -1 ${TMPDIR}/tmp_${NAME}_slice_1.csv > ${INPATH}/${JOBNO}/${NAME}.csv"
+    if [ ${PBS_ARRAY_INDEX:-1} == 1 ]; then
+        head -1 ${TMPDIR}/tmp_${NAME}_slice_1.csv > ${WORK}/${JOBNO}/${NAME}.csv
+        cp ${TMPDIR}/tmp_${NAME}_slice_1-protocol.txt ${WORK}/${JOBNO}/${NAME}-protocol.txt
     fi
 
     echo "Finishing Localization time $(date)"

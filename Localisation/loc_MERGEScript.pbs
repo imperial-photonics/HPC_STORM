@@ -20,62 +20,21 @@
 #HOME=/Users/imunro/HPC_STORM
 #IJ=/Applications/Fiji.app/Contents/MacOS/ImageJ-macosx
 
-set > $WORK/loc_MERGEScript.log
-echo $* >> $WORK/loc_MERGEScript.log
-exit
-
-ARRARGS=(${SETUP_ARGS//:/ })
-INPATH=${ARRARGS[0]}
-FNAME=${ARRARGS[1]}
-
-ARRFNAME=(${FNAME//.ome/ })
-NAME=${ARRFNAME[0]}
-
-echo "${ARRARGS}"
-
-if [ ${#ARRARGS[@]} == "4" ];then
-  NJOBS=${ARRARGS[3]}
-else
-  CALIB=${ARRARGS[2]}
-  NJOBS=${ARRARGS[4]}
-fi
-
 echo "Start Merging time $(date)"
 
-sort -t ',' -k2n,2 -k1n,1 -m $WORK/$JOBNO/tmp_"$NAME"_"$n".csv $WORK/$JOBNO/tmp_"$NAME"_sort_*.csv >> $WORK/$JOBNO/"$NAME".csv
+sort -t ',' -k2n,2 -k1n,1 -m ${WORK}/${JOBNO}/tmp_"$NAME"_*.csv | awk 'BEGIN{FS=",";OFS=","; OFMT="%.2f" }{$1=NR; print $0}' >> $WORK/$JOBNO/"$NAME".csv
 
 echo "merging all the localisation log files"
-cat "${WORK}"/"${JOBNO}"/tmp*.log  > $WORK/$JOBNO/temp_localisation.log
+cat "${WORK}"/"${JOBNO}"/tmp*.log  > ${WORK}/${JOBNO}/temp_localisation.log
 rm  $WORK/$JOBNO/tmp*.log
-#cat "$TMPDIR"/tmp*.log  > $TMPDIR/temp_localisation.log
 
 echo "Start Postprocess time $(date)"
 
-# add environment variables to args list
-ARGS_FULL="$SETUP_ARGS":"$TMPDIR":"$JOBNO":"$LATERAL_RES":"$POST"
-
-## cp "${WORK}"/"${JOBNO}"/tmp_* $TMPSTORM
-
-if [ "$LATERAL_RES" != "0" ]; then
-  # non-zero lateral res so copy files needed to TMPDIR
-  if [ ! -f $TMPDIR"/"$FNAME ]
-  then
-	if [[ $INPATH == "/external"* ]]	
-	then
-		echo "secure copying one .ome.tiff from Input Dir to TMPDIR"
-		scp -q ${USER}@login-2-internal:${INPATH}/${FNAME} ${TMPSTORM}
-		echo "done!"
-	else
-		echo "copying source ome.tiff from Input Dir to TMPDIR"
-		cp "${INPATH}"/"${FNAME}" ${TMPSTORM}
-	fi
-  fi
-
-  cp "${HOME}"/Localisation/csv_sigma_mode.py $TMPSTORM
-fi
+# Read pixel size from protocol file
+export PIXELSIZE=`cat tmp_1000_frames_only_slice_1-protocol.txt | sed ' s/^.*pixelSize": // ; s/,.*$//'`
 
 ##load application module
-module load fiji vnc anaconda3/personal
+module load fiji vnc #anaconda3/personal
 
 `vnc_start`
 
@@ -87,7 +46,7 @@ module load sysconfcpus/0.5
 # run ThunderSTORM
 #sysconfcpus -n $NCPUS $IJ --ij2 -macro $HOME/Localisation/TSTORM_loc_merge_macro.ijm $ARGS_FULL
 # sysconfcpus -n 24 fiji -macro $HOME/Localisation/TSTORM_loc_merge_mac
-sysconfcpus -n 48 fiji --ij2 -macro $HOME/Localisation/TSTORM_loc_post_macro.ijm $ARGS_FULL
+sysconfcpus -n 48 fiji --ij2 -macro $HOME/Localisation/TSTORM_loc_post_macro.ijm ${WORK}:${FNAME}:${JOBNO}:${NJOBS}:${PBS_ARRAY_INDX:-1}:${THREED}:${CAMERA:-Unknown}:${CALIB:-NULL}:${PIXELSIZE}:${POST_PROC}
 
 #echo "stopping vnc!"
 vnc_stop
@@ -99,7 +58,7 @@ chmod 666 "${WORK}"/"${JOBNO}"/*_loc.log
 if [[ $INPATH == "/external"* ]]
 then
   
-  echo "secure copying .csv from TMPDIR to Input Dir"
+  echo "secure copying .csv from WORK to Input Dir"
   scp -q -p "${WORK}"/"${JOBNO}"/*.csv ${USER}@login-2-internal:${INPATH}
   echo "secure copying protocol file from TMPDIR to Input Dir"
   scp -q -p "${WORK}"/"${JOBNO}"/*protocol.txt ${USER}@login-2-internal:${INPATH}
@@ -113,7 +72,7 @@ then
   
 else
   
-  echo "copying .csv from TMPDIR to Input Dir"
+  echo "copying .csv from WORK to Input Dir"
   cp "${WORK}"/"${JOBNO}"/*.csv ${INPATH}
   echo "copying protocol file from TMPDIR to Input Dir"
   cp "${WORK}"/"${JOBNO}"/*protocol.txt ${INPATH}
