@@ -14,6 +14,15 @@ CALIB=parts[7];
 PIXELSIZE=parts[8];
 POST=parts[9];
 
+fullname=split(FNAME, ".");
+NAME=fullname[0];
+
+CONF=File.openAsString(WORK+"/"+JOBNO+"/tmp_conf_"+NAME+"_1.txt");
+parts=split(CONF,":");
+PIXELSIZE=parts[2];
+sizeX=parts[3];
+sizeY=parts[4];
+
 LOGPATH = WORK + "/" + JOBNO + "/temp_localisation.log";
 
 if (File.exists(LOGPATH))  {
@@ -24,13 +33,11 @@ else  {
   File.append("Failed to find Localisation log file!",LOGPATH);
 }
 
-fullname=split(FNAME, ".");
-NAME=fullname[0];
-
+File.append("Configuration: Pixelwidth="+PIXELSIZE+", sizeX="+sizeX+", sizeY="+sizeY);
 File.append("Starting Import Result at " + getTimeString(), LOGPATH);
 
-sizeX=1200;
-sizeY=1200;
+//sizeX=1200;
+//sizeY=1200;
 
 SAVEPROTOCOL = "true";
 
