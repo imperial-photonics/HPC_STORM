@@ -106,14 +106,14 @@ fi
 
 ARRFNAME=(${FNAME//.ome/ })
 export NAME=${ARRFNAME[0]}
-export CAMERA=`tail -c 2000000 ${FULLNAME} | strings | grep Detector |  sed 's/^.*Detector ID="// ; s/".*$//'`
+export CAMERA=`tail -c 4000000 ${FULLNAME} | strings | grep Detector |  sed 's/^.*Detector ID="// ; s/".*$//'`
 
 #   environment variables $INPATH $FNAME $NJOBS $THREED $CALIB $NAME $CAMERA now contain the necessary information for the other scripts to work
 
 if [ $NJOBS == "1" ]; then
-  one=$(qsub -q $QUEUE -V $HOME/Localisation/loc_ARRScriptSingle.pbs)
+    one=$(qsub -q $QUEUE -V $HOME/Localisation/loc_ARRScriptSingle.pbs)
 else
-  one=$(qsub -q $QUEUE -V $HOME/Localisation/loc_ARRScript.pbs)
+    one=$(qsub -q $QUEUE -V $HOME/Localisation/loc_ARRScript.pbs)
 fi
 echo "launching processing job"
 echo $one
