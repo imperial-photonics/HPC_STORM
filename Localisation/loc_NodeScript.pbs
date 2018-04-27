@@ -66,7 +66,7 @@ export PBS_ARRAY_INDEX=${PBS_ARRAY_INDEX:-1}
         fi
     fi
 
-    module load fij vnc sysconfcpus/0.5
+    module load fiji vnc sysconfcpus/0.5
 
 `vnc_start`
 
