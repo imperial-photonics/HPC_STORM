@@ -84,9 +84,10 @@ export PBS_ARRAY_INDEX=${PBS_ARRAY_INDEX:-1}
     echo "Started thunderstorm processes ${PIDS} $(date)"
     wait ${PIDS}
 
-    awk -v job_index=$PBS_ARRAY_INDEX -v job_no=$NJOBS 'BEGIN{FS=",";OFS=",";OFMT="%.2f"; getline }{$2=job_no*($2-1)+job_index; print $0}' ${TMPDIR}/tmp_${NAME}_slice_${INDX1}.csv  > ${WORK}/${JOBNO}/tmp_${NAME}_${PBS_ARRAY_INDEX}.csv &
+    NJOBS=`eval 2 * ${NJOBS}`
+    awk -v job_index=${INDX1} -v job_no=${NJOBS} 'BEGIN{FS=",";OFS=",";OFMT="%.2f"; getline }{$2=job_no*($2-1)+job_index; print $0}' ${TMPDIR}/tmp_${NAME}_slice_${INDX1}.csv  > ${WORK}/${JOBNO}/tmp_${NAME}_${PBS_ARRAY_INDEX}.csv &
     PIDS=$!
-    awk -v job_index=$PBS_ARRAY_INDEX -v job_no=$NJOBS 'BEGIN{FS=",";OFS=",";OFMT="%.2f"; getline }{$2=job_no*($2-1)+job_index; print $0}' ${TMPDIR}/tmp_${NAME}_slice_`expr ${PBS_ARRAY_INDEX:-1} + ${NJOBS}`.csv  > ${WORK}/${JOBNO}/tmp_${NAME}_${INDX2}.csv &
+    awk -v job_index=${INDX2} -v job_no=$NJOBS 'BEGIN{FS=",";OFS=",";OFMT="%.2f"; getline }{$2=job_no*($2-1)+job_index; print $0}' ${TMPDIR}/tmp_${NAME}_slice_${INDX2}.csv  > ${WORK}/${JOBNO}/tmp_${NAME}_${INDX2}.csv &
     PIDS="${PIDS} $!"
 
     trap "kill -15 $PIDS" 0 1 2 15

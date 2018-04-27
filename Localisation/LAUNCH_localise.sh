@@ -113,7 +113,7 @@ export CAMERA=`tail -c 10000000 ${FULLNAME} | strings | grep Detector |  sed 's/
 if [ $NJOBS == "1" ]; then
     one=$(qsub -q $QUEUE -V -J 1 $HOME/Localisation/loc_NodeScript.pbs)
 else
-    one=$(qsub -q $QUEUE -V -J 1-$NJOBS $HOME/Localisation/loc_NodeScript_Multi.pbs)
+    one=$(qsub -q $QUEUE -V -J 1-$NJOBS $HOME/Localisation/loc_NodeScript.pbs)
 fi
 echo "launching processing job"
 echo $one
