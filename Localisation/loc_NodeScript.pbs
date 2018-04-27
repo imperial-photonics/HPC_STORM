@@ -10,6 +10,10 @@
 #   ARGS = {input file directory}:{input file name}:{working directory}:{numbero of jobs}:{PBS_array_index}
 #   or
 #   ARGS = {input file directory}:{input filename}:{calibration filename}:{working directory}:{number of jobs}:{PBS_array_index}
+## ask PBS for time (format hh:mm:ss)
+#PBS -l walltime=08:00:0
+## ask for ten jobs with 24 cpus and total 64gb memory (per node)
+#PBS -l select=1:ncpus=48:ompthreads=48:mem=110gb
 
 echo "Start Localization time $(date)"
 
@@ -21,7 +25,9 @@ IJ=/apps/fiji/Fiji.app/ImageJ-linux64
 
 # if NJOBS == 1 &&  jobs and PBS_ARRAY_INDEX > 1
 # then this is a dummy array job so do nothing
-if [[ $NJOBS  != 1  ]] || [[  $PBS_ARRAY_INDEX == 1 ]]; then
+#if [[ ${NJOBS}  != 1  ]] || [[  ${PBS_ARRAY_INDEX} == 1 ]]; then
+
+export PBS_ARRAY_INDEX=${PBS_ARRAY_INDEX:-1}
 
     # split PBS_JOBID to get pbsjob no
     ARR=(${PBS_JOBID//[/ })
@@ -60,7 +66,9 @@ if [[ $NJOBS  != 1  ]] || [[  $PBS_ARRAY_INDEX == 1 ]]; then
         fi
     fi
 
-    module load sysconfcpus/0.5
+    module load fij vnc sysconfcpus/0.5
+
+`vnc_start`
 
     # run ThunderSTORM
     # set > $WORK/loc_NodeScript$PBS_ARRAY_INDEX.log
@@ -75,11 +83,13 @@ if [[ $NJOBS  != 1  ]] || [[  $PBS_ARRAY_INDEX == 1 ]]; then
     fi
 
     echo "Finishing Localization time $(date)"
-else
-    echo "Dummy job returning!"
-fi
+#else
+#    echo "Dummy job returning!"
+#fi
 
+vnc_stop
 
+exit
 
 
 

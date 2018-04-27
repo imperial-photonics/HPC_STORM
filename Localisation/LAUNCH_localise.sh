@@ -19,7 +19,7 @@ QUEUE="pqfogim"
 INPATH=""
 FNAME=""
 
-echo "How many HPC nodes do you wand to use?"
+echo "How many HPC nodes do you want to use?"
 read -p "Enter number of nodes on the HPC: " NJOBS
 
 export NJOBS
@@ -111,9 +111,9 @@ export CAMERA=`tail -c 4000000 ${FULLNAME} | strings | grep Detector |  sed 's/^
 #   environment variables $INPATH $FNAME $NJOBS $THREED $CALIB $NAME $CAMERA now contain the necessary information for the other scripts to work
 
 if [ $NJOBS == "1" ]; then
-    one=$(qsub -q $QUEUE -V $HOME/Localisation/loc_ARRScriptSingle.pbs)
+    one=$(qsub -q $QUEUE -V -J 1 $HOME/Localisation/loc_NodeScript.pbs)
 else
-    one=$(qsub -q $QUEUE -V $HOME/Localisation/loc_ARRScript.pbs)
+    one=$(qsub -q $QUEUE -V -J 1-$NJOBS $HOME/Localisation/loc_NodeScript.pbs)
 fi
 echo "launching processing job"
 echo $one
