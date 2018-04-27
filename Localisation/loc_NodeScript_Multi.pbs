@@ -20,89 +20,78 @@ echo "Start Localization time $(date)"
 #  hardwired paths TBD
 IJ=/apps/fiji/Fiji.app/ImageJ-linux64
 
-#HOME=/Users/imunro/HPC_STORM
-#IJ=/Applications/Fiji.app/Contents/MacOS/ImageJ-macosx
-
-# if NJOBS == 1 &&  jobs and PBS_ARRAY_INDEX > 1
-# then this is a dummy array job so do nothing
-#if [[ ${NJOBS}  != 1  ]] || [[  ${PBS_ARRAY_INDEX} == 1 ]]; then
-
-export PBS_ARRAY_INDEX=${PBS_ARRAY_INDEX:-1}
-
-    # split PBS_JOBID to get pbsjob no
-    ARR=(${PBS_JOBID//[/ })
-    export JOBNO=${ARR[0]}
+# split PBS_JOBID to get pbsjob no
+ARR=(${PBS_JOBID//[/ })
+export JOBNO=${ARR[0]}
   
-    echo "Jobno = "
-    echo $JOBNO
+echo "Jobno = "
+echo $JOBNO
 
-    #create a subdir to hold the outputs from this job
+#create a subdir to hold the outputs from this job
 
-    if [ ! -d ${INPATH}/${JOBNO} ]; then  # This probably doesn't work if the file is in an external directory
-        mkdir ${INPATH}/${JOBNO}
-    fi
+if [ ! -d ${INPATH}/${JOBNO} ]; then  # This probably doesn't work if the file is in an external directory
+    mkdir ${INPATH}/${JOBNO}
+fi
 
-    #copy data file into $TMPDIR
+#copy data file into $TMPDIR
+if [[ $INPATH == "/external"* ]]; then
+    echo "secure copying data file"
+    scp -q ${USER}@login-2-internal:${INPATH}/${NAME}*.ome.tif ${TMPDIR}
+else
+    echo "copying data file"
+    cp ${INPATH}/${NAME}*.ome.tif ${TMPDIR}
+fi
+  
+if [ ! -f ${TMPDIR}/${FNAME} ]; then
+    echo "Copy failed!"
+    exit 0
+fi
+
+if [ $THREED == 1 ]; then
     if [[ $INPATH == "/external"* ]]; then
-        echo "secure copying data file"
-        scp -q ${USER}@login-2-internal:${INPATH}/${NAME}*.ome.tif ${TMPDIR}
+        echo "secure copying calibration file"
+        scp -q ${USER}@login-2-internal:${INPATH}/${CALIB} ${TMPDIR}
     else
-        echo "copying data file"
-        cp ${INPATH}/${NAME}*.ome.tif ${TMPDIR}
+        echo "copying calibration file"
+        cp ${INPATH}/${CALIB} ${TMPDIR}
     fi
-  
-    if [ ! -f ${TMPDIR}/${FNAME} ]; then
-        echo "Copy failed!"
-        exit 0
-    fi
+fi
 
-    if [ $THREED == 1 ]; then
-        if [[ $INPATH == "/external"* ]]; then
-            echo "secure copying calibration file"
-            scp -q ${USER}@login-2-internal:${INPATH}/${CALIB} ${TMPDIR}
-        else
-            echo "copying calibration file"
-            cp ${INPATH}/${CALIB} ${TMPDIR}
-        fi
-    fi
-
-    module load fiji vnc sysconfcpus/0.5
+module load fiji vnc sysconfcpus/0.5
 
 `vnc_start`
 
-    export INDX1=${PBS_ARRAY_INDEX:-1}
-    export INDX2=`expr ${INDX1} + ${NJOBS}`
-    NJOBS=`expr 2 \* ${NJOBS}`
-    # run ThunderSTORM
-    # set > $WORK/loc_NodeScript$PBS_ARRAY_INDEX.log
-    sysconfcpus -n 48 fiji --ij2 -macro $HOME/Localisation/TSTORM_loc_macro.ijm ${WORK}:${FNAME}:${JOBNO}:${NJOBS}:${INDX1}:${THREED}:${CAMERA:-Unknown}:${CALIB:-NULL} &
-    PIDS=$!
-    sysconfcpus -n 48 fiji --ij2 -macro $HOME/Localisation/TSTORM_loc_macro.ijm ${WORK}:${FNAME}:${JOBNO}:${NJOBS}:${INDX2}:${THREED}:${CAMERA:-Unknown}:${CALIB:-NULL} &
+export INDX=${PBS_ARRAY_INDEX:-1}
+export FRAMESTEP=`expr ${JPERNODE} \* ${NJOBS}`
+export PIDS
+# run ThunderSTORM
+# set > $WORK/loc_NodeScript$PBS_ARRAY_INDEX.log
+for i in `seq -s " " 1 ${JPERNODE}`
+do
+    (
+        echo "starting fiji, INDX = ${INDX}"
+        sysconfcpus -n 48 fiji --ij2 -macro $HOME/Localisation/TSTORM_loc_macro.ijm ${WORK}:${FNAME}:${JOBNO}:${FRAMESTEP}:${INDX}:${THREED}:${CAMERA:-Unknown}:${CALIB:-NULL}
+        echo "starting awk, INDX = ${INDX}, $(date)"
+        awk -v job_index=${INDX} -v job_no=${FRAMESTEP} 'BEGIN{FS=",";OFS=",";OFMT="%.2f"; getline }{$2=job_no*($2-1)+job_index; print $0}' ${TMPDIR}/tmp_${NAME}_slice_${INDX}.csv  > ${WORK}/${JOBNO}/tmp_${NAME}_${INDX}.csv
+        echo "done awk, INDX = ${INDX}, $(date)"
+        INDX=`expr ${INDX} + ${NJOBS}`
+    ) &
     PIDS="${PIDS} $!"
-    #echo "returned from Macro"
+done
 
-    trap "kill -15 $PIDS" 0 1 2 15
-    echo "Started thunderstorm processes ${PIDS} $(date)"
-    wait ${PIDS}
+#echo "returned from Macro"
 
-    awk -v job_index=${INDX1} -v job_no=${NJOBS} 'BEGIN{FS=",";OFS=",";OFMT="%.2f"; getline }{$2=job_no*($2-1)+job_index; print $0}' ${TMPDIR}/tmp_${NAME}_slice_${INDX1}.csv  > ${WORK}/${JOBNO}/tmp_${NAME}_${PBS_ARRAY_INDEX}.csv &
-    PIDS=$!
-    awk -v job_index=${INDX2} -v job_no=${NJOBS} 'BEGIN{FS=",";OFS=",";OFMT="%.2f"; getline }{$2=job_no*($2-1)+job_index; print $0}' ${TMPDIR}/tmp_${NAME}_slice_${INDX2}.csv  > ${WORK}/${JOBNO}/tmp_${NAME}_${INDX2}.csv &
-    PIDS="${PIDS} $!"
+trap "kill -15 $PIDS" 0 1 2 15
+echo "Started thunderstorm processes ${PIDS} $(date)"
+wait ${PIDS}
+echo "done thunderstorm processes ${PIDS} $(date)"
 
-    trap "kill -15 $PIDS" 0 1 2 15
-    echo "Started awk processes ${PIDS} $(date)"
-    wait ${PIDS}
+if [ ${PBS_ARRAY_INDEX:-1} == 1 ]; then
+    head -1 ${TMPDIR}/tmp_${NAME}_slice_1.csv > ${WORK}/${JOBNO}/${NAME}.csv
+    cp ${TMPDIR}/tmp_${NAME}_slice_1-protocol.txt ${WORK}/${JOBNO}/${NAME}-protocol.txt
+fi
 
-    if [ ${PBS_ARRAY_INDEX:-1} == 1 ]; then
-        head -1 ${TMPDIR}/tmp_${NAME}_slice_1.csv > ${WORK}/${JOBNO}/${NAME}.csv
-        cp ${TMPDIR}/tmp_${NAME}_slice_1-protocol.txt ${WORK}/${JOBNO}/${NAME}-protocol.txt
-    fi
-
-    echo "Finishing Localization time $(date)"
-#else
-#    echo "Dummy job returning!"
-#fi
+echo "Finishing Localization time $(date)"
 
 vnc_stop
 

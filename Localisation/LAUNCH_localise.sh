@@ -22,7 +22,11 @@ FNAME=""
 echo "How many HPC nodes do you want to use?"
 read -p "Enter number of nodes on the HPC: " NJOBS
 
+echo "How many jobs per do you want to use?"
+read -p "Enter number of jobs per node, use fewer for large or 3D datasets" JPERNODE
+
 export NJOBS
+export JPERNODE
 export THREED=0
 
 case "$#" in
@@ -106,14 +110,16 @@ fi
 
 ARRFNAME=(${FNAME//.ome/ })
 export NAME=${ARRFNAME[0]}
+
+# Look for camera name in the ome-tif metadata which sits at the end of the ome.tif file - needs to be fixed so it can be read in imagej properly!
 export CAMERA=`tail -c 10000000 ${FULLNAME} | strings | grep Detector |  sed 's/^.*Detector ID="// ; s/".*$//'`
 
-#   environment variables $INPATH $FNAME $NJOBS $THREED $CALIB $NAME $CAMERA now contain the necessary information for the other scripts to work
+#   environment variables $INPATH $FNAME $NJOBS $JPERNODE $THREED $CALIB $NAME $CAMERA now contain the necessary information for the other scripts to work
 
 if [ $NJOBS == "1" ]; then
-    one=$(qsub -q $QUEUE -V -J 1 $HOME/Localisation/loc_NodeScript.pbs)
+    one=$(qsub -q $QUEUE -m abe -M ${USER} -V -J 1 $HOME/Localisation/loc_NodeScript.pbs)
 else
-    one=$(qsub -q $QUEUE -V -J 1-$NJOBS $HOME/Localisation/loc_NodeScript_Multi.pbs)
+    one=$(qsub -q $QUEUE -m abe -M ${USER} -V -J 1-$NJOBS $HOME/Localisation/loc_NodeScript_Multi.pbs)
 fi
 echo "launching processing job"
 echo $one
