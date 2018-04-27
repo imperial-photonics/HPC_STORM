@@ -72,7 +72,7 @@ export PBS_ARRAY_INDEX=${PBS_ARRAY_INDEX:-1}
 
     export INDX1=${PBS_ARRAY_INDEX:-1}
     export INDX2=`expr ${INDX1} + ${NJOBS}`
-    NJOBS=`eval 2 * ${NJOBS}`
+    NJOBS=`expr 2 \* ${NJOBS}`
     # run ThunderSTORM
     # set > $WORK/loc_NodeScript$PBS_ARRAY_INDEX.log
     sysconfcpus -n 48 fiji --ij2 -macro $HOME/Localisation/TSTORM_loc_macro.ijm ${WORK}:${FNAME}:${JOBNO}:${NJOBS}:${INDX1}:${THREED}:${CAMERA:-Unknown}:${CALIB:-NULL} &
