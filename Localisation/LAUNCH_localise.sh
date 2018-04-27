@@ -23,7 +23,7 @@ echo "How many HPC nodes do you want to use?"
 read -p "Enter number of nodes on the HPC: " NJOBS
 
 echo "How many jobs per do you want to use?"
-read -p "Enter number of jobs per node, use fewer for large or 3D datasets" JPERNODE
+read -p "Enter number of jobs per node, use fewer for large or 3D datasets: " JPERNODE
 
 export NJOBS
 export JPERNODE

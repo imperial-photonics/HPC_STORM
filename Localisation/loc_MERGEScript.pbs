@@ -13,12 +13,6 @@
 #PBS -l select=1:ncpus=48:mem=110gb
 #PBS -m ae
 
-#  hardwired paths TBD
-#IJ=/apps/fiji/Fiji.app/ImageJ-linux64
-
-#HOME=/Users/imunro/HPC_STORM
-#IJ=/Applications/Fiji.app/Contents/MacOS/ImageJ-macosx
-
 echo "merging all the localisation log files"
 export LOGFILE=${WORK}/${JOBNO}/temp_localisation.log
 cat ${WORK}/${JOBNO}/tmp*.log  > ${LOGFILE}
@@ -53,23 +47,23 @@ then
     scp -q -p ${WORK}/${JOBNO}/${NAME}*.csv ${USER}@login-2-internal:${INPATH}/${JOBNO}
     echo "secure copying protocol file from WORK to Input Dir" >> ${LOGFILE}
     scp -q -p ${WORK}/${JOBNO}/*protocol.txt ${USER}@login-2-internal:${INPATH}/${JOBNO}
-    echo "secure copying log file from WORK to Input Dir" >> ${LOGFILE}
-    scp -q -p ${WORK}/${JOBNO}/*.log ${USER}@login-2-internal:${INPATH}/${JOBNO}
     echo "secure copying output .ome.tiff from WORK to Input Dir" >> ${LOGFILE}
     scp -q -p ${WORK}/${JOBNO}/*D.ome.tiff ${USER}@login-2-internal:${INPATH}/${JOBNO}
     echo "secure copying drift.tiff from WORK to Input Dir" >> ${LOGFILE}
     scp -q -p ${WORK}/${JOBNO}/*_drift.tiff ${USER}@login-2-internal:${INPATH}/${JOBNO}
+    echo "secure copying log file from WORK to Input Dir" >> ${LOGFILE}
+    scp -q -p ${WORK}/${JOBNO}/*.log ${USER}@login-2-internal:${INPATH}/${JOBNO}
 else
     echo "copying .csv from WORK to Input Dir" >> ${LOGFILE}
     cp ${WORK}/${JOBNO}/${NAME}*.csv ${INPATH}/${JOBNO}
     echo "copying protocol file from WORK to Input Dir" >> ${LOGFILE}
     cp ${WORK}/${JOBNO}/*protocol.txt ${INPATH}/${JOBNO}
-    echo "copying log file from WORK to Input Dir" >> ${LOGFILE}
-    cp ${WORK}/${JOBNO}/*.log ${INPATH}/${JOBNO}
     echo "copying output .ome.tiff from WORK to Input Dir" >> ${LOGFILE}
     cp ${WORK}/${JOBNO}/*D.ome.tiff ${INPATH}/${JOBNO}
     echo "copying drift.tiff from WORK to Input Dir" >> ${LOGFILE}
     cp ${WORK}/${JOBNO}/*_drift.tiff ${INPATH}/${JOBNO}
+    echo "copying log file from WORK to Input Dir" >> ${LOGFILE}
+    cp ${WORK}/${JOBNO}/*.log ${INPATH}/${JOBNO}
 fi
 
 echo "Finishing Postprocess time $(date)" >> ${LOGFILE}
