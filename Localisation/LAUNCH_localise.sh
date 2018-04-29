@@ -117,7 +117,7 @@ export CAMERA=`tail -c 10000000 ${FULLNAME} | strings | grep Detector |  sed 's/
 #   environment variables $INPATH $FNAME $NJOBS $JPERNODE $THREED $CALIB $NAME $CAMERA now contain the necessary information for the other scripts to work
 
 if [ $NJOBS == "1" ]; then
-    one=$(qsub -q $QUEUE -m abe -M ${USER} -V $HOME/Localisation/loc_NodeScript.pbs)
+    one=$(qsub -q $QUEUE -m abe -M ${USER} -V $HOME/Localisation/loc_NodeScript_Multi.pbs)
 else
     one=$(qsub -q $QUEUE -m abe -M ${USER} -V -J 1-$NJOBS $HOME/Localisation/loc_NodeScript_Multi.pbs)
 fi
@@ -125,8 +125,7 @@ echo "launching processing job"
 echo $one
 
 # split name of first job to get pbsjob no
-ARR=(${one//[/ })
-export JOBNO=${ARR[0]}
+export JOBNO=`expr "$one" : '\([0-9]*\)'`
 
 mkdir ${WORK}/${JOBNO}        # Create a directory in $WORK to take shared temporary output files
 
