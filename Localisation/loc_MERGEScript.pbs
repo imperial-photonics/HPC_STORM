@@ -22,7 +22,7 @@ echo "Start Merging time $(date)" >> ${LOGFILE}
 
 cp ${WORK}/${JOBNO}/${NAME}.csv ${TMPDIR}/${NAME}.csv
 
-if [[ ${NJOBS} == 1 && ${JPERNODE == 1} ] ; then
+if [[ ${NJOBS} == 1 && ${JPERNODE} == 1 ]] ; then
     cat ${WORK}/${JOBNO}/tmp_${NAME}_*.csv >> ${TMPDIR}/${NAME}.csv
 else
     sort -t ',' -k2n,2 -k1n,1 -m ${WORK}/${JOBNO}/tmp_${NAME}_*.csv | awk 'BEGIN{FS=",";OFS=","; OFMT="%.2f" }{$1=NR; print $0}' >> ${TMPDIR}/${NAME}.csv
