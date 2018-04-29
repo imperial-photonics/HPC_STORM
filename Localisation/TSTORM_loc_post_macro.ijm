@@ -41,7 +41,8 @@ File.append("Starting Import Result at " + getTimeString(), LOGPATH);
 
 SAVEPROTOCOL = "true";
 
-INPATH = WORK + "/" + JOBNO + "/" + NAME + ".csv";
+//INPATH = WORK + "/" + JOBNO + "/" + NAME + ".csv";
+INPATH = NAME + ".csv";
 
 File.append("Importing file  " + INPATH, LOGPATH);
 run("Import results", "filepath=["+INPATH+"] detectmeasurementprotocol=true fileformat=[CSV (comma separated)] livepreview=false rawimagestack= startingframe=1 append=false");

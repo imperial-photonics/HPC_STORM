@@ -20,7 +20,13 @@ rm  ${WORK}/${JOBNO}/tmp*.log
 
 echo "Start Merging time $(date)" >> ${LOGFILE}
 
-sort -t ',' -k2n,2 -k1n,1 -m ${WORK}/${JOBNO}/tmp_${NAME}_*.csv | awk 'BEGIN{FS=",";OFS=","; OFMT="%.2f" }{$1=NR; print $0}' >> ${WORK}/${JOBNO}/${NAME}.csv
+cp ${WORK}/${JOBNO}/${NAME}.csv ${TMPDIR}/${NAME}.csv
+
+if [[ ${NJOBS} == 1 && ${JPERNODE == 1} ] ; then
+    cat ${WORK}/${JOBNO}/tmp_${NAME}_*.csv >> ${TMPDIR}/${NAME}.csv
+else
+    sort -t ',' -k2n,2 -k1n,1 -m ${WORK}/${JOBNO}/tmp_${NAME}_*.csv | awk 'BEGIN{FS=",";OFS=","; OFMT="%.2f" }{$1=NR; print $0}' >> ${TMPDIR}/${NAME}.csv
+fi
 
 echo "Start Postprocess time $(date)" >> ${LOGFILE}
 
@@ -43,7 +49,7 @@ vnc_stop
 
 if [[ $INPATH == "/external"* ]]
 then
-    echo "secure copying .csv from WORK to Input Dir" >> ${LOGFILE}
+    echo "secure copying .csv files from WORK to Input Dir" >> ${LOGFILE}
     scp -q -p ${WORK}/${JOBNO}/${NAME}*.csv ${USER}@login-2-internal:${INPATH}/${JOBNO}
     echo "secure copying protocol file from WORK to Input Dir" >> ${LOGFILE}
     scp -q -p ${WORK}/${JOBNO}/*protocol.txt ${USER}@login-2-internal:${INPATH}/${JOBNO}
@@ -54,7 +60,7 @@ then
     echo "secure copying log file from WORK to Input Dir" >> ${LOGFILE}
     scp -q -p ${WORK}/${JOBNO}/*.log ${USER}@login-2-internal:${INPATH}/${JOBNO}
 else
-    echo "copying .csv from WORK to Input Dir" >> ${LOGFILE}
+    echo "copying .csv files from WORK to Input Dir" >> ${LOGFILE}
     cp ${WORK}/${JOBNO}/${NAME}*.csv ${INPATH}/${JOBNO}
     echo "copying protocol file from WORK to Input Dir" >> ${LOGFILE}
     cp ${WORK}/${JOBNO}/*protocol.txt ${INPATH}/${JOBNO}
