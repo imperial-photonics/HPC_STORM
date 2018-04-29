@@ -126,6 +126,7 @@ echo $one
 
 # split name of first job to get pbsjob no
 export JOBNO=`expr "$one" : '\([0-9]*\)'`
+echo ${JOBNO}
 
 mkdir ${WORK}/${JOBNO}        # Create a directory in $WORK to take shared temporary output files
 
