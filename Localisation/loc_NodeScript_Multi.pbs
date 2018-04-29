@@ -17,6 +17,9 @@ echo "Start Localization time $(date)"
 #  hardwired paths TBD
 IJ=/apps/fiji/Fiji.app/ImageJ-linux64
 
+export JOBNO=`expr "$PBS_JOBID" : '\([0-9]*\)'`
+echo ${JOBNO}
+
 echo "Jobno = "
 echo $JOBNO
 
