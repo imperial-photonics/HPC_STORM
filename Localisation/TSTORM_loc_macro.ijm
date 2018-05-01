@@ -49,6 +49,7 @@ if (!File.exists(FILEPATH))  {
     File.append("Error failed to find " + FILEPATH, LOGPATH);
 }
 
+File.append("Reading image metadata"+getTimeString(), LOGPATH);
 // Use Bio-Formats extensions to find the pixelSize & sizeT
 run("Bio-Formats Macro Extensions");
 Ext.setId(FILEPATH);
