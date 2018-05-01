@@ -31,7 +31,7 @@ fi
 echo "Start Postprocess time $(date)" >> ${LOGFILE}
 
 ##load application module
-module load fiji vnc #anaconda3/personal
+module load fiji/2017-05-30 vnc #anaconda3/personal
 
 `vnc_start`
 
@@ -46,6 +46,11 @@ sysconfcpus -n 48 fiji --ij2 -macro $HOME/Localisation/TSTORM_loc_post_macro.ijm
 echo "stopping vnc!"
 
 vnc_stop
+
+# Copy raw csv file back to Work directory
+cp ${TMPDIR}/${NAME}.csv ${WORK}/${JOBNO}/${NAME}.csv
+
+# Copy relevant output files back to the "Input directory"
 
 if [[ $INPATH == "/external"* ]]
 then
