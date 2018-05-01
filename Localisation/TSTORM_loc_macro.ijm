@@ -26,6 +26,7 @@ logf = File.open(LOGPATH);
 File.append(ARGS,LOGPATH);
 
 File.append("Opened log file at " + getTimeString(), LOGPATH);
+File.append("ImageJ version " + getVersion());
 
 // NB TMPDIR points to our own
 // temporary directory
