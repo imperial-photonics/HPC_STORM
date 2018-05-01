@@ -15,7 +15,8 @@
 echo "Start Localization time $(date)"
 
 #  hardwired paths TBD
-IJ=/apps/fiji/Fiji.app/ImageJ-linux64
+#IJ=/apps/fiji/Fiji.app/ImageJ-linux64
+export IJ=/home/maan/Fiji.app/ImageJ-linux64
 
 export JOBNO=`expr "$PBS_JOBID" : '\([0-9]*\)'`
 echo ${JOBNO}
@@ -67,7 +68,7 @@ for i in `seq -s " " 1 ${JPERNODE}`
 do
     (
         echo "starting fiji, INDX = ${INDX}"
-        sysconfcpus -n 48 fiji --ij2 -macro $HOME/Localisation/TSTORM_loc_macro.ijm ${WORK}:${FNAME}:${JOBNO}:${FRAMESTEP}:${INDX}:${THREED}:${CAMERA:-Unknown}:${CALIB:-NULL}
+        sysconfcpus -n 48 IJ --ij2 -macro $HOME/Localisation/TSTORM_loc_macro.ijm ${WORK}:${FNAME}:${JOBNO}:${FRAMESTEP}:${INDX}:${THREED}:${CAMERA:-Unknown}:${CALIB:-NULL}
         echo "starting awk, INDX = ${INDX}, $(date)"
         awk -v job_index=${INDX} -v job_no=${FRAMESTEP} 'BEGIN{FS=",";OFS=",";OFMT="%.2f"; getline }{$2=job_no*($2-1)+job_index; print $0}' ${TMPDIR}/tmp_${NAME}_slice_${INDX}.csv  > ${WORK}/${JOBNO}/tmp_${NAME}_${INDX}.csv
         echo "done awk, INDX = ${INDX}, $(date)"
