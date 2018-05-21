@@ -120,6 +120,7 @@ export CAMERA=`tiffinfo -0 ${FULLNAME} 2> /dev/null | grep Detector |  sed 's/^.
 if [ $NJOBS == "1" ]; then
     one=$(qsub -q $QUEUE -m abe -M ${USER} -V $HOME/Localisation/loc_NodeScript_Multi.pbs)
 else
+    echo qsub -q $QUEUE -m abe -M ${USER} -V -J 1-$NJOBS $HOME/Localisation/loc_NodeScript_Multi.pbs
     one=$(qsub -q $QUEUE -m abe -M ${USER} -V -J 1-$NJOBS $HOME/Localisation/loc_NodeScript_Multi.pbs)
 fi
 echo "launching processing job"
