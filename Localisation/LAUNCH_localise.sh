@@ -15,6 +15,7 @@ USAGE="Usage: LAUNCH_localise [-b] filename(inc path) [calibration_file(name onl
 
 echo "fogim queue"
 QUEUE="pqfogim"
+echo $QUEUE
 
 INPATH=""
 FNAME=""
