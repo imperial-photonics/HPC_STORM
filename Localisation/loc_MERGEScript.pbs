@@ -34,19 +34,19 @@ echo "Start Postprocess time $(date)" >> ${LOGFILE}
 ##load application module
 module load fiji vnc #anaconda3/personal
 
-`vnc_start`
+#`vnc_start`
 
 echo "running TSTORM loc_merge macro!"
 
 module load sysconfcpus/0.5
 
 # run ThunderSTORM
-sysconfcpus -n 48 fiji --ij2 -macro $HOME/Localisation/TSTORM_loc_post_macro.ijm ${WORK}:${FNAME}:${JOBNO}:${NJOBS}:${PBS_ARRAY_INDX:-1}:${THREED}:${CAMERA:-Unknown}:${CALIB:-NULL}:${POST_PROC}:${LATERAL_RES}
+xvfb-run sysconfcpus -n 48 fiji --ij2 -macro $HOME/Localisation/TSTORM_loc_post_macro.ijm ${WORK}:${FNAME}:${JOBNO}:${NJOBS}:${PBS_ARRAY_INDX:-1}:${THREED}:${CAMERA:-Unknown}:${CALIB:-NULL}:${POST_PROC}:${LATERAL_RES}
 #/Applications/Fiji.app/Contents/MacOS/ImageJ-macosx -macro $HOME/Documents/Github/HPC_STORM/Localisation/TSTORM_loc_post_macro.ijm ${WORK}:${FNAME}:${JOBNO}:${NJOBS}:${PBS_ARRAY_INDX:-1}:${THREED}:${CAMERA:-Unknown}:${CALIB:-NULL}:${POST_PROC}:${LATERAL_RES}
 
-echo "stopping vnc!"
+#echo "stopping vnc!"
 
-vnc_stop
+#vnc_stop
 
 # Copy raw csv file back to Work directory
 cp ${TMPDIR}/${NAME}.csv ${WORK}/${JOBNO}/${NAME}.csv
