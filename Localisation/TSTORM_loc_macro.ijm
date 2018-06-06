@@ -50,6 +50,9 @@ if (!File.exists(FILEPATH))  {
 }
 
 File.append("Reading image metadata at "+getTimeString(), LOGPATH);
+File.close(logf);
+exit();
+
 // Use Bio-Formats extensions to find the pixelSize & sizeT
 run("Bio-Formats Macro Extensions");
 Ext.setId(FILEPATH);
@@ -67,9 +70,6 @@ FIRST = parseInt(BLOCK);
 LAST = sizeT;
 
 File.append("Frames from " + FIRST + " to " + LAST, LOGPATH);
-
-File.close(logf);
-exit();
 
 //run("Memory & Threads...", "maximum=65536 parallel=24”);
 run("Bio-Formats Importer","open="+FILEPATH+" color_mode=Default specify_range view=[Standard ImageJ] stack_order=Default t_begin="+FIRST+" t_end="+LAST+" t_step="+NJOBS+"");
