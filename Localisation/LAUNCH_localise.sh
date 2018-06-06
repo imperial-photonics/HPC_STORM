@@ -15,6 +15,7 @@ USAGE="Usage: LAUNCH_localise [-b] filename(inc path) [calibration_file(name onl
 
 echo "fogim queue"
 QUEUE="pqfogim"
+echo $QUEUE
 
 INPATH=""
 FNAME=""
@@ -112,13 +113,14 @@ ARRFNAME=(${FNAME//.ome/ })
 export NAME=${ARRFNAME[0]}
 
 # Look for camera name in the ome-tif metadata which sits at the end of the ome.tif file - needs to be fixed so it can be read in imagej properly!
-export CAMERA=`tail -c 20000000 ${FULLNAME} | strings | grep Detector |  sed 's/^.*Detector ID="// ; s/".*$//'`
+export CAMERA=`tiffinfo -0 ${FULLNAME} 2> /dev/null | grep Detector |  sed 's/^.*Detector ID="// ; s/".*$//'`
 
 #   environment variables $INPATH $FNAME $NJOBS $JPERNODE $THREED $CALIB $NAME $CAMERA now contain the necessary information for the other scripts to work
 
 if [ $NJOBS == "1" ]; then
     one=$(qsub -q $QUEUE -m abe -M ${USER} -V $HOME/Localisation/loc_NodeScript_Multi.pbs)
 else
+    echo qsub -q $QUEUE -m abe -M ${USER} -V -J 1-$NJOBS $HOME/Localisation/loc_NodeScript_Multi.pbs
     one=$(qsub -q $QUEUE -m abe -M ${USER} -V -J 1-$NJOBS $HOME/Localisation/loc_NodeScript_Multi.pbs)
 fi
 echo "launching processing job"

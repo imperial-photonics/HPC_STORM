@@ -79,7 +79,11 @@ if (CAMERA=="Prime95B")  {
     //Prime95B Camera detected
     File.append("Using Prime95B values for Camera Setup!", LOGPATH);
     run("Camera setup", "readoutnoise=1.8 offset=170.0 quantumefficiency=0.9 isemgain=false photons2adu=2.44 pixelsize=["+PIXELWIDTH+"]");
-} else  {
+} else  if (CAMERA=="Andor iXon Ultra"){
+    File.append("Using Andor iXon Ultra values for Camera Setup!", LOGPATH);
+    run("Camera setup", "readoutnoise=0.0 offset=16.0 quantumefficiency=1.0 isemgain=true photons2adu=5.1 gainem=200.0 pixelsize=["+PIXELWIDTH+"]");
+    // not at all convinced by the value of 5.1 photons2adu!!  Nor the 110nm pixels as the camera has 16um pixels.
+} else {
     // Assume it must be an Andor
     File.append("Using Orca values for Camera Setup!", LOGPATH);
     run("Camera setup", "readoutnoise=1.5 offset=350.0 quantumefficiency=0.9 isemgain=false photons2adu=0.5 pixelsize=["+PIXELWIDTH+"]");
@@ -88,6 +92,7 @@ if (CAMERA=="Prime95B")  {
 if(THREED==0)  {
     File.append("Starting 2D localisation!",LOGPATH);
     run( "Run analysis", "filter=[Wavelet filter (B-Spline)] scale=2.0 order=3 detector=[Non-maximum suppression] radius=3 threshold=[1.25 * std(Wave.F1)] estimator=[PSF: Integrated Gaussian] sigma=1.6 method=[Weighted Least squares] full_image_fitting=false fitradius=4 mfaenabled=false renderer=[No Renderer]");
+    //run( "Run analysis", "filter=[Wavelet filter (B-Spline)] scale=2.0 order=3 detector=[Non-maximum suppression] radius=3 threshold=[1.25 * std(Wave.F1)] estimator=[PSF: Integrated Gaussian] sigma=1.6 method=[Maximum likelihood] full_image_fitting=false fitradius=4 mfaenabled=false renderer=[No Renderer]");
     // Sanity check!! Filter out zero intensities
     //FORMULA = "[intensity > 1]";
     //File.append("Filtering with " + FORMULA, LOGPATH);
