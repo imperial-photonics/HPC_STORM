@@ -62,7 +62,11 @@ if (LATERAL_RES != "0")  {
         //Prime95B Camera detected
         File.append("Using Prime95B values for Camera Setup!", LOGPATH);
         run("Camera setup", "readoutnoise=1.8 offset=170.0 quantumefficiency=0.9 isemgain=false photons2adu=2.44 pixelsize=["+PIXELWIDTH+"]");
-    } else  {
+    } else  if (CAMERA=="Andor_iXon_Ultra"){
+        File.append("Using Andor iXon Ultra values for Camera Setup!", LOGPATH);
+        run("Camera setup", "readoutnoise=0.0 offset=16.0 quantumefficiency=1.0 isemgain=true photons2adu=5.1 gainem=200.0 pixelsize=["+PIXELWIDTH+"]");
+        // not at all convinced by the value of 5.1 photons2adu!!  Nor the 110nm pixels as the camera has 16um pixels.
+    } else {
         // Assume it must be an Andor
         File.append("Using Orca values for Camera Setup!", LOGPATH);
         run("Camera setup", "readoutnoise=1.5 offset=350.0 quantumefficiency=0.9 isemgain=false photons2adu=0.5 pixelsize=["+PIXELWIDTH+"]");
