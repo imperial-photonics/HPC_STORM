@@ -73,6 +73,10 @@ run("Bio-Formats Importer","open="+FILEPATH+" color_mode=Default specify_range v
 
 File.append("Imported Dataset to FIJI at " + getTimeString(), LOGPATH);
 
+close();
+run("Quit");
+
+
 // Determine which Camera is in use & setup appropriately
 // Can't find Camera Name with Bioformats library so it has already been found with commandline tool as CAMERA
 if (CAMERA=="Prime95B")  {
