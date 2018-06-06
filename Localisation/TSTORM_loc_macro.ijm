@@ -68,7 +68,7 @@ LAST = sizeT;
 
 File.append("Frames from " + FIRST + " to " + LAST, LOGPATH);
 
-close();
+File.close(logf);
 run("Quit");
 
 //run("Memory & Threads...", "maximum=65536 parallel=24”);
