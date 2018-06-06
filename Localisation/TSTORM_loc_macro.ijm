@@ -28,10 +28,6 @@ File.append(ARGS,LOGPATH);
 File.append("Opened log file at " + getTimeString(), LOGPATH);
 File.append("ImageJ version " + getVersion(), LOGPATH);
 
-File.close(logf);
-exit();
-
-
 // NB TMPDIR points to our own
 // temporary directory
 // but we should already be running from there anyway
