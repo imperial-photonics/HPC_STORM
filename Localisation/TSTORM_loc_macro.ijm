@@ -68,14 +68,13 @@ LAST = sizeT;
 
 File.append("Frames from " + FIRST + " to " + LAST, LOGPATH);
 
+close();
+run("Quit");
+
 //run("Memory & Threads...", "maximum=65536 parallel=24”);
 run("Bio-Formats Importer","open="+FILEPATH+" color_mode=Default specify_range view=[Standard ImageJ] stack_order=Default t_begin="+FIRST+" t_end="+LAST+" t_step="+NJOBS+"");
 
 File.append("Imported Dataset to FIJI at " + getTimeString(), LOGPATH);
-
-close();
-run("Quit");
-
 
 // Determine which Camera is in use & setup appropriately
 // Can't find Camera Name with Bioformats library so it has already been found with commandline tool as CAMERA
