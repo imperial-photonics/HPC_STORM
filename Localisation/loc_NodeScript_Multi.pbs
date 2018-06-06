@@ -59,6 +59,9 @@ fi
 #module load fiji/2017-05-30 vnc sysconfcpus/0.5
 module load fiji vnc sysconfcpus/0.5
 
+export DISPLAY=:1
+Xvfb ${DISPLAY} &
+XPID=$!
 `vnc_start`
 
 export INDX=${PBS_ARRAY_INDEX:-1}
@@ -94,7 +97,8 @@ fi
 
 echo "Finishing Localization time $(date)"
 
-vnc_stop
+kill ${XPID}
+#vnc_stop
 
 exit
 
