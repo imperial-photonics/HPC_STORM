@@ -57,12 +57,21 @@ if [ $THREED == 1 ]; then
 fi
 
 #module load fiji/2017-05-30 vnc sysconfcpus/0.5
-module load fiji vnc sysconfcpus/0.5
+module load fiji sysconfcpus/0.5
 
-export DISPLAY=:1
+# look for free Xserver number
+i=1
+while [ -f /tmp/.X$i-lock ]; do
+    i=$(($i + 1))
+done
+
+export DISPLAY=:$i
+
 Xvfb ${DISPLAY} &
 XPID=$!
-`vnc_start`
+
+echo Xvfb started on ${IDSPLAY}
+#`vnc_start`
 
 export INDX=${PBS_ARRAY_INDEX:-1}
 export FRAMESTEP=`expr ${JPERNODE} \* ${NJOBS}`
