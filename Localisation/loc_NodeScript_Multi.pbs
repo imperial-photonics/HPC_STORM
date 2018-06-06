@@ -59,7 +59,7 @@ fi
 #module load fiji/2017-05-30 vnc sysconfcpus/0.5
 module load fiji sysconfcpus/0.5
 
-# look for free Xserver number
+
 i=1
 while [ -f /tmp/.X$i-lock ]; do
     i=$(($i + 1))
@@ -70,7 +70,7 @@ export DISPLAY=:$i
 Xvfb ${DISPLAY} &
 XPID=$!
 
-echo Xvfb started on ${IDSPLAY}
+echo Xvfb started on ${DISPLAY}
 #`vnc_start`
 
 export INDX=${PBS_ARRAY_INDEX:-1}
