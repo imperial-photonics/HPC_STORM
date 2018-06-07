@@ -44,7 +44,7 @@ module load sysconfcpus/0.5
 sysconfcpus -n 48 fiji --ij2 -macro $HOME/Localisation/TSTORM_loc_post_macro.ijm ${WORK}:${FNAME}:${JOBNO}:${NJOBS}:${PBS_ARRAY_INDX:-1}:${THREED}:${CAMERA:-Unknown}:${CALIB:-NULL}:${POST_PROC}:${LATERAL_RES}
 #/Applications/Fiji.app/Contents/MacOS/ImageJ-macosx -macro $HOME/Documents/Github/HPC_STORM/Localisation/TSTORM_loc_post_macro.ijm ${WORK}:${FNAME}:${JOBNO}:${NJOBS}:${PBS_ARRAY_INDX:-1}:${THREED}:${CAMERA:-Unknown}:${CALIB:-NULL}:${POST_PROC}:${LATERAL_RES}
 
-#echo "stopping vnc!"
+echo "stopping vnc!"
 
 vnc_stop
 
