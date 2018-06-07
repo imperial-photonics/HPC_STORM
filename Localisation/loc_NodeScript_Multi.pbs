@@ -26,19 +26,6 @@ echo ${JOBNO}
 echo "Jobno = "
 echo $JOBNO
 
-# look for free X-server slot
-i=1
-while [ -f /tmp/.X$i-lock ]; do
-    i=$(($i + 1))
-done
-
-export DISPLAY=:$i
-
-Xvfb ${DISPLAY} -screen 0 1280x1024x32 &
-XPID=$!
-
-echo Xvfb started on ${DISPLAY}
-
 #create a subdir to hold the outputs from this job
 
 if [ ! -d ${INPATH}/${JOBNO} ]; then  # This probably doesn't work if the file is in an external directory
@@ -70,11 +57,9 @@ if [ $THREED == 1 ]; then
 fi
 
 #module load fiji/2017-05-30 vnc sysconfcpus/0.5
-module load fiji sysconfcpus/0.5
+module load fiji vnc sysconfcpus/0.5
 
-#`vnc_start`
-
-xdpyinfo
+`vnc_start`
 
 export INDX=${PBS_ARRAY_INDEX:-1}
 export FRAMESTEP=`expr ${JPERNODE} \* ${NJOBS}`
@@ -110,8 +95,7 @@ fi
 
 echo "Finishing Localization time $(date)"
 
-kill ${XPID}
-#vnc_stop
+vnc_stop
 
 exit
 
