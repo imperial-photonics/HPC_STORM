@@ -26,6 +26,19 @@ echo ${JOBNO}
 echo "Jobno = "
 echo $JOBNO
 
+# look for free X-server slot
+i=1
+while [ -f /tmp/.X$i-lock ]; do
+i=$(($i + 1))
+done
+
+export DISPLAY=:$i
+
+Xvfb ${DISPLAY} &
+XPID=$!
+
+echo Xvfb started on ${DISPLAY}
+
 #create a subdir to hold the outputs from this job
 
 if [ ! -d ${INPATH}/${JOBNO} ]; then  # This probably doesn't work if the file is in an external directory
@@ -59,18 +72,6 @@ fi
 #module load fiji/2017-05-30 vnc sysconfcpus/0.5
 module load fiji sysconfcpus/0.5
 
-
-i=1
-while [ -f /tmp/.X$i-lock ]; do
-    i=$(($i + 1))
-done
-
-export DISPLAY=:$i
-
-Xvfb ${DISPLAY} &
-XPID=$!
-
-echo Xvfb started on ${DISPLAY}
 #`vnc_start`
 
 export INDX=${PBS_ARRAY_INDEX:-1}
