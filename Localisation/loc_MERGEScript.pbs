@@ -22,7 +22,7 @@ done
 
 export DISPLAY=:$i
 
-Xvfb ${DISPLAY} -screen 0 1280x1024x32 &
+Xvfb ${DISPLAY} &
 XPID=$!
 
 echo Xvfb started on ${DISPLAY}
