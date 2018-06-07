@@ -29,7 +29,7 @@ echo $JOBNO
 # look for free X-server slot
 #i=1
 #while [ -f /tmp/.X$i-lock ]; do
-#i=$(($i + 1))
+#    i=$(($i + 1))
 #done
 
 #export DISPLAY=:$i
@@ -89,6 +89,7 @@ do
         awk -v job_index=${INDX} -v job_no=${FRAMESTEP} 'BEGIN{FS=",";OFS=",";OFMT="%.2f"; getline }{$2=job_no*($2-1)+job_index; print $0}' ${TMPDIR}/tmp_${NAME}_slice_${INDX}.csv  > ${WORK}/${JOBNO}/tmp_${NAME}_${INDX}.csv
         echo "done awk, INDX = ${INDX}, $(date)"
     ) &
+    sleep 2 # so that xservers do not clash
     PIDS="${PIDS} $!"
     INDX=`expr ${INDX} + ${NJOBS}`
 done
