@@ -34,7 +34,7 @@ done
 
 export DISPLAY=:$i
 
-Xvfb ${DISPLAY} &
+Xvfb ${DISPLAY} -screen 0 1280x1024x32 &
 XPID=$!
 
 echo Xvfb started on ${DISPLAY}
