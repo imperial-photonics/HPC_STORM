@@ -28,10 +28,6 @@ echo $JOBNO
 
 #create a subdir to hold the outputs from this job
 
-if [ ! -d ${INPATH}/${JOBNO} ]; then  # This probably doesn't work if the file is in an external directory
-    mkdir ${INPATH}/${JOBNO}
-fi
-
 #copy data file into $TMPDIR
 if [[ $INPATH == "/external"* ]]; then
     echo "secure copying data file"

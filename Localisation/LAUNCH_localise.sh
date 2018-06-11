@@ -133,6 +133,10 @@ echo ${JOBNO}
 
 mkdir ${WORK}/${JOBNO}        # Create a directory in $WORK to take shared temporary output files
 
+if [ ! -d ${INPATH}/${JOBNO} ]; then  # This should work if the file is in an external directory
+    mkdir ${INPATH}/${JOBNO}
+fi
+
 echo "Please enter Lateral uncertainty for reconstruction [nm] ? "
 read -p " enter zero to disable preview images ? " lateral
 
