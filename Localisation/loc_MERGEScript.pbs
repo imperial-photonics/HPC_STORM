@@ -36,7 +36,7 @@ module load fiji vnc #anaconda3/personal
 
 `vnc_start`
 
-echo "running TSTORM loc_merge macro!"
+echo "running TSTORM_loc_post_macro!"
 
 module load sysconfcpus/0.5
 
