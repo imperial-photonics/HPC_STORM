@@ -29,6 +29,9 @@ else
     sort -t ',' -k2n,2 -k1n,1 -m ${WORK}/${JOBNO}/tmp_${NAME}_*.csv | awk 'BEGIN{FS=",";OFS=","; OFMT="%.2f" }{$1=NR; print $0}' >> ${TMPDIR}/${NAME}.csv
 fi
 
+LOC_BEFORE=`wc -l ${TMPDIR}/${NAME}.csv | awk '{print $0-1}'`
+echo "${LOC_BEFORE} localisations found after merge" >> ${LOGFILE}
+
 echo "Start Postprocess time $(date)" >> ${LOGFILE}
 
 ##load application module
@@ -47,6 +50,9 @@ sysconfcpus -n 48 fiji --ij2 -macro $HOME/Localisation/Post_Proc_Macro.ijm ${WOR
 echo "stopping vnc!"
 
 vnc_stop
+
+LOC_AFTER=`wc -l ${TMPDIR}/${NAME}*final.csv | awk '{print $0-1}'`
+echo "${LOC_AFTER} localisations found after filtering" >> ${LOGFILE}
 
 # Copy raw csv file back to Work directory
 cp ${TMPDIR}/${NAME}.csv ${WORK}/${JOBNO}/${NAME}.csv
