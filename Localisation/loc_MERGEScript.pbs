@@ -53,6 +53,8 @@ cp ${TMPDIR}/${NAME}.csv ${WORK}/${JOBNO}/${NAME}.csv
 
 # Copy relevant output files back to the "Input directory"
 
+chmod a+r ${WORK}/${JOBNO}/*
+
 if [[ $INPATH == "/external"* ]]
 then
     echo "secure copying .csv files from WORK to Input Dir" >> ${LOGFILE}
