@@ -77,40 +77,31 @@ if (LATERAL_RES != "0")  {
     File.append("Calculated magnification  = " + MAGNIFICATION ,LOGPATH);
 
     // Post_processing
-    if(indexOf(POST, "SIGMA") > -1)  {
-        // Sigma processing will not work yet as needs python
+    if(indexOf(POST, "SIGMA")>-1 && THREED==0)  {
+        // Sigma processing to select the interquartile range of sigma values, for 2D data only
+        // A simple example of what can be calculated using sort and awk
+
         File.append("Performing sigma filtering.", LOGPATH);
-        PYPATH = TMPDIR + "/csv_sigma_mode.py";
-      
-        COMMAND = "python " + PYPATH + " -i " + CSVPATH;
-        MODE = exec(COMMAND);
-      
-        if (MODE == -1)  {
-            File.append("ERROR! Failed to find Mode of csv file!! ", LOGPATH);
-        } else {
-            File.append("Mode of sigma distribution =  " + MODE, LOGPATH);
-            MODEF = parseFloat(MODE);
-            RANGE = MODEF * 0.2;
-            UPPER_LIM = toString(MODEF + RANGE,2);
-            LOWER_LIM = toString(MODEF - RANGE,2);
-            if(THREED==0)  {
-                FORMULA = "[sigma < " + UPPER_LIM + " & sigma > " + LOWER_LIM + " ]";
-            } else  {
-                FORMULA = "[sigma1 < " + UPPER_LIM + " & sigma1 > " + LOWER_LIM + " ]";
-            }
 
-            File.append("Filtering with " + FORMULA, LOGPATH);
-            run("Show results table", "action=filter formula=["+FORMULA+"]");
+        COMMAND = "awk 'BEGIN{FS=\",\"}{if (NR%100 == 0) print $5}' " +INPATH + " | sort -k1n,1 | awk '{ a[i++]=$1; } END { print a[int(i/4)] \":\" a[int(i/2)] \":\" a[int(3*i/4)];}'";
 
-            File.append("Finished Filtering at " + getTimeStrin(), LOGPATH);
-		}
+        QUARTILES = exec(COMMAND);
+        parts=split(QUARTILES,":");
+        LQ=parts(0);
+        UQ=parts(2);
+
+        File.append("Interquartile range of sigma distribution =  " + LQ + " to " + UQ, LOGPATH);
+        FORMULA = "[sigma < " + LQ + " & sigma > " + UQ + " ]";
+        File.append("Filtering with " + FORMULA, LOGPATH);
+        run("Show results table", "action=filter formula=["+FORMULA+"]");
+        File.append("Finished Filtering at " + getTimeString(), LOGPATH)
+
     } else {
 		FORMULA = "(intensity > 1)";
         File.append("Filtering with " + FORMULA, LOGPATH);
         run("Show results table", "action=filter formula=["+FORMULA+"]");
 
 		File.append("Finished Filtering at " + getTimeString(), LOGPATH);
-
 	}
 
     if(indexOf(POST, "DRIFT") > -1)  {
