@@ -84,6 +84,7 @@ if (LATERAL_RES != "0")  {
         File.append("Performing sigma filtering.", LOGPATH);
 
         COMMAND = "awk 'BEGIN{FS=\",\"}{if (NR%100 == 0) print $5}' " +INPATH + " | sort -k1n,1 | awk '{ a[i++]=$1; } END { print a[int(i/4)] \":\" a[int(i/2)] \":\" a[int(3*i/4)];}'";
+        File.append("Running external command: " + COMMAND, LOGPATH);
 
         QUARTILES = exec(COMMAND);
         parts=split(QUARTILES,":");
