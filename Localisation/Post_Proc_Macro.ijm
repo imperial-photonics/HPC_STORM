@@ -86,10 +86,10 @@ if (LATERAL_RES != "0")  {
         COMMAND = "awk 'BEGIN{FS=\",\"}{if (NR%100 == 0) print $5}' " +INPATH + " | sort -k1n,1 | awk '{ a[i++]=$1; } END { print a[int(i/4)] \":\" a[int(i/2)] \":\" a[int(3*i/4)];}'";
         File.append("Running external command: " + COMMAND, LOGPATH);
 
-        QUARTILES = exec(COMMAND);
+        QUARTILES = exec("sh", "-c", COMMAND);
         parts=split(QUARTILES,":");
-        LQ=parts(0);
-        UQ=parts(2);
+        LQ=parts[0];
+        UQ=parts[2];
 
         File.append("Interquartile range of sigma distribution =  " + LQ + " to " + UQ, LOGPATH);
         FORMULA = "[sigma < " + LQ + " & sigma > " + UQ + " ]";
