@@ -89,7 +89,7 @@ if (LATERAL_RES != "0")  {
         File.append("Running external command: " + COMMAND, LOGPATH);
 
         CENTILES = exec("sh", "-c", COMMAND);
-        parts=split(QUARTILES,":");
+        parts=split(CENTILES,":");
         LC=parts[0];
         UC=parts[2];
 
