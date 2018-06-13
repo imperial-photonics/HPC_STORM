@@ -11,8 +11,8 @@
 #PBS -l walltime=08:00:0
 ## ask for ten jobs with 24 cpus and total 64gb memory (per node)
 #PBS -l select=1:ncpus=48:ompthreads=96:mem=110gb
-## make all files readable by others
-#PBS -W umask=022
+
+umask 22 # make all files group and world readable
 
 echo "Start Localization time $(date)"
 
