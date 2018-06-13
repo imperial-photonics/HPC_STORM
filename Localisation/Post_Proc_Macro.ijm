@@ -83,6 +83,8 @@ if (LATERAL_RES != "0")  {
 
         File.append("Performing sigma filtering.", LOGPATH);
 
+        // Awk selects every 100th localisation and prints out the sigma value, which are then sorted into order, finally the 2nd awk selects the n/4, n/2 and 3n/4 values
+        // On most datasets this is a good approximation to the quartiles of the distribution.
         COMMAND = "awk 'BEGIN{FS=\",\"}{if (NR%100 == 0) print $5}' " +INPATH + " | sort -k1n,1 | awk '{ a[i++]=$1; } END { print a[int(i/4)] \":\" a[int(i/2)] \":\" a[int(3*i/4)];}'";
         File.append("Running external command: " + COMMAND, LOGPATH);
 
@@ -92,7 +94,7 @@ if (LATERAL_RES != "0")  {
         UQ=parts[2];
 
         File.append("Interquartile range of sigma distribution =  " + LQ + " to " + UQ, LOGPATH);
-        FORMULA = "[sigma < " + LQ + " & sigma > " + UQ + " ]";
+        FORMULA = "( sigma > " + LQ + " & sigma < " + UQ + " )";
         File.append("Filtering with " + FORMULA, LOGPATH);
         run("Show results table", "action=filter formula=["+FORMULA+"]");
         File.append("Finished Filtering at " + getTimeString(), LOGPATH)
