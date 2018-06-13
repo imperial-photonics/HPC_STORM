@@ -85,7 +85,7 @@ if (LATERAL_RES != "0")  {
 
         // Awk selects every 100th localisation and prints out the sigma value, which are then sorted into order, finally the 2nd awk selects the n/4, n/2 and 3n/4 values
         // On most datasets this is a good approximation to the quartiles of the distribution.
-        COMMAND = "awk 'BEGIN{FS=\",\"}{if (NR%100 == 0) print $5}' " +INPATH + " | sort -k1n,1 | awk '{ a[i++]=$1; } END { print a[int(i/4)] \":\" a[int(i/2)] \":\" a[int(3*i/4)];}'";
+        COMMAND = "awk 'BEGIN{FS=\",\"}{if (NR%100 == 0) print $5}' " +INPATH + " | sort -k1n,1 | awk '{ a[i++]=$1; } END { print a[int(i/4)] \":\" a[int(i/2)] \":\" a[int(3*i/4)] \":\";}'";
         File.append("Running external command: " + COMMAND, LOGPATH);
 
         QUARTILES = exec("sh", "-c", COMMAND);
