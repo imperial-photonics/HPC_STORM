@@ -139,11 +139,15 @@ if [ ! -d ${INPATH}/${JOBNO} ]; then  # This probably doesn't work if the file i
 mkdir ${INPATH}/${JOBNO}
 fi
 
+echo "Please enter post processing required - currently impemented are DRIFT (correction in x and y) and SIGMA (2D only, filters 10th to 75th centile of distribution)? "
+read -p "Enter post processing (eg DRIFT or DRIFT+SIGMA or SIGMA - default is DRIFT)? " proc
+export POST_PROC=`echo ${proc:-DRIFT} | tr [:lower:] [:upper:] | tr -d [:blank:]`
+echo "Post-processing = $POST_PROC"
+
 echo "Please enter Lateral uncertainty for reconstruction [nm] ? "
 read -p " enter zero to disable preview images ? " lateral
-
 export LATERAL_RES=$lateral
-export POST_PROC="DRIFT+SIGMA"
+
 #   environment variables $JOBNO, $POST_PROC and $LATERAL_RES are exported for use in merge and post processing scripts
 
 two=$(qsub -q $QUEUE -W depend=afterok:$one -V $HOME/Localisation/MergeScript.pbs)
