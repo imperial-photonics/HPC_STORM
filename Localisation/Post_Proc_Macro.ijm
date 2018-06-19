@@ -100,7 +100,11 @@ if (LATERAL_RES != "0")  {
         File.append("Finished Filtering at " + getTimeString(), LOGPATH)
 
     } else {
-		FORMULA = "(intensity > 1)";
+        if (THREED==0) {
+		    FORMULA = "(intensity > 1)";
+        } else {
+            FORMULA = "(intensity > 1) & (uncertainty_z < 500)";
+        }
         File.append("Filtering with " + FORMULA, LOGPATH);
         run("Show results table", "action=filter formula=["+FORMULA+"]");
 
@@ -124,7 +128,11 @@ if (LATERAL_RES != "0")  {
     POSTPATH = WORK + "/" + JOBNO  + "/" + POSTNAME + ".csv";
 
     File.append("Saving post-processed localisations as " + POSTPATH, LOGPATH);
-    run("Export results", "filepath=["+POSTPATH+"] fileformat=[CSV (comma separated)] id=true frame=true sigma=true bkgstd=true intensity=true saveprotocol=true offset=true uncertainty=true y=true x=true");
+    if(THREED==0) {
+        run("Export results", "floatprecision=2 filepath=["+POSTPATH+"] fileformat=[CSV (comma separated)] id=true frame=true sigma=true bkgstd=true intensity=true saveprotocol=true offset=true uncertainty=true y=true x=true");
+    } else {
+        run("Export results", "floatprecision=2 filepath=["+POSTPATH+"] fileformat=[CSV (comma separated)] chi2=true offset=true saveprotocol=true bkgstd=true uncertainty_xy=true intensity=true x=true sigma2=true uncertainty_z=true y=true sigma1=true z=true id=true frame=true");
+    }
 
     if(THREED==0) {
         File.append("Starting 2D visualisation!",LOGPATH);
