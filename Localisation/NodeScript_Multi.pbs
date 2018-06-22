@@ -62,7 +62,7 @@ for i in `seq -s " " 1 ${JPERNODE}`
 do
     (
         echo "starting fiji, INDX = ${INDX}"
-        LOCSRIPT=./locscript${INDX}.sh
+        LOCSCRIPT=./locscript${INDX}.sh
         echo "sysconfcpus -n 48 fiji --ij2 -macro $HOME/Localisation/Loc_Macro.ijm ${WORK}:${FNAME}:${JOBNO}:${FRAMESTEP}:${INDX}:${THREED}:${CAMERA:-Unknown}:${CALIB:-NULL}"
         echo "#!/bin/sh" > ${LOCSCRIPT}
         echo "sysconfcpus -n 48 fiji --ij2 -macro $HOME/Localisation/Loc_Macro.ijm ${WORK}:${FNAME}:${JOBNO}:${FRAMESTEP}:${INDX}:${THREED}:${CAMERA:-Unknown}:${CALIB:-NULL}" >> ${LOCSCRIPT}
