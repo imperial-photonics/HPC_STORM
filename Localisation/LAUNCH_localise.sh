@@ -119,10 +119,10 @@ export CAMERA=`tiffinfo -0 ${FULLNAME} 2> /dev/null | grep Detector |  sed 's/^.
 #   environment variables $INPATH $FNAME $NJOBS $JPERNODE $THREED $CALIB $NAME $CAMERA now contain the necessary information for the other scripts to work
 
 if [ $NJOBS == "1" ]; then
-    one=$(qsub -q $QUEUE -m abe -M ${USER} -V $HOME/Localisation/loc_NodeScript_Multi.pbs)
+    one=$(qsub -q $QUEUE -m abe -M ${USER} -V $HOME/Localisation/NodeScript_Multi.pbs)
 else
-    echo qsub -q $QUEUE -m abe -M ${USER} -V -J 1-$NJOBS $HOME/Localisation/loc_NodeScript_Multi.pbs
-    one=$(qsub -q $QUEUE -m abe -M ${USER} -V -J 1-$NJOBS $HOME/Localisation/loc_NodeScript_Multi.pbs)
+    echo qsub -q $QUEUE -m abe -M ${USER} -V -J 1-$NJOBS $HOME/Localisation/NodeScript_Multi.pbs
+    one=$(qsub -q $QUEUE -m abe -M ${USER} -V -J 1-$NJOBS $HOME/Localisation/NodeScript_Multi.pbs)
 fi
 echo "launching processing job"
 echo $one
@@ -133,18 +133,31 @@ echo ${JOBNO}
 
 mkdir ${WORK}/${JOBNO}        # Create a directory in $WORK to take shared temporary output files
 
+<<<<<<< HEAD
 if [ ! -d ${INPATH}/${JOBNO} ]; then  # This should work if the file is in an external directory
     mkdir ${INPATH}/${JOBNO}
 fi
 
+=======
+#create a subdir to hold the outputs from this job
+
+if [ ! -d ${INPATH}/${JOBNO} ]; then  # This probably doesn't work if the file is in an external directory
+mkdir ${INPATH}/${JOBNO}
+fi
+
+echo "Please enter post processing required - currently impemented are DRIFT (correction in x and y) and SIGMA (2D only, filters 10th to 75th centile of distribution)? "
+read -p "Enter post processing (eg DRIFT or DRIFT+SIGMA or SIGMA - default is DRIFT)? " proc
+export POST_PROC=`echo ${proc:-DRIFT} | tr [:lower:] [:upper:] | tr -d [:blank:]`
+echo "Post-processing = $POST_PROC"
+
+>>>>>>> clean-up
 echo "Please enter Lateral uncertainty for reconstruction [nm] ? "
 read -p " enter zero to disable preview images ? " lateral
-
 export LATERAL_RES=$lateral
-export POST_PROC="DRIFT"
+
 #   environment variables $JOBNO, $POST_PROC and $LATERAL_RES are exported for use in merge and post processing scripts
 
-two=$(qsub -q $QUEUE -W depend=afterok:$one -V $HOME/Localisation/loc_MERGEScript.pbs)
+two=$(qsub -q $QUEUE -W depend=afterok:$one -V $HOME/Localisation/MergeScript.pbs)
 
 echo "launching merge job"
 echo $two

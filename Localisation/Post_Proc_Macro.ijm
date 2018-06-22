@@ -77,40 +77,38 @@ if (LATERAL_RES != "0")  {
     File.append("Calculated magnification  = " + MAGNIFICATION ,LOGPATH);
 
     // Post_processing
-    if(indexOf(POST, "SIGMA") > -1)  {
-        // Sigma processing will not work yet as needs python
+    if(indexOf(POST, "SIGMA")>-1 && THREED==0)  {
+        // Sigma processing to select the interquartile range of sigma values, for 2D data only
+        // A simple example of what can be calculated using sort and awk
+
         File.append("Performing sigma filtering.", LOGPATH);
-        PYPATH = TMPDIR + "/csv_sigma_mode.py";
-      
-        COMMAND = "python " + PYPATH + " -i " + CSVPATH;
-        MODE = exec(COMMAND);
-      
-        if (MODE == -1)  {
-            File.append("ERROR! Failed to find Mode of csv file!! ", LOGPATH);
-        } else {
-            File.append("Mode of sigma distribution =  " + MODE, LOGPATH);
-            MODEF = parseFloat(MODE);
-            RANGE = MODEF * 0.2;
-            UPPER_LIM = toString(MODEF + RANGE,2);
-            LOWER_LIM = toString(MODEF - RANGE,2);
-            if(THREED==0)  {
-                FORMULA = "[sigma < " + UPPER_LIM + " & sigma > " + LOWER_LIM + " ]";
-            } else  {
-                FORMULA = "[sigma1 < " + UPPER_LIM + " & sigma1 > " + LOWER_LIM + " ]";
-            }
 
-            File.append("Filtering with " + FORMULA, LOGPATH);
-            run("Show results table", "action=filter formula=["+FORMULA+"]");
+        // Awk selects every 100th localisation and prints out the sigma value, which are then sorted into order, finally the 2nd awk selects the n/10, n/2 and 3n/4 values
+        // On most datasets this is a good approximation to the 10th 50th and 75th centiles of the distribution, but a lot faster than processing the whole dataset.
+        COMMAND = "awk 'BEGIN{FS=\",\"}{if (NR%100 == 0) print $5}' " +INPATH + " | sort -k1n,1 | awk '{ a[i++]=$1; } END { print a[int(i/10)] \":\" a[int(i/2)] \":\" a[int(3*i/4)] \":\";}'";
+        File.append("Running external command: " + COMMAND, LOGPATH);
 
-            File.append("Finished Filtering at " + getTimeStrin(), LOGPATH);
-		}
+        CENTILES = exec("sh", "-c", COMMAND);
+        parts=split(CENTILES,":");
+        LC=parts[0];
+        UC=parts[2];
+
+        File.append("Interquartile range of sigma distribution =  " + LC + " to " + UC, LOGPATH);
+        FORMULA = "( sigma > " + LC + " & sigma < " + UC + " )";
+        File.append("Filtering with " + FORMULA, LOGPATH);
+        run("Show results table", "action=filter formula=["+FORMULA+"]");
+        File.append("Finished Filtering at " + getTimeString(), LOGPATH)
+
     } else {
-		FORMULA = "(intensity > 1)";
+        if (THREED==0) {
+		    FORMULA = "(intensity > 1)";
+        } else {
+            FORMULA = "(intensity > 1) & (uncertainty_z < 500)";
+        }
         File.append("Filtering with " + FORMULA, LOGPATH);
         run("Show results table", "action=filter formula=["+FORMULA+"]");
 
 		File.append("Finished Filtering at " + getTimeString(), LOGPATH);
-
 	}
 
     if(indexOf(POST, "DRIFT") > -1)  {
@@ -130,7 +128,11 @@ if (LATERAL_RES != "0")  {
     POSTPATH = WORK + "/" + JOBNO  + "/" + POSTNAME + ".csv";
 
     File.append("Saving post-processed localisations as " + POSTPATH, LOGPATH);
-    run("Export results", "filepath=["+POSTPATH+"] fileformat=[CSV (comma separated)] id=true frame=true sigma=true bkgstd=true intensity=true saveprotocol=true offset=true uncertainty=true y=true x=true");
+    if(THREED==0) {
+        run("Export results", "floatprecision=2 filepath=["+POSTPATH+"] fileformat=[CSV (comma separated)] id=true frame=true sigma=true bkgstd=true intensity=true saveprotocol=true offset=true uncertainty=true y=true x=true");
+    } else {
+        run("Export results", "floatprecision=2 filepath=["+POSTPATH+"] fileformat=[CSV (comma separated)] chi2=true offset=true saveprotocol=true bkgstd=true uncertainty_xy=true intensity=true x=true sigma2=true uncertainty_z=true y=true sigma1=true z=true id=true frame=true");
+    }
 
     if(THREED==0) {
         File.append("Starting 2D visualisation!",LOGPATH);
