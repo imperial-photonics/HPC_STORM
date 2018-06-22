@@ -133,16 +133,10 @@ echo ${JOBNO}
 
 mkdir ${WORK}/${JOBNO}        # Create a directory in $WORK to take shared temporary output files
 
-<<<<<<< HEAD
-if [ ! -d ${INPATH}/${JOBNO} ]; then  # This should work if the file is in an external directory
-    mkdir ${INPATH}/${JOBNO}
-fi
-
-=======
 #create a subdir to hold the outputs from this job
 
-if [ ! -d ${INPATH}/${JOBNO} ]; then  # This probably doesn't work if the file is in an external directory
-mkdir ${INPATH}/${JOBNO}
+if [ ! -d ${INPATH}/${JOBNO} ]; then  # This should work if the file is in an external directory
+    mkdir ${INPATH}/${JOBNO}
 fi
 
 echo "Please enter post processing required - currently impemented are DRIFT (correction in x and y) and SIGMA (2D only, filters 10th to 75th centile of distribution)? "
@@ -150,7 +144,6 @@ read -p "Enter post processing (eg DRIFT or DRIFT+SIGMA or SIGMA - default is DR
 export POST_PROC=`echo ${proc:-DRIFT} | tr [:lower:] [:upper:] | tr -d [:blank:]`
 echo "Post-processing = $POST_PROC"
 
->>>>>>> clean-up
 echo "Please enter Lateral uncertainty for reconstruction [nm] ? "
 read -p " enter zero to disable preview images ? " lateral
 export LATERAL_RES=$lateral
