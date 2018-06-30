@@ -137,23 +137,90 @@ if (LATERAL_RES != "0")  {
     if(THREED==0) {
         File.append("Starting 2D visualisation!",LOGPATH);
 	    run("Visualization", "imleft=0.0 imtop=0.0 imwidth=["+sizeX+"] imheight=["+sizeY+"] renderer=[Averaged shifted histograms] magnification=["+MAGNIFICATION+"] colorize=false threed=false shifts=2");
+        File.append("Finished Visualization at " + getTimeString(), LOGPATH);
         OUTPATH = WORK + "/" + JOBNO  + "/" + POSTNAME + "_2D.ome.tiff";
+        run("Enhance Contrast...", "saturated=0.35 process_all use"); // lets brightest 0.01% of pixels saturate
+        run("16-bit");
+
+        run("Scale Bar...", "width=10 height=24 font=100 color=White background=None location=[Lower Right] bold");
+
+        File.append("Exporting visualisation as ome.tiff to " + OUTPATH, LOGPATH);
+        run("Bio-Formats Exporter", "save=["+OUTPATH+"] compression=LZW");
     } else  {
         File.append("Starting 3D visualisation!",LOGPATH);
-	    run("Visualization", "imleft=0.0 imtop=0.0 imwidth=["+sizeX+"] imheight=["+sizeY+"] renderer=[Averaged shifted histograms] zrange=-600:60:600 pickedlut=[16 colors] magnification=["+MAGNIFICATION+"] colorize=true threed=true shifts=2 zshifts=2");
+	    run("Visualization", "imleft=0.0 imtop=0.0 imwidth=["+sizeX+"] imheight=["+sizeY+"] renderer=[Averaged shifted histograms] zrange=-500:50:500 magnification=["+MAGNIFICATION+"] colorize=false threed=true shifts=2 zshifts=2");
+        File.append("Finished Visualization at " + getTimeString(), LOGPATH);
         OUTPATH = WORK + "/" + JOBNO  + "/" + POSTNAME + "_3D.ome.tiff";
+
+        // 3D visualisation is as a colour coded 2d image where colour is the average z position for each xy pixel position
+        // code below assumes -500:50:500 zrange, colour scale and scale bar are added 
+
+        setBatchMode(true);
+        im_stack=getImageID();
+        run("Z Project...", "projection=[Sum Slices]");
+        sum_id=getImageID();
+        run("Add...", "value=0.001"); // to avoid divide by zero
+
+        selectImage(im_stack);
+        run("Macro...", "code=v=v*z stack");
+        run("Z Project...", "projection=[Sum Slices]");
+        sumz_id=getImageID();
+
+        imageCalculator("Divide 32-bit", sumz_id, sum_id);  // calculates average image position in z
+        avgz_id=getImageID();
+
+        newImage("ramp", "32-bit ramp", 512, 64, 1);  // z-scale bar
+        run("Multiply...", "value=15.000");
+        run("Add...","value=2.0");
+        run("Copy");
+        selectImage(avgz_id);
+        makeRectangle(256, 256, 512, 64);
+        run("Paste");
+        run("Select None");
+        setMinAndMax(1, 18);
+        run("Spectrum");
+
+        selectImage(sum_id);
+        run("Enhance Contrast...", "saturated=0.3 normalize");
+        run("Gamma...", "value=0.50");        // use for intensity in final image
+        setColor(1.0);
+        fillRect(256, 256, 512, 64);
+
+        selectImage(avgz_id);
+        run("RGB Color");
+        run("Split Channels");
+        blue=getImageID();
+        green=blue+1;
+        red=green+1;
+
+        imageCalculator("Multiply 32-bit", red, sum_id);
+        rename("red");
+        imageCalculator("Multiply 32-bit", green, sum_id);
+        rename("green");
+        imageCalculator("Multiply 32-bit", blue, sum_id);
+        rename("blue");
+        run("Merge Channels...", "c1=red c2=green c3=blue create");
+
+        run("RGB Color");
+        setBatchMode(false);
+
+        run("Scale Bar...", "width=10 height=24 font=100 color=White background=None location=[Lower Right] bold");
+        setColor(0xffffff);
+        setFont("SansSerif", 100, "bold");
+        setJustification("center");
+        drawString("z(nm)",512,256);
+        setJustification("right");
+        drawString("-400",320,256);
+        setJustification("left");
+        drawString("400",704,256);
+
+        File.append("Exporting visualisation as ome.tiff to " + OUTPATH, LOGPATH);
+        run("Bio-Formats Exporter", "save=["+OUTPATH+"] compression=LZW");
+
     }
 
-    run("Enhance Contrast...", "saturated=0.35 process_all use"); // lets brightest 0.01% of pixels saturate
-    run("16-bit");
-
-	File.append("Finished Visualization at " + getTimeString(), LOGPATH);
-
-    File.append("Exporting visualisation as ome.tiff to " + OUTPATH, LOGPATH);
-    run("Bio-Formats Exporter", "save=["+OUTPATH+"] compression=LZW");
-
     if(File.exists(OUTPATH) != 1 ) {
-      File.append("Failed to write " + OUTPATH, LOGPATH);
+        File.append("Failed to write " + OUTPATH, LOGPATH);
     }
 }  //End of Visualisation
 
