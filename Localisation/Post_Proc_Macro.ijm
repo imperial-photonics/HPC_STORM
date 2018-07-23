@@ -129,7 +129,7 @@ if (LATERAL_RES != "0")  {
 
     File.append("Saving post-processed localisations as " + POSTPATH, LOGPATH);
     if(THREED==0) {
-        run("Export results", "floatprecision=2 filepath=["+POSTPATH+"] fileformat=[CSV (comma separated)] id=true frame=true sigma=true bkgstd=true intensity=true saveprotocol=true offset=true uncertainty=true y=true x=true");
+        run("Export results", "floatprecision=2 filepath=["+POSTPATH+"] fileformat=[CSV (comma separated)] sigma=true intensity=true chi2=true offset=true saveprotocol=true x=true y=true bkgstd=true id=true uncertainty_xy=true frame=true");
     } else {
         run("Export results", "floatprecision=2 filepath=["+POSTPATH+"] fileformat=[CSV (comma separated)] chi2=true offset=true saveprotocol=true bkgstd=true uncertainty_xy=true intensity=true x=true sigma2=true uncertainty_z=true y=true sigma1=true z=true id=true frame=true");
     }
@@ -146,6 +146,7 @@ if (LATERAL_RES != "0")  {
 
         File.append("Exporting visualisation as ome.tiff to " + OUTPATH, LOGPATH);
         run("Bio-Formats Exporter", "save=["+OUTPATH+"] compression=LZW");
+        File.append("Visualisation exported at " + getTimeString(), LOGPATH);
     } else  {
         File.append("Starting 3D visualisation!",LOGPATH);
 	    run("Visualization", "imleft=0.0 imtop=0.0 imwidth=["+sizeX+"] imheight=["+sizeY+"] renderer=[Averaged shifted histograms] zrange=-500:50:500 magnification=["+MAGNIFICATION+"] colorize=false threed=true shifts=2 zshifts=2");
@@ -216,7 +217,7 @@ if (LATERAL_RES != "0")  {
 
         File.append("Exporting visualisation as ome.tiff to " + OUTPATH, LOGPATH);
         run("Bio-Formats Exporter", "save=["+OUTPATH+"] compression=LZW");
-
+        File.append("Visualisation exported at " + getTimeString(), LOGPATH);
     }
 
     if(File.exists(OUTPATH) != 1 ) {
