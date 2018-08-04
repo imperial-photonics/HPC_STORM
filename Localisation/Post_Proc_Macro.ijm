@@ -139,7 +139,7 @@ if (LATERAL_RES != "0")  {
 	    run("Visualization", "imleft=0.0 imtop=0.0 imwidth=["+sizeX+"] imheight=["+sizeY+"] renderer=[Averaged shifted histograms] magnification=["+MAGNIFICATION+"] colorize=false threed=false shifts=2");
         File.append("Finished Visualization at " + getTimeString(), LOGPATH);
         OUTPATH = WORK + "/" + JOBNO  + "/" + POSTNAME + "_2D.ome.tiff";
-        run("Enhance Contrast...", "saturated=0.35 process_all use"); // lets brightest 0.01% of pixels saturate
+        run("Enhance Contrast...", "saturated=0.35 process_all use"); // lets brightest 0.35% of pixels saturate
         run("16-bit");
 
         run("Scale Bar...", "width=10 height=24 font=100 color=White background=None location=[Lower Right] bold");
