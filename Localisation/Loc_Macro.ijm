@@ -81,7 +81,7 @@ File.append("Imported Dataset to FIJI at " + getTimeString(), LOGPATH);
 // Can't find Camera Name with Bioformats library so it has already been found with commandline tool as CAMERA
 if (CAMERA=="Prime95B")  {
     File.append("Using Prime95B values for Camera Setup!", LOGPATH);
-    if (isNaN(PIXELWIDTH)) PIXELWIDTH=110;  // default assumes 100x lens and normal camera pixel size
+    //if (isNaN(PIXELWIDTH)) PIXELWIDTH=110;  // default assumes 100x lens and normal camera pixel size
     run("Camera setup", "readoutnoise=1.8 offset=170.0 quantumefficiency=0.9 isemgain=false photons2adu=2.44 pixelsize=["+PIXELWIDTH+"]");
 } else  if (CAMERA=="Andor_iXon_Ultra"){
     File.append("Using Andor iXon Ultra values for Camera Setup!", LOGPATH);
