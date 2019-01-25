@@ -58,6 +58,7 @@ export FRAMESTEP=`expr ${JPERNODE} \* ${NJOBS}`
 export PIDS
 # run ThunderSTORM
 # set > $WORK/loc_NodeScript$PBS_ARRAY_INDEX.log
+echo "starting sub-processes"
 for i in `seq -s " " 1 ${JPERNODE}`
 do
     (
@@ -72,7 +73,7 @@ do
     INDX=`expr ${INDX} + ${NJOBS}`
 done
 
-#echo "returned from Macro"
+echo "sub-processes launched"
 
 trap "kill -15 $PIDS" 0 1 2 15
 echo "Started thunderstorm processes ${PIDS} $(date)"
