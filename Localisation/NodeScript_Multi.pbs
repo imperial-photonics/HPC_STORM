@@ -54,6 +54,7 @@ module load fiji vnc sysconfcpus/0.5
 `vnc_start`
 
 export INDX=${PBS_ARRAY_INDEX:-1}
+echo "INDX = ${INDX}"
 export FRAMESTEP=`expr ${JPERNODE} \* ${NJOBS}`
 export PIDS
 # run ThunderSTORM
@@ -61,6 +62,7 @@ export PIDS
 echo "starting sub-processes"
 for i in `seq -s " " 1 ${JPERNODE}`
 do
+    echo "starting sub-process, INDX = ${INDX}"
     (
         echo "starting fiji, INDX = ${INDX}"
         echo "sysconfcpus -n 48 fiji --ij2 -macro $HOME/Localisation/Loc_Macro.ijm ${EPHEMERAL}:${INPATH}:${FNAME}:${JOBNO}:${FRAMESTEP}:${INDX}:${THREED}:${CAMERA:-Unknown}:${CALIB:-NULL}
