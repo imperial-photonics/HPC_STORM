@@ -4,13 +4,14 @@ setBatchMode(true);
 parts=split(ARGS, ":");
 
 WORK=parts[0];
-FNAME=parts[1];
-JOBNO=parts[2];
-NJOBS=parts[3];
-BLOCK=parts[4];
-THREED=parts[5];
-CAMERA=parts[6];
-CALIB=parts[7];
+INPATH=parts[1];
+FNAME=parts[2];
+JOBNO=parts[3];
+NJOBS=parts[4];
+BLOCK=parts[5];
+THREED=parts[6];
+CAMERA=parts[7];
+CALIB=parts[8];
 
 fullname=split(FNAME, ".");
 NAME=fullname[0];
@@ -40,10 +41,10 @@ if (BLOCK == "1")  {
 }
 
 if (THREED == 1)  {
-    CALPATH=CALIB;
+    CALPATH=INPATH + "/" + CALIB;
 }
- 
-FILEPATH=FNAME;
+
+FILEPATH=INPATH + "/" + FNAME;
 
 if (!File.exists(FILEPATH))  {
     File.append("Error failed to find " + FILEPATH, LOGPATH);
@@ -78,17 +79,29 @@ File.append("Imported Dataset to FIJI at " + getTimeString(), LOGPATH);
 // Determine which Camera is in use & setup appropriately
 // Can't find Camera Name with Bioformats library so it has already been found with commandline tool as CAMERA
 if (CAMERA=="Prime95B")  {
-    //Prime95B Camera detected
     File.append("Using Prime95B values for Camera Setup!", LOGPATH);
+    if (isNaN(PIXELWIDTH)) PIXELWIDTH=110;  // default assumes 100x lens and normal camera pixel size
     run("Camera setup", "readoutnoise=1.8 offset=170.0 quantumefficiency=0.9 isemgain=false photons2adu=2.44 pixelsize=["+PIXELWIDTH+"]");
 } else  if (CAMERA=="Andor_iXon_Ultra"){
-    PIXELWIDTH=107.8;
     File.append("Using Andor iXon Ultra values for Camera Setup!", LOGPATH);
+    if (isNaN(PIXELWIDTH)) PIXELWIDTH=130;  // default assumes 100x lens and normal camera pixel size
     run("Camera setup", "readoutnoise=0.0 offset=16.0 quantumefficiency=1.0 isemgain=true photons2adu=5.1 gainem=200.0 pixelsize=["+PIXELWIDTH+"]");
-    // not at all convinced by the value of 5.1 photons2adu!!  Nor the 110nm pixels as the camera has 16um pixels.
+} else  if (CAMERA=="pco_camera"){
+    File.append("Using pco_camera values for Camera Setup!", LOGPATH);
+    if (isNaN(PIXELWIDTH)) PIXELWIDTH=65;  // default assumes 100x lens and normal camera pixel size
+    run("Camera setup", "readoutnoise=2.1 offset=126 quantumefficiency=0.80 isemgain=false photons2adu=1 pixelsize=["+PIXELWIDTH+"]");
+} else  if (CAMERA=="Andor_sCMOS_Camera"){
+    File.append("Using Andor_sCMOS_Camera values for Camera Setup!", LOGPATH);
+    if (isNaN(PIXELWIDTH)) PIXELWIDTH=65;  // default assumes 100x lens and normal camera pixel size
+    run("Camera setup", "readoutnoise=1.8 offset=170.0 quantumefficiency=0.9 isemgain=false photons2adu=2.44 pixelsize=["+PIXELWIDTH+"]");
+} else  if (CAMERA=="Grasshopper3_GS3-U3-23S6M"){
+    File.append("Using Grasshopper3_GS3-U3-23S6M values for Camera Setup!", LOGPATH);
+    if (isNaN(PIXELWIDTH)) PIXELWIDTH=58.6;  // default assumes 100x lens and normal camera pixel size
+    run("Camera setup", "readoutnoise=6.1 offset=9 quantumefficiency=0.76 isemgain=false photons2adu=1 pixelsize=["+PIXELWIDTH+"]");
 } else {
-    // Assume it must be an Andor
+    // Assume it must be an Orca flash 4
     File.append("Using Orca values for Camera Setup!", LOGPATH);
+    if (isNaN(PIXELWIDTH)) PIXELWIDTH=65;
     run("Camera setup", "readoutnoise=1.5 offset=350.0 quantumefficiency=0.9 isemgain=false photons2adu=0.5 pixelsize=["+PIXELWIDTH+"]");
 }
 
