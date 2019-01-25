@@ -72,6 +72,7 @@ LAST = sizeT;
 File.append("Frames from " + FIRST + " to " + LAST, LOGPATH);
 
 //run("Memory & Threads...", "maximum=65536 parallel=24”);
+File.append("Bio-Formats Importer"+","+"open="+FILEPATH+" color_mode=Default specify_range view=[Standard ImageJ] stack_order=Default t_begin="+FIRST+" t_end="+LAST+" t_step="+NJOBS+"",LOGPATH);
 run("Bio-Formats Importer","open="+FILEPATH+" color_mode=Default specify_range view=[Standard ImageJ] stack_order=Default t_begin="+FIRST+" t_end="+LAST+" t_step="+NJOBS+"");
 
 File.append("Imported Dataset to FIJI at " + getTimeString(), LOGPATH);
