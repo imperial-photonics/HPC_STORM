@@ -48,8 +48,8 @@ echo $JOBNO
 #    fi
 #fi
 
-#module load fiji/2017-05-30 vnc sysconfcpus/0.5
-module load fiji vnc sysconfcpus/0.5
+module load fiji/2017-05-30 vnc sysconfcpus/0.5
+#module load fiji vnc sysconfcpus/0.5
 
 #`vnc_start`
 
