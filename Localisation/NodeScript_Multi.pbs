@@ -29,14 +29,14 @@ echo $JOBNO
 #    echo "secure copying data file"
 #    scp -q ${USER}@login-2-internal:${INPATH}/${NAME}*.ome.tif ${TMPDIR}
 #else
-#    echo "copying data file"
-#    cp ${INPATH}/${NAME}*.ome.tif ${TMPDIR}
+    echo "copying data file"
+    cp ${INPATH}/${NAME}*.ome.tif ${TMPDIR}
 #fi
   
-#if [ ! -f ${TMPDIR}/${FNAME} ]; then
-#    echo "Copy failed!"
-#    exit 0
-#fi
+if [ ! -f ${TMPDIR}/${FNAME} ]; then
+    echo "Copy failed!"
+    exit 0
+fi
 
 #if [ $THREED == 1 ]; then
 #    if [[ $INPATH == "/external"* ]]; then
@@ -80,8 +80,8 @@ wait ${PIDS}
 echo "done thunderstorm processes ${PIDS} $(date)"
 
 if [ ${PBS_ARRAY_INDEX:-1} == 1 ]; then
-    head -1 ${TMPDIR}/tmp_${NAME}_slice_1.csv > ${EMPEMERAL}/${JOBNO}/${NAME}.csv
-    cp ${TMPDIR}/tmp_${NAME}_slice_1-protocol.txt ${EMPHEMERAL}/${JOBNO}/${NAME}-protocol.txt
+    head -1 ${TMPDIR}/tmp_${NAME}_slice_1.csv > ${EPHEMERAL}/${JOBNO}/${NAME}.csv
+    cp ${TMPDIR}/tmp_${NAME}_slice_1-protocol.txt ${EPHEMERAL}/${JOBNO}/${NAME}-protocol.txt
 fi
 
 echo "Finishing Localization time $(date)"
