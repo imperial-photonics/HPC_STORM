@@ -44,8 +44,8 @@ if (THREED == 1)  {
     CALPATH=INPATH + "/" + CALIB;
 }
 
-//FILEPATH=INPATH + "/" + FNAME;
-FILEPATH=FNAME;
+FILEPATH=INPATH + "/" + FNAME;
+//FILEPATH=FNAME;
 
 if (!File.exists(FILEPATH))  {
     File.append("Error failed to find " + FILEPATH, LOGPATH);
