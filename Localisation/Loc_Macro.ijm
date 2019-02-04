@@ -99,6 +99,7 @@ if (CAMERA=="Prime95B")  {
 } else  if (CAMERA=="Grasshopper3_GS3-U3-23S6M"){
     File.append("Using Grasshopper3_GS3-U3-23S6M values for Camera Setup!", LOGPATH);
     if (isNaN(PIXELWIDTH)) PIXELWIDTH=58.6;  // default assumes 100x lens and normal camera pixel size
+    if (PIXELWIDTH==0) PIXELWIDTH=58.6;
     run("Camera setup", "readoutnoise=6.1 offset=9 quantumefficiency=0.76 isemgain=false photons2adu=1 pixelsize=["+PIXELWIDTH+"]");
 } else {
     // Assume it must be an Orca flash 4
