@@ -55,14 +55,14 @@ echo "Started thunderstorm processes ${PIDS} $(date)"
 wait ${PIDS}
 echo "done thunderstorm processes ${PIDS} $(date)"
 
+vnc_stop
+
 if [ ${PBS_ARRAY_INDEX:-1} == 1 ]; then
     head -1 ${TMPDIR}/tmp_${NAME}_slice_1.csv > ${EPHEMERAL}/${JOBNO}/${NAME}.csv
     cp ${TMPDIR}/tmp_${NAME}_slice_1-protocol.txt ${EPHEMERAL}/${JOBNO}/${NAME}-protocol.txt
 fi
 
 echo "Finishing Localization time $(date)"
-
-#vnc_stop
 
 exit
 
