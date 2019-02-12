@@ -75,38 +75,20 @@ FULLNAME=`realpath ${FULLNAME}`
 
 export INPATH=$(dirname "${FULLNAME}")
 export FNAME=$(basename "${FULLNAME}")
-if [[ $(hostname -s) == "login-2-internal" ]]; then
-    if [ -f ${FULLNAME} ]; then
-        echo "File found!"
-    else
-        echo "Error! File not found!"
-        exit 0
-    fi
+
+if [ -f ${FULLNAME:-filenotfound} ]; then
+    echo "File found!"
 else
-    COMMAND="[ -f "${FULLNAME}" ]"
-    if ssh ${USER}@login-2-internal ${COMMAND}; then
-        echo "File found!"
-    else
-        echo "Error! File not found!"
-        exit 0
-    fi
+    echo "Error! File not found!"
+    exit 0
 fi
+
 if [ $THREED == 1 ]; then
-    if [[ $(hostname -s) == "login-2-internal" ]]; then
-        if [ -f ${INPATH}/${CALIB} ]; then
-            echo "Calibration file found!"
-        else
-            echo "Error!  Calibration file not found!"
-            exit 0
-        fi
+    if [ -f ${INPATH}/${CALIB} ]; then
+        echo "Calibration file found!"
     else
-        COMMAND="[ -f "${INPATH}"/"${CALIB}" ]"
-        if ssh ${USER}@login-2-internal ${COMMAND}; then
-            echo "Calibration file found!"
-        else
-            echo "Error!  Calibration file not found!"
-            exit 0
-        fi
+        echo "Error!  Calibration file not found!"
+        exit 0
     fi
 fi
 
