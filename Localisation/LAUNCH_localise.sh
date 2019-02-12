@@ -113,7 +113,15 @@ ARRFNAME=(${FNAME//.ome/ })
 export NAME=${ARRFNAME[0]}
 
 # Look for camera name in the ome-tif metadata which sits at the end of the ome.tif file - needs to be fixed so it can be read in imagej properly!
-export CAMERA=`tiffinfo -0 ${FULLNAME} 2> /dev/null | grep Detector |  sed 's/^.*Detector ID="// ; s/".*$//' | tr " " "_"`
+export CAMERAstring=`tiffinfo -0 ${FULLNAME} 2> /dev/null | grep Detector |  sed 's/^.*Detector ID="// ; s/".*$//' | tr " " "_"`
+case ${CAMERAstring} in
+    *Prime95B*) export CAMERA=Prime95B ;;
+    *Andor_iXon_Ultra*) export CAMERA=Andor_iXon_Ultra ;;
+    *pco_camera*) export CAMERA=pco_camera ;;
+    *Andor_sCMOS_Camera*) export CAMERA=Andor_sCMOS_Camera ;;
+    *Grasshopper3_GS3-U3-23S6M*) export CAMERA=Grasshopper3_GS3-U3-23S6M ;;
+    *) export CAMERA=Unknown ;;
+esac
 # export CAMERA=`tiffinfo -0 ${FULLNAME} 2> /dev/null | grep Detector |  sed 's/^.*Detector ID="// ; s/".*$//' `
 
 #   environment variables $INPATH $FNAME $NJOBS $JPERNODE $THREED $CALIB $NAME $CAMERA now contain the necessary information for the other scripts to work
@@ -131,7 +139,7 @@ echo $one
 export JOBNO=`expr "$one" : '\([0-9]*\)'`
 echo ${JOBNO}
 
-mkdir ${WORK}/${JOBNO}        # Create a directory in $WORK to take shared temporary output files
+mkdir ${EPHEMERAL}/${JOBNO}        # Create a directory in $EPHEMERAL to take shared temporary output files
 
 #create a subdir to hold the outputs from this job
 
