@@ -71,6 +71,7 @@ case "$#" in
 esac
 
 ## check input data and calibration file, if needed, exist
+FULLNAME=`realpath ${FULLNAME}`
 
 export INPATH=$(dirname "${FULLNAME}")
 export FNAME=$(basename "${FULLNAME}")
