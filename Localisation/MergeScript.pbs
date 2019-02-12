@@ -40,6 +40,8 @@ module load fiji/2016-05-23 vnc
 
 `vnc_start`
 
+trap "vnc_stop" 0 1 2 15 EXIT
+
 echo "running TSTORM_loc_post_macro!"
 
 module load sysconfcpus/0.5

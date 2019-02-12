@@ -50,7 +50,7 @@ done
 
 echo "sub-processes launched"
 
-trap "kill -15 $PIDS" 0 1 2 15
+trap "kill -15 $PIDS; vnc_stop" 0 1 2 15 EXIT
 echo "Started thunderstorm processes ${PIDS} $(date)"
 wait ${PIDS}
 echo "done thunderstorm processes ${PIDS} $(date)"
