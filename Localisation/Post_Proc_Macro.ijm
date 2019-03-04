@@ -82,7 +82,7 @@ if (LATERAL_RES != "0")  {
     }
 
     // find required magnification to get 25nm pixels
-    MAGNIFICATION = toString(parseFloat(PIXELWIDTH)/25);
+    MAGNIFICATION = toString(parseFloat(PIXELWIDTH)/LATERAL_RES);
     File.append("Calculated magnification  = " + MAGNIFICATION ,LOGPATH);
 
     // Post_processing
