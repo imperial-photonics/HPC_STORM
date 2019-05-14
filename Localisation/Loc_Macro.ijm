@@ -68,7 +68,7 @@ Ext.close();
 
 FIRST = parseInt(BLOCK);
 LAST = sizeT;
-LAST=10000;
+// LAST=10000;
 
 File.append("Frames from " + FIRST + " to " + LAST, LOGPATH);
 
