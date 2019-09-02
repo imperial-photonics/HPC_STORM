@@ -92,6 +92,7 @@ if [ $THREED == 1 ]; then
     fi
 fi
 
+
 ARRFNAME=(${FNAME//.ome/ })
 export NAME=${ARRFNAME[0]}
 
