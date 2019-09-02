@@ -20,6 +20,30 @@ echo $QUEUE
 INPATH=""
 FNAME=""
 
+# Check if git has updates or if local updates have not been committed
+GITRES=`(  cd -P $HOME/Localisation/..
+    git fetch
+    git rev-list HEAD...@{u} --count
+ )`
+
+if [ $GITRES != "0" ]; then
+    cd -P $HOME/Localisation/..
+    git status
+    cd -
+    read -p "Git is showing changes in remote, do you want to proceed (Y/N)" ANS
+    if [ $ANS == "N" ]; then
+        read -p "Do you want to update repository with git pull (Y/N)?" ANS
+        if [ $ANS == "Y" ]; then
+            cd -P $HOME/Localisation/..
+            git pull
+            cd -
+        else
+            echo "Update local copy by running 'git pull' in the HPC_STORM directory"
+        fi
+        exit 0
+    fi
+fi
+
 echo "How many HPC nodes do you want to use?"
 read -p "Enter number of nodes on the HPC: " NJOBS
 
@@ -91,7 +115,6 @@ if [ $THREED == 1 ]; then
         exit 0
     fi
 fi
-
 
 ARRFNAME=(${FNAME//.ome/ })
 export NAME=${ARRFNAME[0]}
