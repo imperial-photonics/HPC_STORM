@@ -110,10 +110,10 @@ esac
 #   environment variables $INPATH $FNAME $NJOBS $JPERNODE $THREED $CALIB $NAME $CAMERA now contain the necessary information for the other scripts to work
 
 if [ $NJOBS == "1" ]; then
-    one=$(qsub -q $QUEUE -m abe -M ${USER} -V $HOME/Localisation/NodeScript_Multi.pbs)
+    one=$(qsub -q $QUEUE -V $HOME/Localisation/NodeScript_Multi.pbs)
 else
-    echo qsub -q $QUEUE -m abe -M ${USER} -V -J 1-$NJOBS $HOME/Localisation/NodeScript_Multi.pbs
-    one=$(qsub -q $QUEUE -m abe -M ${USER} -V -J 1-$NJOBS $HOME/Localisation/NodeScript_Multi.pbs)
+    echo qsub -q $QUEUE -V -J 1-$NJOBS $HOME/Localisation/NodeScript_Multi.pbs
+    one=$(qsub -q $QUEUE -V -J 1-$NJOBS $HOME/Localisation/NodeScript_Multi.pbs)
 fi
 echo "launching processing job"
 echo $one

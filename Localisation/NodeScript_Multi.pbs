@@ -16,10 +16,6 @@ umask 22 # make all files group and world readable
 
 echo "Start Localization time $(date)"
 
-#  hardwired paths TBD
-#IJ=/apps/fiji/Fiji.app/ImageJ-linux64
-#export IJ=/home/maan/Fiji.app/ImageJ-linux64
-
 export JOBNO=`expr "$PBS_JOBID" : '\([0-9]*\)'`
 echo "Jobno = "
 echo $JOBNO
