@@ -120,7 +120,7 @@ ARRFNAME=(${FNAME//.ome/ })
 export NAME=${ARRFNAME[0]}
 
 # Look for camera name in the ome-tif metadata which sits at the end of the ome.tif file - needs to be fixed so it can be read in imagej properly!
-export CAMERAstring=`tiffinfo -0 ${FULLNAME} 2> /dev/null | grep Detector |  sed 's/^.*Detector ID="// ; s/".*$//' | tr " " "_"`
+export CAMERAstring=`tiffinfo -0 ${FULLNAME} 2> /dev/null | sed 's/>/>\n/g' | grep "Detector ID=" |  sed 's/^.*Detector ID="// ; s/".*$// ; s/Detector://' | tr " " "_"`
 case ${CAMERAstring} in
     *Prime95B*) export CAMERA=Prime95B ;;
     *Andor_iXon_Ultra*) export CAMERA=Andor_iXon_Ultra ;;
