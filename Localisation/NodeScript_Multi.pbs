@@ -30,7 +30,7 @@ export FRAMESTEP=`expr ${JPERNODE} \* ${NJOBS}`
 export PIDS
 # run ThunderSTORM
 # set > $WORK/loc_NodeScript$PBS_ARRAY_INDEX.log
-for i in `seq -s " " 1 ${JPERNODE}`
+for i in `seq -s " " 1 2 ${JPERNODE}`
 do
     (
         echo "starting fiji, INDX = ${INDX}"
@@ -39,9 +39,16 @@ do
         echo "starting awk, INDX = ${INDX}, $(date)"
         awk -v job_index=${INDX} -v job_no=${FRAMESTEP} 'BEGIN{FS=",";OFS=",";OFMT="%.2f"; getline }{$2=job_no*($2-1)+job_index; print $0}' ${TMPDIR}/tmp_${NAME}_slice_${INDX}.csv  > ${EPHEMERAL}/${JOBNO}/tmp_${NAME}_${INDX}.csv
         echo "done awk, INDX = ${INDX}, $(date)"
+        INDX=`expr ${INDX} + ${NJOBS}`
+        echo "starting fiji, INDX = ${INDX}"
+        echo "sysconfcpus -n 48 fiji --ij2 -macro $HOME/Localisation/Loc_Macro.ijm ${EPHEMERAL}:${INPATH}:${FNAME}:${JOBNO}:${FRAMESTEP}:${INDX}:${THREED}:${CAMERA:-Unknown}:${CALIB:-NULL} -port0"
+        sysconfcpus -n 48 fiji --ij2 -macro $HOME/Localisation/Loc_Macro.ijm ${EPHEMERAL}:${INPATH}:${FNAME}:${JOBNO}:${FRAMESTEP}:${INDX}:${THREED}:${CAMERA:-Unknown}:${CALIB:-NULL} -port0
+        echo "starting awk, INDX = ${INDX}, $(date)"
+        awk -v job_index=${INDX} -v job_no=${FRAMESTEP} 'BEGIN{FS=",";OFS=",";OFMT="%.2f"; getline }{$2=job_no*($2-1)+job_index; print $0}' ${TMPDIR}/tmp_${NAME}_slice_${INDX}.csv  > ${EPHEMERAL}/${JOBNO}/tmp_${NAME}_${INDX}.csv
+        echo "done awk, INDX = ${INDX}, $(date)"
     ) &
     PIDS="${PIDS} $!"
-    INDX=`expr ${INDX} + ${NJOBS}`
+    INDX=`expr ${INDX} + ${NJOBS} + ${NJOBS}`
 done
 
 echo "sub-processes launched"

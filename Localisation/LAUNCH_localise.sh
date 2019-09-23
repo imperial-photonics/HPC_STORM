@@ -54,6 +54,8 @@ export NJOBS
 export JPERNODE
 export THREED=0
 
+JPERNODE=`expr ${JPERNODE} \* 2`
+
 case "$#" in
     1)
         FULLNAME=$1
