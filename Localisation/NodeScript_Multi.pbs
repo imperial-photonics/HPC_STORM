@@ -30,7 +30,7 @@ export FRAMESTEP=`expr ${JPERNODE} \* ${NJOBS}`
 export PIDS
 # run ThunderSTORM
 # set > $WORK/loc_NodeScript$PBS_ARRAY_INDEX.log
-for i in `seq -s " " 1 2 ${JPERNODE}`
+for i in `seq -s " " 1 4 ${JPERNODE}`
 do
     (
         echo "starting fiji, INDX = ${INDX}"
