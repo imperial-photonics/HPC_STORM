@@ -54,7 +54,7 @@ export NJOBS
 export JPERNODE
 export THREED=0
 
-JPERNODE=`expr ${JPERNODE} \* 2`
+JPERNODE=`expr ${JPERNODE} \* 4`
 
 case "$#" in
     1)
