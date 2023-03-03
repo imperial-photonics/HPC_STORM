@@ -6,11 +6,8 @@
 #  Created by Ian Munro on 18/07/2016.
 #
 
-## ask PBS for time (format hh:mm:ss)
-#PBS -l walltime=02:00:00
-
-## ask for one node with 24 cpus and total 110gb memory
-#PBS -l select=1:ncpus=48:mem=110gb
+#PBS -l walltime=01:00:00
+#PBS -l select=1:ncpus=256:mem=920gb:avx2=true
 
 umask 22 # make all files group and world readable
 
@@ -43,10 +40,10 @@ trap "vnc_stop" 0 1 2 15 EXIT
 
 echo "running TSTORM_loc_post_macro!"
 
-module load sysconfcpus/0.5
+module load fiji/2016-05-23 vnc sysconfcpus/0.5 tiff/4.3.0
 
 # run ThunderSTORM
-sysconfcpus -n 48 fiji --ij2 -macro $HOME/Localisation/Post_Proc_Macro.ijm ${EPHEMERAL}:${FNAME}:${JOBNO}:${NJOBS}:${PBS_ARRAY_INDX:-1}:${THREED}:${CAMERA:-Unknown}:${CALIB:-NULL}:${POST_PROC}:${LATERAL_RES} -port0
+sysconfcpus -n 32 fiji --ij2 -macro $HOME/$folder_change/Post_Proc_Macro.ijm ${EPHEMERAL}:${FNAME}:${JOBNO}:${NJOBS}:${PBS_ARRAY_INDX:-1}:${THREED}:${CAMERA:-Unknown}:${CALIB:-NULL}:${POST_PROC}:${LATERAL_RES} -port0
 #/Applications/Fiji.app/Contents/MacOS/ImageJ-macosx -macro $HOME/Documents/Github/HPC_STORM/Localisation/TSTORM_loc_post_macro.ijm ${WORK}:${FNAME}:${JOBNO}:${NJOBS}:${PBS_ARRAY_INDX:-1}:${THREED}:${CAMERA:-Unknown}:${CALIB:-NULL}:${POST_PROC}:${LATERAL_RES}
 
 echo "stopping vnc!"

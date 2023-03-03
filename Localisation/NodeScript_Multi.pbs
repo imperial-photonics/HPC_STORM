@@ -8,9 +8,10 @@
 #
 
 ## ask PBS for time (format hh:mm:ss)
-#PBS -l walltime=12:00:0
-## ask for ten jobs with 24 cpus and total 64gb memory (per node)
-#PBS -l select=1:ncpus=48:ompthreads=96:mem=110gb
+
+#PBS -l walltime=01:00:00
+#PBS -l select=1:ncpus=256:mem=920gb:avx2=true
+
 
 umask 22 # make all files group and world readable
 
@@ -21,7 +22,7 @@ echo "Jobno = "
 echo $JOBNO
 
 #module load fiji/2017-05-30 vnc sysconfcpus/0.5 # beware that fiji/2017-05-30 seems to have probelms with bioformats extensions
-module load fiji/2016-05-23 vnc sysconfcpus/0.5
+module load fiji/2016-05-23 vnc sysconfcpus/0.5 tiff/4.3.0
 
 `vnc_start`
 
@@ -34,8 +35,8 @@ for i in `seq -s " " 1 ${JPERNODE}`
 do
     (
         echo "starting fiji, INDX = ${INDX}"
-        echo "sysconfcpus -n 48 fiji --ij2 -macro $HOME/Localisation/Loc_Macro.ijm ${EPHEMERAL}:${INPATH}:${FNAME}:${JOBNO}:${FRAMESTEP}:${INDX}:${THREED}:${CAMERA:-Unknown}:${CALIB:-NULL} -port0"
-        sysconfcpus -n 48 fiji --ij2 -macro $HOME/Localisation/Loc_Macro.ijm ${EPHEMERAL}:${INPATH}:${FNAME}:${JOBNO}:${FRAMESTEP}:${INDX}:${THREED}:${CAMERA:-Unknown}:${CALIB:-NULL} -port0
+        echo "sysconfcpus -n 32 fiji --ij2 -macro $HOME/$folder_change/Loc_Macro.ijm ${EPHEMERAL}:${INPATH}:${FNAME}:${JOBNO}:${FRAMESTEP}:${INDX}:${THREED}:${CAMERA:-Unknown}:${CALIB:-NULL} -port0"
+        sysconfcpus -n 10 fiji --ij2 -macro $HOME/$folder_change/Loc_Macro.ijm ${EPHEMERAL}:${INPATH}:${FNAME}:${JOBNO}:${FRAMESTEP}:${INDX}:${THREED}:${CAMERA:-Unknown}:${CALIB:-NULL} -port0
         echo "starting awk, INDX = ${INDX}, $(date)"
         awk -v job_index=${INDX} -v job_no=${FRAMESTEP} 'BEGIN{FS=",";OFS=",";OFMT="%.2f"; getline }{$2=job_no*($2-1)+job_index; print $0}' ${TMPDIR}/tmp_${NAME}_slice_${INDX}.csv  > ${EPHEMERAL}/${JOBNO}/tmp_${NAME}_${INDX}.csv
         echo "done awk, INDX = ${INDX}, $(date)"

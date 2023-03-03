@@ -13,36 +13,36 @@
 
 USAGE="Usage: LAUNCH_localise [-b] filename(inc path) [calibration_file(name only - must be in same directory] <-b> "
 
-echo "fogim queue"
-QUEUE="pqfogim"
-echo $QUEUE
+#echo "fogim queue"
+#QUEUE="pqfogim"
+#echo $QUEUE
 
 INPATH=""
 FNAME=""
 
 # Check if git has updates or if local updates have not been committed
-GITRES=`(  cd -P $HOME/Localisation/..
-    git fetch
-    git rev-list HEAD...@{u} --count
- )`
+#GITRES=`(  cd -P $HOME/Localisation/..
+#    git fetch
+#    git rev-list HEAD...@{u} --count
+# )`
 
-if [ $GITRES != "0" ]; then
-    cd -P $HOME/Localisation/..
-    git status
-    cd -
-    read -p "Git is showing changes in remote, do you want to proceed (Y/N)" ANS
-    if [ $ANS == "N" ]; then
-        read -p "Do you want to update repository with git pull (Y/N)?" ANS
-        if [ $ANS == "Y" ]; then
-            cd -P $HOME/Localisation/..
-            git pull
-            cd -
-        else
-            echo "Update local copy by running 'git pull' in the HPC_STORM directory"
-        fi
-        exit 0
-    fi
-fi
+#if [ $GITRES != "0" ]; then
+#    cd -P $HOME/Localisation/..
+#    git status
+#    cd -
+#    read -p "Git is showing changes in remote, do you want to proceed (Y/N)" ANS
+#    if [ $ANS == "N" ]; then
+#        read -p "Do you want to update repository with git pull (Y/N)?" ANS
+#        if [ $ANS == "Y" ]; then
+#            cd -P $HOME/Localisation/..
+#            git pull
+#            cd -
+#        else
+#            echo "Update local copy by running 'git pull' in the HPC_STORM directory"
+#        fi
+#        exit 0
+#    fi
+#fi
 
 echo "How many HPC nodes do you want to use?"
 read -p "Enter number of nodes on the HPC: " NJOBS
@@ -133,11 +133,13 @@ esac
 
 #   environment variables $INPATH $FNAME $NJOBS $JPERNODE $THREED $CALIB $NAME $CAMERA now contain the necessary information for the other scripts to work
 
+export folder_change="Localisation_Ben"
+
 if [ $NJOBS == "1" ]; then
-    one=$(qsub -q $QUEUE -V $HOME/Localisation/NodeScript_Multi.pbs)
+    one=$(qsub -V $HOME/$folder_change/NodeScript_Multi.pbs)
 else
-    echo qsub -q $QUEUE -V -J 1-$NJOBS $HOME/Localisation/NodeScript_Multi.pbs
-    one=$(qsub -q $QUEUE -V -J 1-$NJOBS $HOME/Localisation/NodeScript_Multi.pbs)
+    echo qsub -V -J 1-$NJOBS $HOME/$folder_change/NodeScript_Multi.pbs
+    one=$(qsub -V -J 1-$NJOBS $HOME/$folder_change/NodeScript_Multi.pbs)
 fi
 echo "launching processing job"
 echo $one
@@ -165,7 +167,7 @@ export LATERAL_RES=$lateral
 
 #   environment variables $JOBNO, $POST_PROC and $LATERAL_RES are exported for use in merge and post processing scripts
 
-two=$(qsub -q $QUEUE -W depend=afterok:$one -V $HOME/Localisation/MergeScript.pbs)
+two=$(qsub -W depend=afterok:$one -V $HOME/$folder_change/MergeScript.pbs)
 
 echo "launching merge job"
 echo $two

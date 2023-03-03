@@ -77,8 +77,20 @@ if (LATERAL_RES != "0")  {
         run("Camera setup", "readoutnoise=6.1 offset=9 quantumefficiency=0.76 isemgain=false photons2adu=1 pixelsize=["+PIXELWIDTH+"]");
     } else {
         // Assume it must be an Orca flash 4
-        File.append("Using Orca values for Camera Setup!", LOGPATH);
-        run("Camera setup", "readoutnoise=1.5 offset=350.0 quantumefficiency=0.9 isemgain=false photons2adu=0.5 pixelsize=["+PIXELWIDTH+"]");
+    //File.append("Using Orca values for Camera Setup!", LOGPATH);
+	
+	//File.append("Using HamamatsuHam_DCAM values for Camera Setup!", LOGPATH);
+    //if (isNaN(PIXELWIDTH)) PIXELWIDTH=64.5;
+    //run("Camera setup", "readoutnoise=1.5 offset=20.0 quantumefficiency=0.82 isemgain=false photons2adu=0.458 pixelsize=["+PIXELWIDTH+"]");
+	
+    //if (isNaN(PIXELWIDTH)) PIXELWIDTH=65;
+    //run("Camera setup", "readoutnoise=1.5 offset=350.0 quantumefficiency=0.9 isemgain=false photons2adu=0.5 pixelsize=["+PIXELWIDTH+"]");
+    //Nope Assume is an Prime95B
+	File.append("Using Prime95B values for Camera Setup!", LOGPATH);
+    if (isNaN(PIXELWIDTH)) PIXELWIDTH=106; 
+    //      run("Camera setup", "readoutnoise=0.9 offset=200 quantumefficiency=0.64 isemgain=false photons2adu=0.45 pixelsize=["+PIXELWIDTH+"]");
+    //   // run("Camera setup", "readoutnoise=1.5 offset=200 quantumefficiency=0.70 isemgain=false photons2adu=0.20 pixelsize=["+PIXELWIDTH+"]");​
+	run("Camera setup", "readoutnoise=1.8 offset=170.0 quantumefficiency=0.9 isemgain=false photons2adu=2.44 pixelsize=["+PIXELWIDTH+"]");
     }
 
     // find required magnification to get 25nm pixels

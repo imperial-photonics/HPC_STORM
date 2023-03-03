@@ -68,13 +68,17 @@ Ext.close();
 
 FIRST = parseInt(BLOCK);
 LAST = sizeT;
-// LAST=10000;
+//FIRST =10000
+//LAST=12000;
 
 File.append("Frames from " + FIRST + " to " + LAST, LOGPATH);
 
 //run("Memory & Threads...", "maximum=65536 parallel=24”);
 File.append("Bio-Formats Importer"+","+"open="+FILEPATH+" color_mode=Default specify_range view=[Standard ImageJ] stack_order=Default t_begin="+FIRST+" t_end="+LAST+" t_step="+NJOBS+"",LOGPATH);
 run("Bio-Formats Importer","open="+FILEPATH+" color_mode=Default specify_range view=[Standard ImageJ] stack_order=Default t_begin="+FIRST+" t_end="+LAST+" t_step="+NJOBS+"");
+
+
+
 
 File.append("Imported Dataset to FIJI at " + getTimeString(), LOGPATH);
 
@@ -103,14 +107,20 @@ if (CAMERA=="Prime95B")  {
     run("Camera setup", "readoutnoise=6.1 offset=9 quantumefficiency=0.76 isemgain=false photons2adu=1 pixelsize=["+PIXELWIDTH+"]");
 } else {
     // Assume it must be an Orca flash 4
-    File.append("Using Orca values for Camera Setup!", LOGPATH);
-    if (isNaN(PIXELWIDTH)) PIXELWIDTH=65;
-    run("Camera setup", "readoutnoise=1.5 offset=350.0 quantumefficiency=0.9 isemgain=false photons2adu=0.5 pixelsize=["+PIXELWIDTH+"]");
-}
+    //File.append("Using HamamatsuHam_DCAM values for Camera Setup!", LOGPATH);
+	File.append("Using Prime95B values for Camera Setup!", LOGPATH);
+    if (isNaN(PIXELWIDTH)) PIXELWIDTH=64.5;
+    //run("Camera setup", "readoutnoise=1.5 offset=20.0 quantumefficiency=0.82 isemgain=false photons2adu=0.458 pixelsize=["+PIXELWIDTH+"]");
+	run("Camera setup", "readoutnoise=1.8 offset=170.0 quantumefficiency=0.9 isemgain=false photons2adu=2.44 pixelsize=["+PIXELWIDTH+"]");
+    //Nope Assume is an Zyle
+    //if (isNaN(PIXELWIDTH)) PIXELWIDTH=130; 
+       //   run("Camera setup", "readoutnoise=0.9 offset=200 quantumefficiency=0.64 isemgain=false photons2adu=0.45 pixelsize=["+PIXELWIDTH+"]");
+       // run("Camera setup", "readoutnoise=1.5 offset=200 quantumefficiency=0.70 isemgain=false photons2adu=0.20 pixelsize=["+PIXELWIDTH+"]");​
+	   
 
 if(THREED==0)  {
     File.append("Starting 2D localisation!",LOGPATH);
-    run( "Run analysis", "filter=[Wavelet filter (B-Spline)] scale=2.0 order=3 detector=[Non-maximum suppression] radius=3 threshold=[1.25 * std(Wave.F1)] estimator=[PSF: Integrated Gaussian] sigma=1.6 method=[Weighted Least squares] full_image_fitting=false fitradius=4 mfaenabled=false renderer=[No Renderer]");
+    run( "Run analysis", "filter=[Wavelet filter (B-Spline)] scale=2.0 order=3 detector=[Non-maximum suppression] radius=3 threshold=[std(Wave.F1)] estimator=[PSF: Integrated Gaussian] sigma=1.6 method=[Weighted Least squares] full_image_fitting=false fitradius=4 mfaenabled=false renderer=[No Renderer]");
     //run( "Run analysis", "filter=[Wavelet filter (B-Spline)] scale=2.0 order=3 detector=[Non-maximum suppression] radius=3 threshold=[1.25 * std(Wave.F1)] estimator=[PSF: Integrated Gaussian] sigma=1.6 method=[Maximum likelihood] full_image_fitting=false fitradius=4 mfaenabled=false renderer=[No Renderer]");
     // Sanity check!! Filter out zero intensities
     //FORMULA = "[intensity > 1]";
