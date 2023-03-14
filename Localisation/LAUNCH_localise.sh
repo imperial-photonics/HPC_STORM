@@ -10,6 +10,7 @@
 #   3D localisation is to take place.  Adding a callibration file therefore triggers 3D localisation.
 #   An optional arguement of -b in position 1 forces only a single job to run.
 
+module load tiff/4.3.0
 
 USAGE="Usage: LAUNCH_localise [-b] filename(inc path) [calibration_file(name only - must be in same directory] <-b> "
 

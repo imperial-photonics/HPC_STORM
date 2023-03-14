@@ -6,11 +6,9 @@
 #  Created by Ian Munro on 18/07/2016.
 #
 
-## ask PBS for time (format hh:mm:ss)
 #PBS -l walltime=02:00:00
+#PBS -l select=1:ncpus=48:mem=128gb
 
-## ask for one node with 24 cpus and total 110gb memory
-#PBS -l select=1:ncpus=48:mem=110gb
 
 umask 22 # make all files group and world readable
 
@@ -35,7 +33,7 @@ echo "${LOC_BEFORE} localisations found after merge" >> ${LOGFILE}
 echo "Start Postprocess time $(date)" >> ${LOGFILE}
 
 ##load application module
-module load fiji/2016-05-23 vnc
+module load fiji/2016-05-23 vnc tiff/4.3.0
 
 `vnc_start`
 
